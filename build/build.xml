@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="bibifi">
+    <property environment="env"/>
+    <property name="junit.output.dir" value="junit"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="bibifi.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="libs/args4j-2.32.jar"/>
+        <pathelement location="libs/junit.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin/classes/src"/>
+        <mkdir dir="bin/classes/test"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="test">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin/classes/src" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="bibifi.classpath"/>
+        </javac>
+    </target>
+	<target depends="build-project" name="jar">
+		<jar destfile="bin/app1.jar" basedir="bin/classes/src">
+			<fileset dir="bin/classes/src" />
+		    <zipfileset src="libs/args4j-2.32.jar" />
+			<manifest>
+	        	<attribute name="Main-Class" value="bibifi.App1" />
+	    	</manifest>
+		</jar>
+	</target>
+    <target depends="init" name="build-tests">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin/classes/test" includeantruntime="false" source="${source}" target="${target}">
+            <src path="test"/>
+            <classpath refid="bibifi.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target name="App1">
+        <java classname="bibifi.App1" failonerror="true" fork="yes">
+            <classpath refid="bibifi.classpath"/>
+        </java>
+    </target>
+    <target name="test">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="bibifi.App1Test" todir="${junit.output.dir}"/>
+            <classpath refid="bibifi.classpath"/>
+        </junit>
+    </target>
+    <target depends="cleanall,jar,test" name="integrate"/>
+</project>
