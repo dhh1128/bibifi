@@ -19,7 +19,7 @@ def report(subject, msg):
     smtpserver = smtplib.SMTP('localhost', 25)
     header = 'To: %s\nFrom: "SEADA bibifi vm" <%s>\nSubject: %s\n' % (to_addr, from_addr, subject)
     msg = header + '\n' + msg
-    print(msg)
+    #print(msg)
     smtpserver.sendmail('seada@builditbreakit.org', to_addr, msg)
     smtpserver.close()
     
