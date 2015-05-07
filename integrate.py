@@ -47,11 +47,11 @@ def integrate():
     new_commit_id = 'unknown'
     try:
         try:
-            old_commmit_id, old_status = get_integrate_status()
+            old_commit_id, old_status = get_integrate_status()
             current_commit_id = get_latest_commit_id()
             subprocess.check_call(shlex.split('git pull'))
             new_commit_id = get_latest_commit_id()
-            if current_commit_id == new_commit_id and old_commmit_id == new_commit_id:
+            if current_commit_id == new_commit_id and old_commit_id == new_commit_id:
                 #print('No commits since last integrate.')
                 return
             else:
