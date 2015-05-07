@@ -89,7 +89,7 @@ def integrate():
             new_status = 'error'
             new_commit_id = 'unknown'
             msg = traceback.format_exc()
-            report('unable to integrate', msg, to='daniel.hardman@gmail.com')
+            report('unable to integrate', msg)
     finally:
         os.chdir(my_folder)
         set_integrate_status(new_commit_id, new_status)
