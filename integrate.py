@@ -15,12 +15,12 @@ def get_latest_commit_id():
     m = commit_pat.search(answer)
     return m.group(1)
     
-def report(subject, msg):
+def report(subject, msg, to='cybersecurity-capstone-2015@googlegroups.com'):
     smtpserver = smtplib.SMTP('localhost', 25)
-    header = 'To: %s\nFrom: "SEADA bibifi vm" <%s>\nSubject: %s\n' % (to_addr, from_addr, subject)
+    header = 'To: %s\nFrom: "SEADA bibifi vm" <%s>\nSubject: %s\n' % (to, from_addr, subject)
     msg = header + '\n' + msg
     #print(msg)
-    smtpserver.sendmail('seada@builditbreakit.org', to_addr, msg)
+    smtpserver.sendmail('seada@builditbreakit.org', to, msg)
     smtpserver.close()
     
 def get_integrate_status():
@@ -89,7 +89,7 @@ def integrate():
             new_status = 'error'
             new_commit_id = 'unknown'
             msg = traceback.format_exc()
-            report('unable to integrate', msg)
+            report('unable to integrate', msg, to='daniel.hardman@gmail.com')
     finally:
         os.chdir(my_folder)
         set_integrate_status(new_commit_id, new_status)
