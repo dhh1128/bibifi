@@ -55,7 +55,7 @@ def integrate():
                 #print('No commits since last integrate.')
                 return
             else:
-                if current_commmit_id != new_commit_id:
+                if current_commit_id != new_commit_id:
                     # We might have a new integrate script; run it instead.
                     os.system('./integrate.py')
                     return
