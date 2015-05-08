@@ -2,7 +2,7 @@ package org.builditbreakit.seada.data;
 
 import java.io.Serializable;
 
-public final class ArrivalRecord implements Serializable {
+public final class ArrivalRecord implements Serializable, Comparable<ArrivalRecord> {
 	private static final long serialVersionUID = -3875621941891444819L;
 	
 	private final Location location;
@@ -19,5 +19,10 @@ public final class ArrivalRecord implements Serializable {
 	
 	public long getArrivalTime() {
 		return arrivalTime;
+	}
+
+	@Override
+	public int compareTo(ArrivalRecord other) {
+		return Long.compare(this.arrivalTime, other.arrivalTime);
 	}
 }
