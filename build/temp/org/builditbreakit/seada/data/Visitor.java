@@ -1,20 +1,16 @@
 package org.builditbreakit.seada.data;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Visitor implements Serializable {	
+public class Visitor implements Serializable {
 	private static final long serialVersionUID = -2865757182731074012L;
 	
 	private final String name;
 	private final VisitorType visitorType;
 	private final List<ArrivalRecord> history;
-	 
-	private transient Location currentLocation = Location.OFF_PREMISES;
 
 	public Visitor(String name, VisitorType visitorType) {
 		this.name = name;
@@ -23,7 +19,10 @@ public class Visitor implements Serializable {
 	}
 	
 	public Location getCurrentLocation() {
-		return currentLocation;
+		if(history.isEmpty()) {
+			return Location.OFF_PREMISES;
+		}
+		return history.get(history.size() - 1).getLocation();
 	}
 	
 	public String getName() {
@@ -44,7 +43,6 @@ public class Visitor implements Serializable {
 		
 		assertValidStateTransition(newLocation);
 		history.add(new ArrivalRecord(timestamp, newLocation));
-		currentLocation = newLocation;
 	}
 
 	@Override
@@ -80,6 +78,7 @@ public class Visitor implements Serializable {
 	}
 	
 	private void assertValidStateTransition(Location newLocation) {
+		Location currentLocation = getCurrentLocation();
 		if ((currentLocation.isInRoom() || currentLocation.isOffPremises())
 				&& !newLocation.isInGallery()) {
 			throw new IllegalStateException(getStateTransitionErrorMsg(
@@ -91,17 +90,6 @@ public class Visitor implements Serializable {
 		}
 	}
 	
-	private void readObject(ObjectInputStream ois)
-			throws ClassNotFoundException, IOException {
-		// default deserialization
-		ois.defaultReadObject();
-	
-		// Populate transient values
-		if (!history.isEmpty()) {
-			currentLocation = history.get(history.size() - 1).getLocation();
-		}
-	}
-
 	private static String getStateTransitionErrorMsg(Location currentLocation,
 			Location newLocation) {
 		StringBuilder builder = new StringBuilder(80);
