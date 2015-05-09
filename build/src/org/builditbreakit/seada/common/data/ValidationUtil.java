@@ -1,4 +1,4 @@
-package org.builditbreakit.seada.data;
+package org.builditbreakit.seada.common.data;
 
 final class ValidationUtil {
 	private ValidationUtil() {
@@ -22,8 +22,16 @@ final class ValidationUtil {
 	}
 
 	public static void assertValidString(String value, String param) {
+		assertNotNull(value, param);
 		if (value.isEmpty()) {
 			throw new IllegalArgumentException(param + " must not be empty");
+		}
+
+		for (char c : value.toCharArray()) {
+			if (((c < 'a') || (c > 'z')) && ((c < 'A') && (c > 'Z'))) {
+				throw new IllegalArgumentException(param
+						+ " contains invalid characters: " + value);
+			}
 		}
 	}
 
@@ -36,8 +44,14 @@ final class ValidationUtil {
 	}
 
 	public static void assertValidVisitorName(String visitorName) {
-		final String param_name = "Visitor name";
-		assertNotNull(visitorName, param_name);
-		assertValidString(visitorName, param_name);
+		assertValidString(visitorName, "Visitor name");
+	}
+
+	public static void assertValidTimestamp(long timestamp) {
+		assertValidUINT32(timestamp, "Timestamp");
+	}
+
+	public static void assertValidLocation(Location location) {
+		assertNotNull(location, "Location");
 	}
 }

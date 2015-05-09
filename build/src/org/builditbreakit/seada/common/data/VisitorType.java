@@ -1,4 +1,4 @@
-package org.builditbreakit.seada.data;
+package org.builditbreakit.seada.common.data;
 
 public enum VisitorType {
 	GUEST,

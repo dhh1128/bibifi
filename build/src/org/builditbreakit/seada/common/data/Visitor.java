@@ -1,23 +1,36 @@
-package org.builditbreakit.seada.data;
+package org.builditbreakit.seada.common.data;
 
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Visitor implements Serializable {
-	private static final long serialVersionUID = -2865757182731074012L;
+	private static final long serialVersionUID = -8422758600278331225L;
 	
-	private final String name;
-	private final VisitorType visitorType;
-	private final List<ArrivalRecord> history;
+	private transient final String name;
+	private transient final VisitorType visitorType;
+	private transient final List<LocationRecord> history;
 
 	public Visitor(String name, VisitorType visitorType) {
+		// TODO Validate parameters
+		
 		this.name = name;
 		this.visitorType = visitorType;
 		this.history = new LinkedList<>();
 	}
 	
+	private Visitor(String name, VisitorType visitorType,
+			List<LocationRecord> history) {
+		// TODO Validate parameters
+		
+		this.name = name;
+		this.visitorType = visitorType;
+		this.history = new LinkedList<>(history);
+	}
+
 	public Location getCurrentLocation() {
 		if(history.isEmpty()) {
 			return Location.OFF_PREMISES;
@@ -33,7 +46,7 @@ public class Visitor implements Serializable {
 		return visitorType;
 	}
 	
-	public List<ArrivalRecord> getHistory() {
+	public List<LocationRecord> getHistory() {
 		return Collections.unmodifiableList(history);
 	}
 
@@ -42,7 +55,7 @@ public class Visitor implements Serializable {
 		ValidationUtil.assertNotNull(newLocation, "Location");
 		
 		assertValidStateTransition(newLocation);
-		history.add(new ArrivalRecord(timestamp, newLocation));
+		history.add(new LocationRecord(timestamp, newLocation));
 	}
 
 	@Override
@@ -96,5 +109,33 @@ public class Visitor implements Serializable {
 		builder.append("Cannot transition from state ").append(currentLocation)
 				.append(" to state ").append(newLocation);
 		return builder.toString();
+	}
+	
+	
+	private static class SerializationProxy implements Serializable {
+		private static final long serialVersionUID = -6377133384230120340L;
+		
+		private final String name;
+		private final VisitorType visitorType;
+		private final List<LocationRecord> history;
+		
+		SerializationProxy(Visitor visitor) {
+			this.name = visitor.name;
+			this.visitorType = visitor.visitorType;
+			this.history = visitor.history;
+		}
+		
+		private Object readResolve() {
+			return new Visitor(name, visitorType, history);
+		}
+	}
+
+	private Object writeReplace() {
+		return new SerializationProxy(this);
+	}
+
+	private void readObject(ObjectInputStream ois)
+			throws InvalidObjectException {
+		throw new InvalidObjectException("Proxy required");
 	}
 }

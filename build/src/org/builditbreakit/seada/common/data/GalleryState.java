@@ -1,29 +1,56 @@
-package org.builditbreakit.seada.data;
+package org.builditbreakit.seada.common.data;
 
-import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
+import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
 
 public class GalleryState implements Serializable {
-	private static final long serialVersionUID = 1229809171003207567L;
+	private static final long serialVersionUID = 6928424752159836102L;
 	
-	private final Set<Visitor> visitors;
-	private long lastTimestamp = 0;
-
+	private transient long lastTimestamp = 0;
 	private transient final Map<String, Visitor> visitorMap;
 
 	public GalleryState() {
-		this.visitors = new HashSet<>();
 		this.visitorMap = new HashMap<>();
 	}
 
-	public Set<Visitor> getVisitors() {
-		return Collections.unmodifiableSet(visitors);
+	private GalleryState(Collection<? extends Visitor> visitors) {
+		final float load_factor = 0.75f;
+		final int default_capacity = 16;
+		final int extra_space = 10;
+		final int initial_capacity = Math.max(
+				(int) (visitors.size() / load_factor) + extra_space,
+				default_capacity);
+
+		this.visitorMap = new HashMap<>(initial_capacity, load_factor);
+
+		if (!visitors.isEmpty()) {
+			visitors.forEach((visitor) -> {
+				if (visitorMap.put(visitor.getName(), visitor) != null) {
+					throw new IntegrityViolationException("Duplicate visitor: "
+							+ visitor.getName());
+				}
+				List<LocationRecord> history = visitor.getHistory();
+				if (!history.isEmpty()) {
+					long lastVisitTime = history.get(history.size() - 1)
+							.getArrivalTime();
+					if (lastVisitTime > lastTimestamp) {
+						lastTimestamp = lastVisitTime;
+					}
+				}
+			});
+		}
+	}
+
+	public Collection<Visitor> getVisitors() {
+		return Collections.unmodifiableCollection(visitorMap.values());
 	}
 
 	public Visitor getVisitor(VisitorType visitorType, String name) {
@@ -50,12 +77,11 @@ public class GalleryState implements Serializable {
 		if (visitor == null) {
 			visitor = new Visitor(name, visitorType);
 			visitorMap.put(name, visitor);
-			visitors.add(visitor);
 		} else {
 			assertMatchingVisitorType(visitor, visitorType);
 		}
  
-		visitor.moveTo(timestamp, Location.GALLERY);
+		visitor.moveTo(timestamp, Location.IN_GALLERY);
 	}
 
 	public void arriveAtRoom(VisitorType visitorType, long timestamp,
@@ -83,7 +109,7 @@ public class GalleryState implements Serializable {
 		Visitor visitor = getVisitor(visitorType, name);
 		Location currentLocation = visitor.getCurrentLocation();
 		if (currentLocation.isInRoom()) {
-			visitor.moveTo(timestamp, Location.GALLERY);
+			visitor.moveTo(timestamp, Location.IN_GALLERY);
 		} else if (currentLocation.isInGallery()) {
 			visitor.moveTo(timestamp, Location.OFF_PREMISES);
 		} else {
@@ -107,18 +133,28 @@ public class GalleryState implements Serializable {
 			throw new IllegalStateException();
 		}
 	}
-
-	private void readObject(ObjectInputStream ois)
-			throws ClassNotFoundException, IOException {
-		// default deserialization
-		ois.defaultReadObject();
-
-		// Populate transient values
-		if (!visitors.isEmpty()) {
-			visitors.forEach((visitor) -> visitorMap.put(visitor.getName(),
-					visitor));
+	
+	
+	private static class SerializationProxy implements Serializable {
+		private static final long serialVersionUID = 8768461134732556971L;
+		
+		private final Collection<Visitor> visitors;
+		
+		SerializationProxy(GalleryState galleryState) {
+			this.visitors = galleryState.getVisitors();
+		}
+		
+		private Object readResolve() {
+			return new GalleryState(visitors);
 		}
 	}
 
-	
+	private Object writeReplace() {
+		return new SerializationProxy(this);
+	}
+
+	private void readObject(ObjectInputStream ois)
+			throws InvalidObjectException {
+		throw new InvalidObjectException("Proxy required");
+	}
 }
