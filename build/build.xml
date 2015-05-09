@@ -3,8 +3,8 @@
     <property environment="env"/>
     <property name="junit.output.dir" value="junit"/>
     <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.6"/>
-    <property name="source" value="1.6"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
     <path id="bibifi.classpath">
         <pathelement location="bin"/>
         <pathelement location="libs/args4j-2.32.jar"/>
@@ -23,6 +23,8 @@
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
+    	<chmod file="bin/logappend" perm="+x"/>
+    	<chmod file="bin/logread" perm="+x"/>
     </target>
     <target name="clean">
         <delete dir="bin"/>
@@ -37,11 +39,32 @@
             <classpath refid="bibifi.classpath"/>
         </javac>
     </target>
-	<target name="jar" depends="build-project">
-		<jar destfile="bin/app1.jar" basedir="bin/classes/src" duplicate="fail">
-		    <zipfileset src="libs/args4j-2.32.jar" />
+	<target name="jars" depends="common-jar,logappend-jar,logread-jar"/>
+	<target name="common-jar" depends="build-project">
+		<jar destfile="bin/common.jar" duplicate="fail">
+		    <!-- <zipfileset src="libs/args4j-2.32.jar" /> -->
+			<fileset dir="bin/classes/src">
+				<include name="**/common/*"/>
+				<include name="**/data/*"/>
+			</fileset>
 			<manifest>
 	        	<attribute name="Main-Class" value="bibifi.App1" />
+	    	</manifest>
+		</jar>
+	</target>
+	<target name="logappend-jar" depends="build-project">
+		<jar destfile="bin/logappend.jar" duplicate="fail">
+			<fileset dir="bin/classes/src" includes="**/logappend/*" />
+			<manifest>
+	        	<attribute name="Main-Class" value="org.builditbreakit.seada.logappend.App" />
+	    	</manifest>
+		</jar>
+	</target>
+	<target name="logread-jar" depends="build-project">
+		<jar destfile="bin/logread.jar" duplicate="fail">
+			<fileset dir="bin/classes/src" includes="**/logread/*" />
+			<manifest>
+	        	<attribute name="Main-Class" value="org.builditbreakit.seada.logread.App" />
 	    	</manifest>
 		</jar>
 	</target>
@@ -56,8 +79,13 @@
         	</classpath>
         </javac>
     </target>
-    <target name="App1">
-        <java classname="bibifi.App1" failonerror="true" fork="yes">
+    <target name="LogRead">
+        <java classname="bibifi.logread.App" failonerror="true" fork="yes">
+            <classpath refid="bibifi.classpath"/>
+        </java>
+    </target>
+    <target name="LogAppend">
+        <java classname="bibifi.logappend.App" failonerror="true" fork="yes">
             <classpath refid="bibifi.classpath"/>
         </java>
     </target>
@@ -65,14 +93,17 @@
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr" haltonfailure="true">
             <formatter type="xml"/>
-            <test name="bibifi.App1Test" todir="${junit.output.dir}"/>
+			<batchtest todir="${junit.output.dir}">
+				<fileset dir="bin/classes/test"/>
+        	</batchtest>
         	<classpath>
       	    	<pathelement location="libs/junit.jar"/>
-        		<pathelement location="libs/args4j-2.32.jar"/>
-        		<pathelement location="bin/app1.jar"/>
+        		<pathelement location="bin/common.jar"/>
+        		<pathelement location="bin/logappend.jar"/>
+        		<pathelement location="bin/logread.jar"/>
         		<pathelement location="bin/classes/test"/>
         	</classpath>
         </junit>
     </target>
-    <target depends="cleanall,jar,test" name="integrate"/>
+    <target depends="cleanall,jars,test" name="integrate"/>
 </project>
