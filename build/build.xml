@@ -7,8 +7,6 @@
     <property name="source" value="1.8"/>
     <path id="bibifi.classpath">
         <pathelement location="bin"/>
-        <pathelement location="libs/args4j-2.32.jar"/>
-        <pathelement location="libs/junit.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin/classes/src"/>
@@ -75,6 +73,7 @@
             <classpath>
                 <pathelement location="libs/args4j-2.32.jar"/>
                 <pathelement location="libs/junit.jar"/>
+      	    	<pathelement location="libs/hamcrest-core-1.3.jar"/>
         		<pathelement location="bin/classes/src"/>
         	</classpath>
         </javac>
@@ -98,6 +97,7 @@
         	</batchtest>
         	<classpath>
       	    	<pathelement location="libs/junit.jar"/>
+      	    	<pathelement location="libs/hamcrest-core-1.3.jar"/>
         		<pathelement location="bin/common.jar"/>
         		<pathelement location="bin/logappend.jar"/>
         		<pathelement location="bin/logread.jar"/>
