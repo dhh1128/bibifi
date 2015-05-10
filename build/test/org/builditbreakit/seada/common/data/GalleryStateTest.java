@@ -15,15 +15,79 @@ import org.junit.Test;
 
 public class GalleryStateTest {
 
-	/*
-	 * TODO - Test the following: -Moving thru states (both valid and invalid)
-	 * -Getting non-empty history -Defensive copies of history (white-box)
-	 * -Returned history is unmodifiable
-	 */
+	/* getVisitors Tests */
+	
+	@Test(expected = UnsupportedOperationException.class)
+	public void testUnmodifiableVisitors() {
+		GalleryState galleryState = new GalleryState();
+		galleryState.getVisitors()
+				.add(new Visitor("Bob", VisitorType.EMPLOYEE));
+	}
+	
+	/* getVisitor Tests */
 
 	@Test
 	public void testGetVisitor() {
 
+	}
+	
+	@Test(expected = IllegalStateException.class)
+	public void testGetVisitorMissingVisitor() {
+		GalleryState galleryState = new GalleryState();
+		galleryState.getVisitor("Bob", VisitorType.EMPLOYEE);
+	}
+	
+	@Test(expected = IllegalStateException.class)
+	public void testGetVisitorWrongVisitorType() {
+		GalleryState galleryState = new GalleryState();
+
+		String visitorName = "Bob";
+		galleryState.arriveAtBuilding(5, visitorName, VisitorType.GUEST);
+		galleryState.getVisitor(visitorName, VisitorType.EMPLOYEE);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetVisitorNullName() {
+		GalleryState galleryState = new GalleryState();
+
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+
+		galleryState.arriveAtBuilding(5, visitorName, visitorType);
+		galleryState.getVisitor(null, visitorType);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetVisitorEmptyName() {
+		GalleryState galleryState = new GalleryState();
+
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+
+		galleryState.arriveAtBuilding(5, visitorName, visitorType);
+		galleryState.getVisitor("", visitorType);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetVisitorInvalidName() {
+		GalleryState galleryState = new GalleryState();
+
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+
+		galleryState.arriveAtBuilding(5, visitorName, visitorType);
+		galleryState.getVisitor("&", visitorType);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetVisitorNullVisitorType() {
+		GalleryState galleryState = new GalleryState();
+
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+
+		galleryState.arriveAtBuilding(5, visitorName, visitorType);
+		galleryState.getVisitor(visitorName, null);
 	}
 
 	/* arriveAtBuilding Tests */
