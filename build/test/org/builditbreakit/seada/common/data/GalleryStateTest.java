@@ -25,11 +25,6 @@ public class GalleryStateTest {
 	}
 	
 	/* getVisitor Tests */
-
-	@Test
-	public void testGetVisitor() {
-
-	}
 	
 	@Test(expected = IllegalStateException.class)
 	public void testGetVisitorMissingVisitor() {
