@@ -2,47 +2,21 @@ package org.builditbreakit.seada.common.data;
 
 import static org.junit.Assert.*;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class LocationTest {
 	private static final long ROOM_LOWER_BOUND = 0L;
 	private static final long ROOM_UPPER_BOUND = 4294967295L;
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
+	/* isOffPremises Tests */
 
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
-
-	
-	
 	@Test
 	public void testOffPremisesIsOffPremises() {
 		assertTrue(Location.OFF_PREMISES.isOffPremises());
@@ -58,8 +32,8 @@ public class LocationTest {
 		assertFalse(Location.locationOfRoom(101).isOffPremises());
 	}
 
-	
-	
+	/* isInGallery Tests */
+
 	@Test
 	public void testOffPremisesIsNotInGallery() {
 		assertFalse(Location.OFF_PREMISES.isInGallery());
@@ -75,8 +49,8 @@ public class LocationTest {
 		assertFalse(Location.locationOfRoom(101).isInGallery());
 	}
 
-	
-	
+	/* isInRoom Tests */
+
 	@Test
 	public void testOffPremisesIsNotInRoom() {
 		assertFalse(Location.OFF_PREMISES.isInRoom());
@@ -92,8 +66,8 @@ public class LocationTest {
 		assertTrue(Location.locationOfRoom(101).isInRoom());
 	}
 
-	
-	
+	/* getRoomNumber Tests */
+
 	@Test
 	public void testOffPremisesNullRoomNumber() {
 		assertNull(Location.OFF_PREMISES.getRoomNumber());
@@ -110,8 +84,8 @@ public class LocationTest {
 				.getRoomNumber());
 	}
 
-	
-	
+	/* Constructor Tests */
+
 	@Test
 	public void testLocationOfRoomCaching() {
 		assertSame(Location.locationOfRoom(101), Location.locationOfRoom(101));
@@ -138,9 +112,9 @@ public class LocationTest {
 	public void testLocationOfRoomUpperConstraint() {
 		Location.locationOfRoom(ROOM_UPPER_BOUND + 1);
 	}
-	
-	
-	
+
+	/* Equals and Hashcode Tests */
+
 	@Test
 	public void testEqualsContract() {
 		/*
@@ -150,46 +124,62 @@ public class LocationTest {
 		EqualsVerifier.forClass(Location.class).usingGetClass()
 				.suppress(Warning.TRANSIENT_FIELDS).verify();
 	}
-	
-	
-	
+
+	/* Serialization Tests */
+
 	@Test
-	public void testOffPremisesSerialization() throws IOException, ClassNotFoundException {
+	public void testOffPremisesSerialization() throws IOException,
+			ClassNotFoundException {
 		testLocationSerialization(Location.OFF_PREMISES);
 	}
-	
+
 	@Test
-	public void testInGallerySerialization() throws IOException, ClassNotFoundException {
+	public void testInGallerySerialization() throws IOException,
+			ClassNotFoundException {
 		testLocationSerialization(Location.IN_GALLERY);
 	}
-	
+
 	@Test
-	public void testInRoomSerialization() throws IOException, ClassNotFoundException {
+	public void testInRoomSerialization() throws IOException,
+			ClassNotFoundException {
 		testLocationSerialization(Location.locationOfRoom(101));
 	}
-	
+
+	/**
+	 * Checks that deserialized data is actually validated. Java's default
+	 * serialization will fail this test. This is a white-box test.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void testMaliciousSerialization() throws Exception {
+		testLocationSerialization(createMaliciousLocation());
+	}
+
 	@Test
 	public void testReadObjectFails() {
 		Location location = Location.locationOfRoom(101);
 		TestUtil.assertReadObjectFails(location);
 	}
+	
+	/* Private helpers */
 
-	
-	
 	private static void testLocationSerialization(Location location)
-			throws IOException, FileNotFoundException, ClassNotFoundException {
-		File tempFile = File.createTempFile("bibifi-test", "tmp");
-		tempFile.deleteOnExit();
-
-		try (ObjectOutputStream out = new ObjectOutputStream(
-				new BufferedOutputStream(new FileOutputStream(tempFile)))) {
-			out.writeObject(location);
-		}
-
-		try (ObjectInputStream in = new ObjectInputStream(
-				new BufferedInputStream(new FileInputStream(tempFile)))) {
-			Location result = (Location) in.readObject();
-			assertSame(location, result);
-		}
+			throws ClassNotFoundException, IOException {
+		TestUtil.testSerialization(location,
+				(result) -> EquivalenceUtil.assertEquivalent(location, result));
+	}
+	
+	private static Location createMaliciousLocation() throws Exception {
+		Class<Location> clazz = Location.class;
+		Constructor<Location> ctor = clazz.getDeclaredConstructor(Long.TYPE);
+		ctor.setAccessible(true);
+		Location maliciousObj = ctor.newInstance(ROOM_LOWER_BOUND + 1);
+		
+		Field stateField = clazz.getDeclaredField("state");
+		stateField.setAccessible(true);
+		
+		// Set the field to something illegal
+		stateField.setLong(maliciousObj, ROOM_LOWER_BOUND - 10);
+		
+		return maliciousObj;
 	}
 }

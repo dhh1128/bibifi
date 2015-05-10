@@ -100,6 +100,17 @@ public final class Location implements Serializable {
 		}
 		return state;
 	}
+	
+	@Override
+	public String toString() {
+		if (isOffPremises()) {
+			return "OFF_PREMISES";
+		}
+		if (isInGallery()) {
+			return "IN_GALLERY";
+		}
+		return  "IN_ROOM(" + state + ")";
+	}
 
 	/**
 	 * @return {@code true} if this object represents the same location as the

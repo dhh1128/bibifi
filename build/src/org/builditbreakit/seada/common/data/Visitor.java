@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Visitor implements Serializable {
+public final class Visitor implements Serializable {
 	private static final long serialVersionUID = -8422758600278331225L;
 	
 	private transient final String name;
@@ -15,7 +15,8 @@ public class Visitor implements Serializable {
 	private transient final List<LocationRecord> history;
 
 	public Visitor(String name, VisitorType visitorType) {
-		// TODO Validate parameters
+		ValidationUtil.assertValidVisitorName(name);
+		ValidationUtil.assertValidVisitorType(visitorType);
 		
 		this.name = name;
 		this.visitorType = visitorType;
@@ -24,7 +25,9 @@ public class Visitor implements Serializable {
 	
 	private Visitor(String name, VisitorType visitorType,
 			List<LocationRecord> history) {
-		// TODO Validate parameters
+		ValidationUtil.assertValidVisitorName(name);
+		ValidationUtil.assertValidVisitorType(visitorType);
+		ValidationUtil.assertNotNull(history, "History");
 		
 		this.name = name;
 		this.visitorType = visitorType;
@@ -48,14 +51,6 @@ public class Visitor implements Serializable {
 	
 	public List<LocationRecord> getHistory() {
 		return Collections.unmodifiableList(history);
-	}
-
-	void moveTo(long timestamp, Location newLocation) {
-		ValidationUtil.assertValidUINT32(timestamp, "Timestamp");
-		ValidationUtil.assertNotNull(newLocation, "Location");
-		
-		assertValidStateTransition(newLocation);
-		history.add(new LocationRecord(timestamp, newLocation));
 	}
 
 	@Override
@@ -89,7 +84,28 @@ public class Visitor implements Serializable {
 		}
 		return true;
 	}
-	
+
+	void moveTo(long timestamp, Location newLocation) {
+		ValidationUtil.assertValidUINT32(timestamp, "Timestamp");
+		ValidationUtil.assertNotNull(newLocation, "Location");
+		
+		assertValidStateTransition(newLocation);
+		assertValidTime(timestamp);
+		history.add(new LocationRecord(timestamp, newLocation));
+	}
+
+	private void assertValidTime(long timestamp) {
+		if (!history.isEmpty()) {
+			long lastTimestamp = history.get(history.size() - 1)
+					.getArrivalTime();
+			if (lastTimestamp >= timestamp) {
+				throw new IllegalStateException("New timestamp " + timestamp
+						+ " is not after the visitor's last timestamp: "
+						+ lastTimestamp);
+			}
+		}
+	}
+
 	private void assertValidStateTransition(Location newLocation) {
 		Location currentLocation = getCurrentLocation();
 		if ((currentLocation.isInRoom() || currentLocation.isOffPremises())

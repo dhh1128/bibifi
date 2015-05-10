@@ -3,6 +3,7 @@ package org.builditbreakit.seada.common.data;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
 
 public class GalleryState implements Serializable {
 	private static final long serialVersionUID = 6928424752159836102L;
-	
+
 	private transient long lastTimestamp = 0;
 	private transient final Map<String, Visitor> visitorMap;
 
@@ -22,6 +23,8 @@ public class GalleryState implements Serializable {
 	}
 
 	private GalleryState(Collection<? extends Visitor> visitors) {
+		ValidationUtil.assertNotNull(visitors, "Imported data");
+
 		final float load_factor = 0.75f;
 		final int default_capacity = 16;
 		final int extra_space = 10;
@@ -53,10 +56,10 @@ public class GalleryState implements Serializable {
 		return Collections.unmodifiableCollection(visitorMap.values());
 	}
 
-	public Visitor getVisitor(VisitorType visitorType, String name) {
+	public Visitor getVisitor(String name, VisitorType visitorType) {
 		ValidationUtil.assertValidVisitorType(visitorType);
 		ValidationUtil.assertValidVisitorName(name);
-		
+
 		Visitor visitor = visitorMap.get(name);
 		if (visitor == null) {
 			// TODO Message
@@ -67,8 +70,8 @@ public class GalleryState implements Serializable {
 		return visitor;
 	}
 
-	public void arriveAtBuilding(VisitorType visitorType, long timestamp,
-			String name) {
+	public void arriveAtBuilding(long timestamp, String name,
+			VisitorType visitorType) {
 		ValidationUtil.assertValidVisitorType(visitorType);
 		ValidationUtil.assertValidVisitorName(name);
 		assertValidTimestamp(timestamp);
@@ -80,18 +83,23 @@ public class GalleryState implements Serializable {
 		} else {
 			assertMatchingVisitorType(visitor, visitorType);
 		}
- 
+
+		if(!visitor.getCurrentLocation().isOffPremises()) {
+			// TODO Message
+			throw new IllegalStateException();
+		}
 		visitor.moveTo(timestamp, Location.IN_GALLERY);
+		lastTimestamp = timestamp;
 	}
 
-	public void arriveAtRoom(VisitorType visitorType, long timestamp,
-			String name, long roomNumber) {
+	public void arriveAtRoom(long timestamp, String name,
+			VisitorType visitorType, long roomNumber) {
 		ValidationUtil.assertValidVisitorType(visitorType);
 		ValidationUtil.assertValidVisitorName(name);
 		ValidationUtil.assertValidRoomNumber(roomNumber);
 		assertValidTimestamp(timestamp);
 
-		Visitor visitor = getVisitor(visitorType, name);
+		Visitor visitor = getVisitor(name, visitorType);
 		if (visitor == null) {
 			// TODO Message
 			throw new IllegalStateException();
@@ -99,14 +107,15 @@ public class GalleryState implements Serializable {
 
 		assertMatchingVisitorType(visitor, visitorType);
 		visitor.moveTo(timestamp, Location.locationOfRoom(roomNumber));
+		lastTimestamp = timestamp;
 	}
 
-	public void depart(VisitorType visitorType, long timestamp, String name) {
+	public void depart(long timestamp, String name, VisitorType visitorType) {
 		ValidationUtil.assertValidVisitorType(visitorType);
 		ValidationUtil.assertValidVisitorName(name);
 		assertValidTimestamp(timestamp);
-		
-		Visitor visitor = getVisitor(visitorType, name);
+
+		Visitor visitor = getVisitor(name, visitorType);
 		Location currentLocation = visitor.getCurrentLocation();
 		if (currentLocation.isInRoom()) {
 			visitor.moveTo(timestamp, Location.IN_GALLERY);
@@ -116,6 +125,7 @@ public class GalleryState implements Serializable {
 			// TODO Message
 			throw new IllegalStateException();
 		}
+		lastTimestamp = timestamp;
 	}
 
 	private void assertValidTimestamp(long timestamp) {
@@ -125,7 +135,7 @@ public class GalleryState implements Serializable {
 					+ " is prior to the current timestamp: " + lastTimestamp);
 		}
 	}
-	
+
 	private void assertMatchingVisitorType(Visitor visitor,
 			VisitorType visitorType) {
 		if (visitor.getVisitorType() != visitorType) {
@@ -133,17 +143,17 @@ public class GalleryState implements Serializable {
 			throw new IllegalStateException();
 		}
 	}
-	
-	
+
 	private static class SerializationProxy implements Serializable {
 		private static final long serialVersionUID = 8768461134732556971L;
-		
+
 		private final Collection<Visitor> visitors;
-		
+
 		SerializationProxy(GalleryState galleryState) {
-			this.visitors = galleryState.getVisitors();
+			// Need to make a copy. Map values are not serializable
+			this.visitors = new ArrayList<>(galleryState.visitorMap.values());
 		}
-		
+
 		private Object readResolve() {
 			return new GalleryState(visitors);
 		}

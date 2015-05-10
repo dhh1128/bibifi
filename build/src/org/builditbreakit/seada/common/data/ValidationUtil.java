@@ -28,7 +28,7 @@ final class ValidationUtil {
 		}
 
 		for (char c : value.toCharArray()) {
-			if (((c < 'a') || (c > 'z')) && ((c < 'A') && (c > 'Z'))) {
+			if (((c < 'a') || (c > 'z')) && ((c < 'A') || (c > 'Z'))) {
 				throw new IllegalArgumentException(param
 						+ " contains invalid characters: " + value);
 			}

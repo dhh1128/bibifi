@@ -4,8 +4,8 @@ import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
-public final class LocationRecord implements Serializable, Comparable<LocationRecord> {
-	private static final long serialVersionUID = -1826625561705118367L;
+public final class LocationRecord implements Serializable {
+	private static final long serialVersionUID = 3368039496562510892L;
 	
 	private transient final Location location;
 	private transient final long arrivalTime;
@@ -26,11 +26,6 @@ public final class LocationRecord implements Serializable, Comparable<LocationRe
 		return arrivalTime;
 	}
 
-	@Override
-	public int compareTo(LocationRecord other) {
-		return Long.compare(this.arrivalTime, other.arrivalTime);
-	}
-	
 	private static class SerializationProxy implements Serializable {
 		private static final long serialVersionUID = 1009514308536095709L;
 		

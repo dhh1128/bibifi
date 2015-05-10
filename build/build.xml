@@ -93,7 +93,9 @@
         <junit fork="yes" printsummary="withOutAndErr" haltonfailure="true">
             <formatter type="xml"/>
 			<batchtest todir="${junit.output.dir}">
-				<fileset dir="bin/classes/test"/>
+				<fileset dir="bin/classes/test">
+					<include name="**/*Test.class"/>	
+				</fileset>
         	</batchtest>
         	<classpath>
       	    	<pathelement location="libs/junit.jar"/>
