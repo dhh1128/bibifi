@@ -11,27 +11,27 @@ import java.util.Map;
  * like you would use JUnit assertions.
  */
 public class EquivalenceUtil {
-	public static void assertEquivalent(GalleryState actual,
-			GalleryState expected) {
-		assertEquivalent(null, actual, expected);
+	public static void assertEquivalent(GalleryState expected,
+			GalleryState actual) {
+		assertEquivalent(null, expected, actual);
 	}
 
-	public static void assertEquivalent(Visitor actual, Visitor expected) {
-		assertEquivalent(null, actual, expected);
+	public static void assertEquivalent(Visitor expected, Visitor actual) {
+		assertEquivalent(null, expected, actual);
 	}
 
-	public static void assertEquivalent(Location actual, Location expected) {
-		assertEquivalent(null, actual, expected);
+	public static void assertEquivalent(Location expected, Location actual) {
+		assertEquivalent(null, expected, actual);
 	}
 
-	public static void assertEquivalent(LocationRecord actual,
-			LocationRecord expected) {
-		assertEquivalent(null, actual, expected);
+	public static void assertEquivalent(LocationRecord expected,
+			LocationRecord actual) {
+		assertEquivalent(null, expected, actual);
 	}
 	
 	public static void assertEquivalent(List<LocationRecord> expected,
 			List<LocationRecord> actual) {
-		assertEquivalent(null, actual, expected);
+		assertEquivalent(null, expected, actual);
 	}
 
 	public static void assertEquivalent(String message, GalleryState expected,
