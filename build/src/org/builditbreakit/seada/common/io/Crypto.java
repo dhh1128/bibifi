@@ -19,7 +19,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.builditbreakit.seada.common.exceptions.UnexpectedException;
+import org.builditbreakit.seada.common.exceptions.SecurityException;
 
 public final class Crypto {
 	public static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding";
@@ -44,7 +44,7 @@ public final class Crypto {
 					KEY_ALGORITHM);
 		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
 			// Should not happen with AES/CBC/PKCS5Padding or SHA-1
-			throw new UnexpectedException(e);
+			throw new SecurityException(e);
 		}
 	}
 
@@ -66,7 +66,7 @@ public final class Crypto {
 				| InvalidKeyException | NoSuchAlgorithmException
 				| NoSuchPaddingException | InvalidAlgorithmParameterException
 				| IOException e) {
-			throw new UnexpectedException(e);
+			throw new SecurityException(e);
 		}
 	}
 
@@ -82,7 +82,7 @@ public final class Crypto {
 		} catch (IllegalBlockSizeException | BadPaddingException
 				| InvalidKeyException | NoSuchAlgorithmException
 				| NoSuchPaddingException | InvalidAlgorithmParameterException e) {
-			throw new UnexpectedException(e);
+			throw new SecurityException(e);
 		}
 	}
 
@@ -92,7 +92,7 @@ public final class Crypto {
 			mac.init(key);
 			return mac.doFinal(message);
 		} catch (NoSuchAlgorithmException | InvalidKeyException e) {
-			throw new UnexpectedException(e);
+			throw new SecurityException(e);
 		}
 	}
 
