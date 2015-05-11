@@ -36,8 +36,11 @@ public class LogFileWriterTest {
 	}
 
 	private void testSerialization(GalleryState galleryState) throws IOException {
+		final double millisToNanos = 1000000.0;
+		
 		String password = "secret";
 		
+		long start = System.nanoTime();
 		File logFile = File.createTempFile("bibifi-test", "tmp");
 		logFile.deleteOnExit();
 		
@@ -46,8 +49,14 @@ public class LogFileWriterTest {
 		
 		LogFileReader reader = new LogFileReader(logFile);
 		GalleryState recoveredGalleryState = reader.read(password);
+		double runtime = (System.nanoTime() - start) / millisToNanos;
+		long logFileSize = logFile.length();
 		
 		EquivalenceUtil.assertEquivalent(galleryState, recoveredGalleryState);
+		
+		System.out.println("Runtime: " + runtime + " ms");
+		System.out.println("Log file size: " + logFileSize + " bytes");
+		System.out.println();
 	}
 
 }
