@@ -20,8 +20,7 @@ public class GalleryStateTest {
 	@Test(expected = UnsupportedOperationException.class)
 	public void testUnmodifiableVisitors() {
 		GalleryState galleryState = new GalleryState();
-		galleryState.getVisitors()
-				.add(new Visitor("Bob", VisitorType.EMPLOYEE));
+		galleryState.getVisitors().clear();
 	}
 
 	/* getVisitor Tests */
@@ -392,7 +391,7 @@ public class GalleryStateTest {
 		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType, -1);
 	}
 
-	/* depart Tests */
+	/* departBuilding Tests */
 
 	@Test
 	public void testDepartBuilding() {
@@ -458,8 +457,21 @@ public class GalleryStateTest {
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
-		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
 		galleryState.departBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.departBuilding(arrivalTime++, visitorName, visitorType);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testDepartBuildingFromRoom() {
+		GalleryState galleryState = new GalleryState();
+
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType, 101);
 		galleryState.departBuilding(arrivalTime++, visitorName, visitorType);
 	}
 
@@ -495,7 +507,7 @@ public class GalleryStateTest {
 		long arrivalTime = 5;
 		String visitorName = "Bob";
 
-		galleryState.arriveAtBuilding(arrivalTime, visitorName,
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName,
 				VisitorType.GUEST);
 		galleryState.departBuilding(arrivalTime++, visitorName,
 				VisitorType.EMPLOYEE);
@@ -509,10 +521,10 @@ public class GalleryStateTest {
 		String visitorName = "Bob";
 		long roomNumber = 101;
 
-		galleryState.arriveAtBuilding(arrivalTime, visitorName,
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName,
 				VisitorType.GUEST);
-		galleryState.arriveAtRoom(arrivalTime, visitorName, VisitorType.GUEST,
-				roomNumber);
+		galleryState.arriveAtRoom(arrivalTime++, visitorName,
+				VisitorType.GUEST, roomNumber);
 		galleryState.departRoom(arrivalTime++, visitorName,
 				VisitorType.EMPLOYEE, roomNumber);
 	}
@@ -525,12 +537,12 @@ public class GalleryStateTest {
 		String visitorName = "Bob";
 		long roomNumber = 101;
 
-		galleryState.arriveAtBuilding(arrivalTime, visitorName,
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName,
 				VisitorType.GUEST);
-		galleryState.arriveAtRoom(arrivalTime, visitorName, VisitorType.GUEST,
-				roomNumber);
+		galleryState.arriveAtRoom(arrivalTime++, visitorName,
+				VisitorType.GUEST, roomNumber);
 		galleryState.departRoom(arrivalTime++, visitorName,
-				VisitorType.EMPLOYEE, roomNumber + 1);
+				VisitorType.GUEST, roomNumber + 1);
 	}
 
 	@Test(expected = IllegalStateException.class)
