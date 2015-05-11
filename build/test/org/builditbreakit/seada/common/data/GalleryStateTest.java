@@ -418,6 +418,163 @@ public class GalleryStateTest {
 				visitor.getHistory());
 	}
 
+	@Test(expected = IllegalStateException.class)
+	public void testDepartBuildingFromOffPremises() {
+		GalleryState galleryState = new GalleryState();
+	
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+	
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.departBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.departBuilding(arrivalTime++, visitorName, visitorType);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testDepartBuildingFromRoom() {
+		GalleryState galleryState = new GalleryState();
+	
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+	
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType, 101);
+		galleryState.departBuilding(arrivalTime++, visitorName, visitorType);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testMissingVisitorDepartBuilding() {
+		GalleryState galleryState = new GalleryState();
+		galleryState.departBuilding(5, "Bob", VisitorType.GUEST);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testDepartBuildingWrongType() {
+		GalleryState galleryState = new GalleryState();
+	
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+	
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName,
+				VisitorType.GUEST);
+		galleryState.departBuilding(arrivalTime++, visitorName,
+				VisitorType.EMPLOYEE);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testDepartBuildingWrongOrderSamePerson() {
+		GalleryState galleryState = new GalleryState();
+	
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+	
+		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
+		galleryState.departBuilding(arrivalTime - 1, visitorName, visitorType);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testDepartBuildingSamePersonTimeCheck() {
+		GalleryState galleryState = new GalleryState();
+	
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+	
+		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
+		galleryState.departBuilding(arrivalTime, visitorName, visitorType);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testDepartBuildingDifferentPersonTimeCheck() {
+		GalleryState galleryState = new GalleryState();
+	
+		long arrivalTime = 5;
+		VisitorType visitorType = VisitorType.GUEST;
+	
+		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
+		galleryState.arriveAtBuilding(arrivalTime + 1, "Tom",
+				VisitorType.EMPLOYEE);
+		galleryState.departBuilding(arrivalTime + 1, "Bob", visitorType);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testDepartBuildingDifferentPersonTimeUpdate() {
+		GalleryState galleryState = new GalleryState();
+	
+		long arrivalTime = 5;
+		VisitorType visitorType = VisitorType.GUEST;
+	
+		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
+		galleryState.departBuilding(arrivalTime + 1, "Bob", visitorType);
+		galleryState.arriveAtBuilding(arrivalTime + 1, "Tom",
+				VisitorType.EMPLOYEE);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testDepartBuildingNullName() {
+		GalleryState galleryState = new GalleryState();
+	
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+	
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.departBuilding(arrivalTime++, null, visitorType);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testDepartBuildingEmptyName() {
+		GalleryState galleryState = new GalleryState();
+	
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+	
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.departBuilding(arrivalTime++, "", visitorType);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testDepartBuildingInvalidName() {
+		GalleryState galleryState = new GalleryState();
+	
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+	
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.departBuilding(arrivalTime++, "&", visitorType);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testDepartBuildingInvalidTime() {
+		GalleryState galleryState = new GalleryState();
+	
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+	
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.departBuilding(Long.MAX_VALUE, visitorName, visitorType);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testDepartBuildingNullVisitorType() {
+		GalleryState galleryState = new GalleryState();
+	
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+	
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.departBuilding(arrivalTime++, visitorName, null);
+	}
+	
+	/* departRoom Tests */
+
 	@Test
 	public void testDepartRoom() {
 		GalleryState galleryState = new GalleryState();
@@ -450,32 +607,6 @@ public class GalleryStateTest {
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void testDepartBuildingFromOffPremises() {
-		GalleryState galleryState = new GalleryState();
-
-		long arrivalTime = 5;
-		String visitorName = "Bob";
-		VisitorType visitorType = VisitorType.GUEST;
-
-		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.departBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.departBuilding(arrivalTime++, visitorName, visitorType);
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void testDepartBuildingFromRoom() {
-		GalleryState galleryState = new GalleryState();
-
-		long arrivalTime = 5;
-		String visitorName = "Bob";
-		VisitorType visitorType = VisitorType.GUEST;
-
-		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType, 101);
-		galleryState.departBuilding(arrivalTime++, visitorName, visitorType);
-	}
-
-	@Test(expected = IllegalStateException.class)
 	public void testDepartRoomFromOffPremises() {
 		GalleryState galleryState = new GalleryState();
 
@@ -483,34 +614,27 @@ public class GalleryStateTest {
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
-		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
 		galleryState.departBuilding(arrivalTime++, visitorName, visitorType);
 		galleryState.departRoom(arrivalTime++, visitorName, visitorType, 101);
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void testMissingVisitorDepartBuilding() {
+	public void testDepartRoomFromGallery() {
 		GalleryState galleryState = new GalleryState();
-		galleryState.departBuilding(5, "Bob", VisitorType.GUEST);
+
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.departRoom(arrivalTime++, visitorName, visitorType, 101);
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testMissingVisitorDepartRoom() {
 		GalleryState galleryState = new GalleryState();
 		galleryState.departRoom(5, "Bob", VisitorType.GUEST, 101);
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void testDepartBuildingWrongType() {
-		GalleryState galleryState = new GalleryState();
-
-		long arrivalTime = 5;
-		String visitorName = "Bob";
-
-		galleryState.arriveAtBuilding(arrivalTime++, visitorName,
-				VisitorType.GUEST);
-		galleryState.departBuilding(arrivalTime++, visitorName,
-				VisitorType.EMPLOYEE);
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -546,18 +670,6 @@ public class GalleryStateTest {
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void testDepartBuildingWrongOrderSamePerson() {
-		GalleryState galleryState = new GalleryState();
-
-		long arrivalTime = 5;
-		String visitorName = "Bob";
-		VisitorType visitorType = VisitorType.GUEST;
-
-		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
-		galleryState.departBuilding(arrivalTime - 1, visitorName, visitorType);
-	}
-
-	@Test(expected = IllegalStateException.class)
 	public void testDepartRoomWrongOrderSamePerson() {
 		GalleryState galleryState = new GalleryState();
 
@@ -571,44 +683,6 @@ public class GalleryStateTest {
 				roomNumber);
 		galleryState.departRoom(arrivalTime + 1, visitorName, visitorType,
 				roomNumber);
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void testDepartBuildingSamePersonTimeCheck() {
-		GalleryState galleryState = new GalleryState();
-
-		long arrivalTime = 5;
-		String visitorName = "Bob";
-		VisitorType visitorType = VisitorType.GUEST;
-
-		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
-		galleryState.departBuilding(arrivalTime, visitorName, visitorType);
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void testDepartBuildingDifferentPersonTimeCheck() {
-		GalleryState galleryState = new GalleryState();
-
-		long arrivalTime = 5;
-		VisitorType visitorType = VisitorType.GUEST;
-
-		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
-		galleryState.arriveAtBuilding(arrivalTime + 1, "Tom",
-				VisitorType.EMPLOYEE);
-		galleryState.departBuilding(arrivalTime + 1, "Bob", visitorType);
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void testDepartBuildingDifferentPersonTimeUpdate() {
-		GalleryState galleryState = new GalleryState();
-
-		long arrivalTime = 5;
-		VisitorType visitorType = VisitorType.GUEST;
-
-		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
-		galleryState.departBuilding(arrivalTime + 1, "Bob", visitorType);
-		galleryState.arriveAtBuilding(arrivalTime + 1, "Tom",
-				VisitorType.EMPLOYEE);
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -678,68 +752,6 @@ public class GalleryStateTest {
 		galleryState.arriveAtRoom(arrivalTime + 3, "Tom", VisitorType.EMPLOYEE,
 				102);
 	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testDepartBuildingNullName() {
-		GalleryState galleryState = new GalleryState();
-
-		long arrivalTime = 5;
-		String visitorName = "Bob";
-		VisitorType visitorType = VisitorType.GUEST;
-
-		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.departBuilding(arrivalTime++, null, visitorType);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testDepartBuildingEmptyName() {
-		GalleryState galleryState = new GalleryState();
-
-		long arrivalTime = 5;
-		String visitorName = "Bob";
-		VisitorType visitorType = VisitorType.GUEST;
-
-		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.departBuilding(arrivalTime++, "", visitorType);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testDepartBuildingInvalidName() {
-		GalleryState galleryState = new GalleryState();
-
-		long arrivalTime = 5;
-		String visitorName = "Bob";
-		VisitorType visitorType = VisitorType.GUEST;
-
-		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.departBuilding(arrivalTime++, "&", visitorType);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testDepartBuildingInvalidTime() {
-		GalleryState galleryState = new GalleryState();
-
-		long arrivalTime = 5;
-		String visitorName = "Bob";
-		VisitorType visitorType = VisitorType.GUEST;
-
-		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.departBuilding(Long.MAX_VALUE, visitorName, visitorType);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testDepartBuildingNullVisitorType() {
-		GalleryState galleryState = new GalleryState();
-
-		long arrivalTime = 5;
-		String visitorName = "Bob";
-		VisitorType visitorType = VisitorType.GUEST;
-
-		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.departBuilding(arrivalTime++, visitorName, null);
-	}
-
-	/* departRoom Tests */
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testDepartRoomNullName() {
