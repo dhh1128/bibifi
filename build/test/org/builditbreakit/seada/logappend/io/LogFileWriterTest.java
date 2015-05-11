@@ -26,11 +26,11 @@ public class LogFileWriterTest {
 		state.arriveAtBuilding(time++, "Jill", VisitorType.EMPLOYEE);
 		state.arriveAtBuilding(time++, "Alice", VisitorType.EMPLOYEE);
 		state.arriveAtRoom(time++, "Jill", VisitorType.EMPLOYEE, 101);
-		state.depart(time++, "Bob", VisitorType.EMPLOYEE);
+		state.departRoom(time++, "Bob", VisitorType.EMPLOYEE, 101);
 		state.arriveAtBuilding(time++, "John", VisitorType.GUEST);
-		state.depart(time++, "John", VisitorType.GUEST);
+		state.departBuilding(time++, "John", VisitorType.GUEST);
 		state.arriveAtBuilding(time++, "John", VisitorType.GUEST);
-		state.depart(time++, "John", VisitorType.GUEST);
+		state.departBuilding(time++, "John", VisitorType.GUEST);
 
 		testSerialization(state);
 	}

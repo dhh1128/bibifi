@@ -16,22 +16,22 @@ import org.junit.Test;
 public class GalleryStateTest {
 
 	/* getVisitors Tests */
-	
+
 	@Test(expected = UnsupportedOperationException.class)
 	public void testUnmodifiableVisitors() {
 		GalleryState galleryState = new GalleryState();
 		galleryState.getVisitors()
 				.add(new Visitor("Bob", VisitorType.EMPLOYEE));
 	}
-	
+
 	/* getVisitor Tests */
-	
+
 	@Test(expected = IllegalStateException.class)
 	public void testGetVisitorMissingVisitor() {
 		GalleryState galleryState = new GalleryState();
 		galleryState.getVisitor("Bob", VisitorType.EMPLOYEE);
 	}
-	
+
 	@Test(expected = IllegalStateException.class)
 	public void testGetVisitorWrongVisitorType() {
 		GalleryState galleryState = new GalleryState();
@@ -40,7 +40,7 @@ public class GalleryStateTest {
 		galleryState.arriveAtBuilding(5, visitorName, VisitorType.GUEST);
 		galleryState.getVisitor(visitorName, VisitorType.EMPLOYEE);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testGetVisitorNullName() {
 		GalleryState galleryState = new GalleryState();
@@ -119,7 +119,8 @@ public class GalleryStateTest {
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName,
 				VisitorType.GUEST);
-		galleryState.depart(arrivalTime++, visitorName, VisitorType.GUEST);
+		galleryState.departBuilding(arrivalTime++, visitorName,
+				VisitorType.GUEST);
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName,
 				VisitorType.EMPLOYEE);
 	}
@@ -244,7 +245,8 @@ public class GalleryStateTest {
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
-		galleryState.arriveAtBuilding(arrivalTime + 1, "Tom", VisitorType.EMPLOYEE);
+		galleryState.arriveAtBuilding(arrivalTime + 1, "Tom",
+				VisitorType.EMPLOYEE);
 		galleryState.arriveAtRoom(arrivalTime + 1, "Bob", visitorType, 101);
 	}
 
@@ -257,7 +259,8 @@ public class GalleryStateTest {
 
 		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
 		galleryState.arriveAtRoom(arrivalTime + 1, "Bob", visitorType, 101);
-		galleryState.arriveAtBuilding(arrivalTime + 1, "Tom",  VisitorType.EMPLOYEE);
+		galleryState.arriveAtBuilding(arrivalTime + 1, "Tom",
+				VisitorType.EMPLOYEE);
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -275,7 +278,7 @@ public class GalleryStateTest {
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.depart(arrivalTime++, visitorName, visitorType);
+		galleryState.departBuilding(arrivalTime++, visitorName, visitorType);
 		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType, 101);
 	}
 
@@ -392,7 +395,7 @@ public class GalleryStateTest {
 	/* depart Tests */
 
 	@Test
-	public void testDepartFromBuilding() {
+	public void testDepartBuilding() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
@@ -400,7 +403,7 @@ public class GalleryStateTest {
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
-		galleryState.depart(arrivalTime + 1, visitorName, visitorType);
+		galleryState.departBuilding(arrivalTime + 1, visitorName, visitorType);
 		Visitor visitor = galleryState.getVisitor(visitorName, visitorType);
 
 		Location expectedLocation = Location.OFF_PREMISES;
@@ -415,9 +418,9 @@ public class GalleryStateTest {
 		EquivalenceUtil.assertEquivalent("History", expectedHistory,
 				visitor.getHistory());
 	}
-	
+
 	@Test
-	public void testDepartFromRoom() {
+	public void testDepartRoom() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
@@ -428,7 +431,8 @@ public class GalleryStateTest {
 		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
 		galleryState.arriveAtRoom(arrivalTime + 1, visitorName, visitorType,
 				roomNumber);
-		galleryState.depart(arrivalTime + 2, visitorName, visitorType);
+		galleryState.departRoom(arrivalTime + 2, visitorName, visitorType,
+				roomNumber);
 		Visitor visitor = galleryState.getVisitor(visitorName, visitorType);
 
 		Location expectedLocation = Location.IN_GALLERY;
@@ -445,9 +449,9 @@ public class GalleryStateTest {
 		EquivalenceUtil.assertEquivalent("History", expectedHistory,
 				visitor.getHistory());
 	}
-	
+
 	@Test(expected = IllegalStateException.class)
-	public void testDepartFromOffPremises() {
+	public void testDepartBuildingFromOffPremises() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
@@ -455,23 +459,37 @@ public class GalleryStateTest {
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
-		galleryState.depart(arrivalTime++, visitorName, visitorType);
-		galleryState.depart(arrivalTime++, visitorName, visitorType);
+		galleryState.departBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.departBuilding(arrivalTime++, visitorName, visitorType);
 	}
-	
+
 	@Test(expected = IllegalStateException.class)
-	public void testMissingVisitorDepart() {
+	public void testDepartRoomFromOffPremises() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
-		galleryState.depart(arrivalTime, visitorName, visitorType);
+		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
+		galleryState.departBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.departRoom(arrivalTime++, visitorName, visitorType, 101);
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void testDepartFromBuildingWrongType() {
+	public void testMissingVisitorDepartBuilding() {
+		GalleryState galleryState = new GalleryState();
+		galleryState.departBuilding(5, "Bob", VisitorType.GUEST);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testMissingVisitorDepartRoom() {
+		GalleryState galleryState = new GalleryState();
+		galleryState.departRoom(5, "Bob", VisitorType.GUEST, 101);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testDepartBuildingWrongType() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
@@ -479,25 +497,44 @@ public class GalleryStateTest {
 
 		galleryState.arriveAtBuilding(arrivalTime, visitorName,
 				VisitorType.GUEST);
-		galleryState.depart(arrivalTime++, visitorName, VisitorType.EMPLOYEE);
+		galleryState.departBuilding(arrivalTime++, visitorName,
+				VisitorType.EMPLOYEE);
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void testDepartFromRoomWrongType() {
+	public void testDepartRoomWrongType() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
 		String visitorName = "Bob";
+		long roomNumber = 101;
 
 		galleryState.arriveAtBuilding(arrivalTime, visitorName,
 				VisitorType.GUEST);
 		galleryState.arriveAtRoom(arrivalTime, visitorName, VisitorType.GUEST,
-				101);
-		galleryState.depart(arrivalTime++, visitorName, VisitorType.EMPLOYEE);
+				roomNumber);
+		galleryState.departRoom(arrivalTime++, visitorName,
+				VisitorType.EMPLOYEE, roomNumber);
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void testDepartFromBuildingWrongOrderSamePerson() {
+	public void testDepartRoomWrongRoom() {
+		GalleryState galleryState = new GalleryState();
+
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		long roomNumber = 101;
+
+		galleryState.arriveAtBuilding(arrivalTime, visitorName,
+				VisitorType.GUEST);
+		galleryState.arriveAtRoom(arrivalTime, visitorName, VisitorType.GUEST,
+				roomNumber);
+		galleryState.departRoom(arrivalTime++, visitorName,
+				VisitorType.EMPLOYEE, roomNumber + 1);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testDepartBuildingWrongOrderSamePerson() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
@@ -505,11 +542,27 @@ public class GalleryStateTest {
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
-		galleryState.depart(arrivalTime - 1, visitorName, visitorType);
+		galleryState.departBuilding(arrivalTime - 1, visitorName, visitorType);
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void testDepartFromRoomWrongOrderSamePerson() {
+	public void testDepartRoomWrongOrderSamePerson() {
+		GalleryState galleryState = new GalleryState();
+
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+		long roomNumber = 101;
+
+		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
+		galleryState.arriveAtRoom(arrivalTime + 1, visitorName, visitorType,
+				roomNumber);
+		galleryState.departRoom(arrivalTime + 1, visitorName, visitorType,
+				roomNumber);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testDepartBuildingSamePersonTimeCheck() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
@@ -517,24 +570,11 @@ public class GalleryStateTest {
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
-		galleryState.arriveAtRoom(arrivalTime + 1, visitorName, visitorType, 101);
-		galleryState.depart(arrivalTime + 1, visitorName, visitorType);
+		galleryState.departBuilding(arrivalTime, visitorName, visitorType);
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void testDepartFromBuildingSamePersonTimeCheck() {
-		GalleryState galleryState = new GalleryState();
-
-		long arrivalTime = 5;
-		String visitorName = "Bob";
-		VisitorType visitorType = VisitorType.GUEST;
-
-		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
-		galleryState.depart(arrivalTime, visitorName, visitorType);
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void testDepartFromBuildingDifferentPersonTimeCheck() {
+	public void testDepartBuildingDifferentPersonTimeCheck() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
@@ -543,37 +583,57 @@ public class GalleryStateTest {
 		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
 		galleryState.arriveAtBuilding(arrivalTime + 1, "Tom",
 				VisitorType.EMPLOYEE);
-		galleryState.depart(arrivalTime + 1, "Bob", visitorType);
+		galleryState.departBuilding(arrivalTime + 1, "Bob", visitorType);
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void testDepartFromBuildingDifferentPersonTimeUpdate() {
+	public void testDepartBuildingDifferentPersonTimeUpdate() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
-		galleryState.depart(arrivalTime + 1, "Bob", visitorType);
+		galleryState.departBuilding(arrivalTime + 1, "Bob", visitorType);
 		galleryState.arriveAtBuilding(arrivalTime + 1, "Tom",
 				VisitorType.EMPLOYEE);
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void testDepartFromRoomSamePersonTimeCheck() {
+	public void testDepartRoomSamePersonTimeCheck() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
+		long roomNumber = 101;
 
 		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
-		galleryState.arriveAtRoom(arrivalTime + 1, visitorName, visitorType, 101);
-		galleryState.depart(arrivalTime + 1, visitorName, visitorType);
+		galleryState.arriveAtRoom(arrivalTime + 1, visitorName, visitorType,
+				roomNumber);
+		galleryState.departRoom(arrivalTime + 1, visitorName, visitorType,
+				roomNumber);
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void testDepartFromRoomDifferentPersonInBuidlingTimeCheck() {
+	public void testDepartRoomDifferentPersonInBuidlingTimeCheck() {
+		GalleryState galleryState = new GalleryState();
+
+		long arrivalTime = 5;
+		VisitorType visitorType = VisitorType.GUEST;
+		long roomNumber = 101;
+
+		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
+		galleryState.arriveAtRoom(arrivalTime + 1, "Bob", visitorType,
+				roomNumber);
+		galleryState.arriveAtBuilding(arrivalTime + 2, "Tom",
+				VisitorType.EMPLOYEE);
+		galleryState
+				.departRoom(arrivalTime + 2, "Bob", visitorType, roomNumber);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testDepartRoomDifferentPersonInRoomTimeCheck() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
@@ -583,43 +643,32 @@ public class GalleryStateTest {
 		galleryState.arriveAtRoom(arrivalTime + 1, "Bob", visitorType, 101);
 		galleryState.arriveAtBuilding(arrivalTime + 2, "Tom",
 				VisitorType.EMPLOYEE);
-		galleryState.depart(arrivalTime + 2, "Bob", visitorType);
+		galleryState.arriveAtRoom(arrivalTime + 3, "Tom", VisitorType.EMPLOYEE,
+				102);
+		galleryState.departRoom(arrivalTime + 3, "Bob", visitorType, 101);
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void testDepartFromRoomDifferentPersonInRoomTimeCheck() {
+	public void testDepartRoomDifferentPersonInRoomTimeUpdate() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
 		VisitorType visitorType = VisitorType.GUEST;
+		long roomNumber = 101;
 
 		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
-		galleryState.arriveAtRoom(arrivalTime + 1, "Bob", visitorType, 101);
+		galleryState.arriveAtRoom(arrivalTime + 1, "Bob", visitorType,
+				roomNumber);
 		galleryState.arriveAtBuilding(arrivalTime + 2, "Tom",
 				VisitorType.EMPLOYEE);
-		galleryState.arriveAtRoom(arrivalTime + 3, "Tom",
-				VisitorType.EMPLOYEE, 102);
-		galleryState.depart(arrivalTime + 3, "Bob", visitorType);
-	}
-	
-	@Test(expected = IllegalStateException.class)
-	public void testDepartFromRoomDifferentPersonInRoomTimeUpdate() {
-		GalleryState galleryState = new GalleryState();
-
-		long arrivalTime = 5;
-		VisitorType visitorType = VisitorType.GUEST;
-
-		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
-		galleryState.arriveAtRoom(arrivalTime + 1, "Bob", visitorType, 101);
-		galleryState.arriveAtBuilding(arrivalTime + 2, "Tom",
-				VisitorType.EMPLOYEE);
-		galleryState.depart(arrivalTime + 3, "Bob", visitorType);
+		galleryState
+				.departRoom(arrivalTime + 3, "Bob", visitorType, roomNumber);
 		galleryState.arriveAtRoom(arrivalTime + 3, "Tom", VisitorType.EMPLOYEE,
 				102);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testDepartNullName() {
+	public void testDepartBuildingNullName() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
@@ -627,11 +676,11 @@ public class GalleryStateTest {
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.depart(arrivalTime++, null, visitorType);
+		galleryState.departBuilding(arrivalTime++, null, visitorType);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testDepartEmptyName() {
+	public void testDepartBuildingEmptyName() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
@@ -639,11 +688,11 @@ public class GalleryStateTest {
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.depart(arrivalTime++, "", visitorType);
+		galleryState.departBuilding(arrivalTime++, "", visitorType);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testDepartInvalidName() {
+	public void testDepartBuildingInvalidName() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
@@ -651,11 +700,11 @@ public class GalleryStateTest {
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.depart(arrivalTime++, "&", visitorType);
+		galleryState.departBuilding(arrivalTime++, "&", visitorType);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testDepartInvalidTime() {
+	public void testDepartBuildingInvalidTime() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
@@ -663,11 +712,11 @@ public class GalleryStateTest {
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.depart(Long.MAX_VALUE, visitorName, visitorType);
+		galleryState.departBuilding(Long.MAX_VALUE, visitorName, visitorType);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testDepartNullVisitorType() {
+	public void testDepartBuildingNullVisitorType() {
 		GalleryState galleryState = new GalleryState();
 
 		long arrivalTime = 5;
@@ -675,7 +724,98 @@ public class GalleryStateTest {
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.depart(arrivalTime++, visitorName, null);
+		galleryState.departBuilding(arrivalTime++, visitorName, null);
+	}
+
+	/* departRoom Tests */
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testDepartRoomNullName() {
+		GalleryState galleryState = new GalleryState();
+
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+		long roomNumber = 101;
+
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType,
+				roomNumber);
+		galleryState.departRoom(arrivalTime++, null, visitorType, roomNumber);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testDepartRoomEmptyName() {
+		GalleryState galleryState = new GalleryState();
+
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+		long roomNumber = 101;
+
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType,
+				roomNumber);
+		galleryState.departRoom(arrivalTime++, "", visitorType, roomNumber);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testDepartRoomInvalidName() {
+		GalleryState galleryState = new GalleryState();
+
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+		long roomNumber = 101;
+
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType,
+				roomNumber);
+		galleryState.departRoom(arrivalTime++, "&", visitorType, roomNumber);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testDepartRoomInvalidTime() {
+		GalleryState galleryState = new GalleryState();
+
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+		long roomNumber = 101;
+
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType,
+				roomNumber);
+		galleryState.departRoom(Long.MAX_VALUE, visitorName, visitorType,
+				roomNumber);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testDepartRoomNullVisitorType() {
+		GalleryState galleryState = new GalleryState();
+
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+		long roomNumber = 101;
+
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType,
+				roomNumber);
+		galleryState.departRoom(arrivalTime++, visitorName, null, roomNumber);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testDepartRoomInvalidRoomNumber() {
+		GalleryState galleryState = new GalleryState();
+
+		long arrivalTime = 5;
+		String visitorName = "Bob";
+		VisitorType visitorType = VisitorType.GUEST;
+
+		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
+		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType, 101);
+		galleryState.departRoom(arrivalTime++, visitorName, visitorType, -1);
 	}
 
 	/* Equals and Hashcode Tests */
@@ -705,11 +845,11 @@ public class GalleryStateTest {
 		state.arriveAtBuilding(time++, "Jill", VisitorType.EMPLOYEE);
 		state.arriveAtBuilding(time++, "Alice", VisitorType.EMPLOYEE);
 		state.arriveAtRoom(time++, "Jill", VisitorType.EMPLOYEE, 101);
-		state.depart(time++, "Bob", VisitorType.EMPLOYEE);
+		state.departRoom(time++, "Bob", VisitorType.EMPLOYEE, 101);
 		state.arriveAtBuilding(time++, "John", VisitorType.GUEST);
-		state.depart(time++, "John", VisitorType.GUEST);
+		state.departBuilding(time++, "John", VisitorType.GUEST);
 		state.arriveAtBuilding(time++, "John", VisitorType.GUEST);
-		state.depart(time++, "John", VisitorType.GUEST);
+		state.departBuilding(time++, "John", VisitorType.GUEST);
 
 		testGalleryStateSerialization(state);
 	}
@@ -751,4 +891,3 @@ public class GalleryStateTest {
 		return maliciousObj;
 	}
 }
-
