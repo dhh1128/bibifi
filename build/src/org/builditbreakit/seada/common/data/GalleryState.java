@@ -104,27 +104,39 @@ public class GalleryState implements Serializable {
 			// TODO Message
 			throw new IllegalStateException();
 		}
-
-		assertMatchingVisitorType(visitor, visitorType);
+		
 		visitor.moveTo(timestamp, Location.locationOfRoom(roomNumber));
 		lastTimestamp = timestamp;
 	}
 
-	public void depart(long timestamp, String name, VisitorType visitorType) {
+	public void departRoom(long timestamp, String name, VisitorType visitorType, long roomNumber) {
+		ValidationUtil.assertValidVisitorType(visitorType);
+		ValidationUtil.assertValidVisitorName(name);
+		ValidationUtil.assertValidRoomNumber(roomNumber);
+		assertValidTimestamp(timestamp);
+
+		Visitor visitor = getVisitor(name, visitorType);
+		Location currentLocation = visitor.getCurrentLocation();
+		if (!currentLocation.equals(Location.locationOfRoom(roomNumber))) {
+			// TODO Message
+			throw new IllegalStateException();
+		}
+		visitor.moveTo(timestamp, Location.IN_GALLERY);
+		lastTimestamp = timestamp;
+	}
+
+	public void departBuilding(long timestamp, String name, VisitorType visitorType) {
 		ValidationUtil.assertValidVisitorType(visitorType);
 		ValidationUtil.assertValidVisitorName(name);
 		assertValidTimestamp(timestamp);
 
 		Visitor visitor = getVisitor(name, visitorType);
 		Location currentLocation = visitor.getCurrentLocation();
-		if (currentLocation.isInRoom()) {
-			visitor.moveTo(timestamp, Location.IN_GALLERY);
-		} else if (currentLocation.isInGallery()) {
-			visitor.moveTo(timestamp, Location.OFF_PREMISES);
-		} else {
+		if (!currentLocation.isInGallery()) {
 			// TODO Message
 			throw new IllegalStateException();
 		}
+		visitor.moveTo(timestamp, Location.OFF_PREMISES);
 		lastTimestamp = timestamp;
 	}
 
