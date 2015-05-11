@@ -26,6 +26,17 @@ public final class LocationRecord implements Serializable {
 		return arrivalTime;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("LocationRecord [arrivalTime=");
+		builder.append(arrivalTime);
+		builder.append(", location=");
+		builder.append(location);
+		builder.append("]");
+		return builder.toString();
+	}
+
 	private static class SerializationProxy implements Serializable {
 		private static final long serialVersionUID = 1009514308536095709L;
 		
