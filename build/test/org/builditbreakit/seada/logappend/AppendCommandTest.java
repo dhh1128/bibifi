@@ -10,6 +10,7 @@ public class AppendCommandTest extends TestCase {
 
 	private static String[] invalidCommands = {
 		"-K abc -G Fred -A -R 25 foo", // missing -T
+		"-T 1 -K abc -G Fred -A -R 25 -T 5 foo", // duplicate -T
 	};
 	
 	public void testValid() {
