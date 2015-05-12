@@ -251,4 +251,5 @@ public class AppendCommandOracleTest {
 	private static String[] tokenize(String str) {
 		return str.split("\\s+");
 	}
+	
 }

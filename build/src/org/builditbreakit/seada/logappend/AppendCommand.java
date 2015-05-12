@@ -89,21 +89,25 @@ public class AppendCommand {
 		event = value;
 	}
 	
+	private static boolean isValuelessSwitch(String arg) {
+		switch (arg.charAt(1)) {
+		case 'T':
+		case 'K':
+		case 'E':
+		case 'G':
+		case 'R':
+			return false;
+		default:
+			return true;
+		}
+	}
+	
 	public void parse(String[] args) {
 		for (int i = 0; i < args.length; ++i) {
 			String arg = args[i];
 			if (ValidationUtil.isSwitch(arg)) {
-				if (i == args.length - 1) {
-					switch (arg.charAt(1)) {
-					case 'T':
-					case 'K':
-					case 'E':
-					case 'G':
-					case 'R':
-						throw new IllegalArgumentException(arg + " must be followed by a value");
-					default:
-						break;
-					}
+				if (i == args.length - 1 && !isValuelessSwitch(arg)) {
+					throw new IllegalArgumentException(arg + " must be followed by a value");
 				}
 				switch (arg.charAt(1)) {
 				case 'T':

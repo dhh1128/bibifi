@@ -2,9 +2,8 @@ package org.builditbreakit.seada.logappend;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class BatchProcessor {
 	
@@ -26,24 +25,12 @@ public class BatchProcessor {
 	/**
 	 * This logic is super simple and would not be adequate for a robust
 	 * cmdline parser that has to handle quoted args, escape sequences,
-	 * and so forth. However, it is adequate for the bibifi spec. I am
-	 * using a scanner instead of ordinary String.split() because I think
-	 * it is faster.
+	 * and so forth. However, it is adequate for the bibifi spec. I tested
+	 * this regex split against a scanner; it is faster.
 	 */
+	private static final Pattern whitespace = Pattern.compile("\\s+");
 	public static String[] splitLine(String line) {
-		List<String> items = new ArrayList<String>();
-		if (line != null && !line.isEmpty()) {
-			Scanner scanner = new Scanner(line);
-			try {
-				while (scanner.hasNext()) {
-					String arg = scanner.next();
-					items.add(arg);
-				}
-			} finally {
-				scanner.close();
-			}
-		}
-		return items.toArray(new String[items.size()]);
+		return whitespace.split(line);
 	}
 	
 	

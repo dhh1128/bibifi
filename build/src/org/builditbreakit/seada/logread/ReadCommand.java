@@ -34,7 +34,6 @@ public class ReadCommand {
 	}
 	
 	public void setToken(String value) {
-		//ValidationUtil.assertAssignedOnlyOnce(token == null);
 		ValidationUtil.assertValidToken(value);
 		token = value;
 	}
@@ -44,8 +43,10 @@ public class ReadCommand {
 	}
 	
 	public void setStyle(Style value) {
-		ValidationUtil.assertAssignedOnlyOnce(style == null);
 		ValidationUtil.assertNotNull(value, "style");
+		if (style != null && value != style) {
+			throw new IllegalArgumentException("Can only have one of -S -R -T -I");
+		}
 		style = value;
 	}
 
@@ -54,7 +55,7 @@ public class ReadCommand {
 	}
 	
 	public void setLogfile(String value) {
-		//ValidationUtil.assertAssignedOnlyOnce(logfile == null);
+		ValidationUtil.assertAssignedOnlyOnce(logfile == null);
 		ValidationUtil.assertValidLogfile(value);
 		logfile = value;
 	}
@@ -79,11 +80,22 @@ public class ReadCommand {
 		visitors.add(spec);
 	}
 	
+	private static boolean isValuelessSwitch(String arg) {
+		switch (arg.charAt(1)) {
+		case 'K':
+		case 'E':
+		case 'G':
+			return false;
+		default:
+			return true;
+		}
+	}
+	
 	public void parse(String[] args) {
 		for (int i = 0; i < args.length; ++i) {
 			String arg = args[i];
 			if (ValidationUtil.isSwitch(arg)) {
-				if (i == args.length - 1) {
+				if (i == args.length - 1 && !isValuelessSwitch(arg)) {
 					throw new IllegalArgumentException(arg + " must be followed by a value");
 				}
 				switch (arg.charAt(1)) {
@@ -111,10 +123,8 @@ public class ReadCommand {
 				default:
 					throw new IllegalArgumentException(arg + " not recognized");
 				}
-			} else if (i + 1 == args.length) {
-				setLogfile(arg);
 			} else {
-				throw new IllegalArgumentException(arg + " not recognized");
+				setLogfile(arg);
 			}
 		}
 		switch (style) {
