@@ -34,7 +34,7 @@ public class ReadCommand {
 	}
 	
 	public void setToken(String value) {
-		ValidationUtil.assertAssignedOnlyOnce(token == null);
+		//ValidationUtil.assertAssignedOnlyOnce(token == null);
 		ValidationUtil.assertValidToken(value);
 		token = value;
 	}
@@ -44,8 +44,9 @@ public class ReadCommand {
 	}
 	
 	public void setStyle(Style value) {
-		ValidationUtil.assertAssignedOnlyOnce(value == null);
+		ValidationUtil.assertAssignedOnlyOnce(style == null);
 		ValidationUtil.assertNotNull(value, "style");
+		style = value;
 	}
 
 	public String getLogfile() {
@@ -53,7 +54,7 @@ public class ReadCommand {
 	}
 	
 	public void setLogfile(String value) {
-		ValidationUtil.assertAssignedOnlyOnce(logfile == null);
+		//ValidationUtil.assertAssignedOnlyOnce(logfile == null);
 		ValidationUtil.assertValidLogfile(value);
 		logfile = value;
 	}

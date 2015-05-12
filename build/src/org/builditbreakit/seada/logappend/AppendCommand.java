@@ -18,7 +18,7 @@ public class AppendCommand {
 	}
 	
 	public void setTimestamp(long value) {
-		ValidationUtil.assertAssignedOnlyOnce(timestamp == -1);
+		//ValidationUtil.assertAssignedOnlyOnce(timestamp == -1);
 		ValidationUtil.assertValidTimestamp(value);
 		timestamp = value;
 	}
@@ -28,7 +28,7 @@ public class AppendCommand {
 	}
 	
 	public void setToken(String value) {
-		ValidationUtil.assertAssignedOnlyOnce(token == null);
+		//ValidationUtil.assertAssignedOnlyOnce(token == null);
 		ValidationUtil.assertValidToken(value);
 		token = value;
 	}
@@ -38,7 +38,7 @@ public class AppendCommand {
 	}
 	
 	public void setLogfile(String value) {
-		ValidationUtil.assertAssignedOnlyOnce(logfile == null);
+		//ValidationUtil.assertAssignedOnlyOnce(logfile == null);
 		ValidationUtil.assertValidLogfile(value);
 		logfile = value;
 	}
@@ -70,7 +70,7 @@ public class AppendCommand {
 	}
 	
 	public void setRoom(long value) {
-		ValidationUtil.assertAssignedOnlyOnce(room == -1);
+		//ValidationUtil.assertAssignedOnlyOnce(room == -1);
 		ValidationUtil.assertValidRoomNumber(value);
 		room = value;
 	}
@@ -80,7 +80,7 @@ public class AppendCommand {
 	}
 	
 	public void setEvent(TransitionEvent value) {
-		ValidationUtil.assertAssignedOnlyOnce(event == null);
+		//ValidationUtil.assertAssignedOnlyOnce(event == null);
 		ValidationUtil.assertValidEvent(value);
 		event = value;
 	}
@@ -119,10 +119,14 @@ public class AppendCommand {
 				default:
 					throw new IllegalArgumentException(arg + " not recognized");
 				}
+			/*
 			} else if (i + 1 == args.length) {
 				setLogfile(arg);
 			} else {
 				throw new IllegalArgumentException(arg + " not recognized");
+			}*/
+			} else {
+				setLogfile(arg);
 			}
 		}
 		if (logfile == null || event == null || timestamp == -1
