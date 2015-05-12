@@ -47,19 +47,6 @@ public class StateFormatter implements Formatter {
 		return strBuilder;
 	}
 
-	private static StringBuilder join(StringBuilder strBuilder, Set<String> set) {
-		boolean first = true;
-		for (String value : set) {
-			if (first) {
-				first = false;
-			} else {
-				strBuilder.append(FormatUtil.COMMA);
-			}
-			strBuilder.append(value);
-		}
-		return strBuilder;
-	}
-
 	private void buildIndex() {
 		for (Visitor visitor : galleryState.getVisitors()) {
 			Location visitorLocation = visitor.getCurrentLocation();
@@ -89,5 +76,9 @@ public class StateFormatter implements Formatter {
 				}
 			}
 		}
+	}
+
+	private static StringBuilder join(StringBuilder strBuilder, Set<String> set) {
+		return FormatUtil.join(strBuilder, set, FormatUtil.COMMA);
 	}
 }

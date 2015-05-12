@@ -2,7 +2,6 @@ package org.builditbreakit.seada.logread.format;
 
 import java.util.List;
 
-import org.builditbreakit.seada.common.data.Location;
 import org.builditbreakit.seada.common.data.LocationRecord;
 import org.builditbreakit.seada.common.data.ValidationUtil;
 import org.builditbreakit.seada.common.data.Visitor;
@@ -17,21 +16,8 @@ public class VisitorRoomFormatter implements Formatter {
 
 	@Override
 	public String format() {
-		StringBuilder builder = new StringBuilder();
-
-		boolean first = true;
-		for (LocationRecord record : history) {
-			Location location = record.getLocation();
-			if (location.isInRoom()) {
-				if (first) {
-					first = false;
-				} else {
-					builder.append(FormatUtil.COMMA);
-				}
-				builder.append(location.getRoomNumber());
-			}
-		}
-
-		return builder.toString();
+		return FormatUtil.join(history, FormatUtil.COMMA, (item) -> item
+				.getLocation().isInRoom(), (item) -> item.getLocation()
+				.getRoomNumber());
 	}
 }

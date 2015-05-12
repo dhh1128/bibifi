@@ -37,27 +37,15 @@ public class ConcurrentVisitorsFormatter implements Formatter {
 
 		SortedSet<Long> results = new TreeSet<>();
 		for (Entry<Long, SortedSet<VisitorRecord>> entry : roomIndex.entrySet()) {
-			if (allInRoomVisitors(entry.getValue())) {
+			if (allVisitorsInRoom(entry.getValue())) {
 				results.add(entry.getKey());
 			}
 		}
 
-		StringBuilder builder = new StringBuilder();
-
-		boolean first = true;
-		for (long room : results) {
-			if (first) {
-				first = false;
-			} else {
-				builder.append(FormatUtil.COMMA);
-			}
-			builder.append(room);
-		}
-
-		return builder.toString();
+		return FormatUtil.join(results, FormatUtil.COMMA);
 	}
 
-	private boolean allInRoomVisitors(SortedSet<VisitorRecord> roomVisists) {
+	private boolean allVisitorsInRoom(SortedSet<VisitorRecord> roomVisists) {
 		Set<Visitor> currentlyInRoom = new HashSet<>();
 		for (VisitorRecord record : roomVisists) {
 			TransitionEvent event = record.getEvent();
