@@ -121,7 +121,7 @@ public final class ValidationUtil {
 		} else {
 			for (int i = 0, len = value.length(); i < len; ++i) {
 				char c = value.charAt(i);
-				if (c != '_' && !isAlphanumeric(c)) {
+				if (c != '_' && c != '.' && c != '/' && !isAlphanumeric(c)) {
 					bad = true;
 					break;
 				}

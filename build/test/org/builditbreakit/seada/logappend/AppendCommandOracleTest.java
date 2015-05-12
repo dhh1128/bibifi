@@ -114,12 +114,12 @@ public class AppendCommandOracleTest {
 	}
 
 	@Test(expected = Exception.class)
-	public void testMultipeLogs() {
+	public void testMultipleLogs() {
 		testCommand("-T 1 -K secret log1 -A  log2 -E Fred");
 	}
 	
 	@Test(expected = Exception.class)
-	public void testMultipeLogsAtEnd() {
+	public void testMultipleLogsAtEnd() {
 		testCommand("-T 1 -K secret -A -E Fred log1 log2");
 	}
 

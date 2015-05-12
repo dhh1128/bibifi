@@ -1,8 +1,5 @@
 package org.builditbreakit.seada.logappend;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import org.builditbreakit.seada.common.TransitionEvent;
 import org.builditbreakit.seada.common.data.ValidationUtil;
 import org.builditbreakit.seada.common.data.VisitorType;
@@ -25,7 +22,6 @@ public class AppendCommand {
 	}
 	
 	public void setTimestamp(long value) {
-		//ValidationUtil.assertAssignedOnlyOnce(timestamp == -1);
 		ValidationUtil.assertValidTimestamp(value);
 		timestamp = value;
 	}
@@ -35,7 +31,6 @@ public class AppendCommand {
 	}
 	
 	public void setToken(String value) {
-		//ValidationUtil.assertAssignedOnlyOnce(token == null);
 		ValidationUtil.assertValidToken(value);
 		token = value;
 	}
@@ -45,7 +40,7 @@ public class AppendCommand {
 	}
 	
 	public void setLogfile(String value) {
-		//ValidationUtil.assertAssignedOnlyOnce(logfile == null);
+		ValidationUtil.assertAssignedOnlyOnce(logfile == null);
 		ValidationUtil.assertValidLogfile(value);
 		logfile = value;
 	}
@@ -57,8 +52,10 @@ public class AppendCommand {
 	}
 	
 	public void setVisitorType(VisitorType value) {
-		ValidationUtil.assertAssignedOnlyOnce(visitorType == null);
 		ValidationUtil.assertValidVisitorType(value);
+		if (visitorType != null && value != visitorType) {
+			throw new IllegalArgumentException("Can't specify both -E and -G");
+		}
 		visitorType = value;
 	}
 	
@@ -67,7 +64,6 @@ public class AppendCommand {
 	}
 	
 	public void setVisitorName(String value) {
-		ValidationUtil.assertAssignedOnlyOnce(visitorName == null);
 		ValidationUtil.assertValidVisitorName(value);
 		visitorName = value;
 	}
@@ -77,7 +73,6 @@ public class AppendCommand {
 	}
 	
 	public void setRoom(long value) {
-		//ValidationUtil.assertAssignedOnlyOnce(room == -1);
 		ValidationUtil.assertValidRoomNumber(value);
 		room = value;
 	}
@@ -87,8 +82,10 @@ public class AppendCommand {
 	}
 	
 	public void setEvent(TransitionEvent value) {
-		//ValidationUtil.assertAssignedOnlyOnce(event == null);
 		ValidationUtil.assertValidEvent(value);
+		if (event != null && value != event) {
+			throw new IllegalArgumentException("Can't specify both -A and -L");
+		}
 		event = value;
 	}
 	
@@ -97,7 +94,16 @@ public class AppendCommand {
 			String arg = args[i];
 			if (ValidationUtil.isSwitch(arg)) {
 				if (i == args.length - 1) {
-					throw new IllegalArgumentException(arg + " must be followed by a value");
+					switch (arg.charAt(1)) {
+					case 'T':
+					case 'K':
+					case 'E':
+					case 'G':
+					case 'R':
+						throw new IllegalArgumentException(arg + " must be followed by a value");
+					default:
+						break;
+					}
 				}
 				switch (arg.charAt(1)) {
 				case 'T':
@@ -126,12 +132,6 @@ public class AppendCommand {
 				default:
 					throw new IllegalArgumentException(arg + " not recognized");
 				}
-			/*
-			} else if (i + 1 == args.length) {
-				setLogfile(arg);
-			} else {
-				throw new IllegalArgumentException(arg + " not recognized");
-			}*/
 			} else {
 				setLogfile(arg);
 			}
