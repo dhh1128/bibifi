@@ -20,11 +20,6 @@ public class AppendCommandOracleTest {
 	private static long NO_ROOM = -1;
 	private AppendCommand cmd;
 
-	@Before
-	public void before() {
-		cmd = new AppendCommand();
-	}
-
 	@Test
 	public void testEmployeeArriveBuilding() {
 		testCommand("-T 1 -K secret -A -E Fred log1");
@@ -243,7 +238,7 @@ public class AppendCommandOracleTest {
 	}
 
 	private void testCommand(String command) {
-		cmd.parse(tokenize(command));
+		cmd = new AppendCommand(tokenize(command));
 	}
 
 	private static String[] tokenize(String str) {

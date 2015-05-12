@@ -4,45 +4,68 @@ import java.io.IOException;
 
 public class App {
 	
+	private static void applyCommand(String[] args, GalleryUpdateManager gum) throws IOException {
+		// This line with throw if cmdline syntax is bad.
+		AppendCommand cmd = new AppendCommand(args);
+		
+		// This line will throw if token is bad or logfile is corrupt/uncreatable.
+		GalleryUpdate item = gum.getGalleryFor(cmd);
+		
+		// This switch statement should throw if a guest name is used as an employee name,
+		// a timestamp isn't >= previous value, etc.
+		switch (cmd.getEvent()) {
+		case ARRIVAL:
+			if (cmd.getRoom() == -1) {
+				item.state.arriveAtBuilding(cmd.getTimestamp(), cmd.getVisitorName(), cmd.getVisitorType());
+			} else {
+				item.state.arriveAtRoom(cmd.getTimestamp(), cmd.getVisitorName(), cmd.getVisitorType(), cmd.getRoom());
+			}
+			break;
+		case DEPARTURE:
+			if (cmd.getRoom() == -1) {
+				item.state.departBuilding(cmd.getTimestamp(), cmd.getVisitorName(), cmd.getVisitorType());
+			} else {
+				item.state.departRoom(cmd.getTimestamp(), cmd.getVisitorName(), cmd.getVisitorType(), cmd.getRoom());
+			}
+			break;
+		default:
+			throw new IllegalArgumentException("bad event type (neither arrival nor departure)");
+		}
+		
+		item.modified = true;
+	}
+	
 	/**
 	 * @return Number of commands that modified model.
 	 */
-	private static int processBatch(String batchFilePath) throws IOException {
-		int validCmdCount = 0;
+	private static void processBatch(GalleryUpdateManager gum, String batchFilePath) throws IOException {
+		
 		BatchProcessor b = new BatchProcessor(batchFilePath);
 		while (b.hasNextLine()) {
 			try {
-				AppendCommand cmd = new AppendCommand();
-				cmd.parse(b.nextLine());
-				// TODO: Update the model with this cmd
-				++validCmdCount;
+				applyCommand(b.nextLine(), gum);				
 			} catch (Throwable e) {
 				System.out.println("invalid");
 			}
 		}
-		return validCmdCount;
 	}
 	
 	public static void main(String[] args) {
 		int exitCodeForErrors = 255;
-		boolean persistModel = false;
 		try {
+			
+			GalleryUpdateManager gum = new GalleryUpdateManager();
+			
 			if (args.length == 2 && args[0].equals("-B")) {
 				exitCodeForErrors = 0;
-				if (processBatch(args[1]) > 0) {
-					persistModel = true;
-				}
+				processBatch(gum, args[1]);
+				
 			} else {
-				AppendCommand cmd = new AppendCommand();
-				// TODO: Read persisted model. We do it here instead of earlier,
-				// because there's no point in doing that work if cmd is bad.
-				cmd.parse(args);
-				// TODO: Update the model with this cmd.
-				persistModel = true;
+				applyCommand(args, gum);
 			}
-			if (persistModel) {
-				// TODO: Persist the model.
-			}
+			
+			gum.save();
+			
 		} catch (Throwable e) {
 			System.out.println("invalid");
 			System.exit(exitCodeForErrors);

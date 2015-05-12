@@ -32,11 +32,15 @@ public class ReadCommandTest extends TestCase {
 
 	public void testInvalid() {
 		for (String line: invalidCommands) {
+			boolean ok = true;
 			try {
 				ReadCommand cmd = new ReadCommand();
 				cmd.parse(BatchProcessor.splitLine(line));
-				fail("Cmdline \"" + line + "\" should not have been valid, but was.");
+				ok = false;
 			} catch (Throwable e) {
+			}
+			if (!ok) {
+				fail("Cmdline \"" + line + "\" should not have been valid, but was.");
 			}
 		}
 	}

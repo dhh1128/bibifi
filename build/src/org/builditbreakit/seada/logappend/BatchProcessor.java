@@ -26,7 +26,9 @@ public class BatchProcessor {
 	/**
 	 * This logic is super simple and would not be adequate for a robust
 	 * cmdline parser that has to handle quoted args, escape sequences,
-	 * and so forth. However, it is adequate for the bibifi spec.
+	 * and so forth. However, it is adequate for the bibifi spec. I am
+	 * using a scanner instead of ordinary String.split() because I think
+	 * it is faster.
 	 */
 	public static String[] splitLine(String line) {
 		List<String> items = new ArrayList<String>();

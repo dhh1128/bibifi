@@ -1,5 +1,8 @@
 package org.builditbreakit.seada.logappend;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.builditbreakit.seada.common.TransitionEvent;
 import org.builditbreakit.seada.common.data.ValidationUtil;
 import org.builditbreakit.seada.common.data.VisitorType;
@@ -11,7 +14,11 @@ public class AppendCommand {
 	private String logfile;
 	private String visitorName;	
 	private long room = -1;	
-	private TransitionEvent event;	
+	private TransitionEvent event;
+	
+	public AppendCommand(String[] args) {
+		parse(args);
+	}
 
 	public long getTimestamp() {
 		return timestamp;
