@@ -41,7 +41,7 @@ public class StateFormatter implements Formatter {
 
 	private StringBuilder appendRooms(StringBuilder strBuilder) {
 		for (Entry<Long, Set<String>> roomEntry : rooms.entrySet()) {
-			strBuilder.append(Long.toString(roomEntry.getKey())).append(": ");
+			strBuilder.append(Long.toString(roomEntry.getKey())).append(":");
 			join(strBuilder, roomEntry.getValue()).append(FormatUtil.NEWLINE);
 		}
 		return strBuilder;
