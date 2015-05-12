@@ -59,7 +59,7 @@ public class AppendCommandOracleTest {
 	}
 
 	@Test
-	public void testTripleDuplicateToken() {
+	public void testDuplicateToken() {
 		testCommand("-T 1 -K thing1 -K thing2 -A -E Fred log1");
 		assertCommand(1, "thing2", TransitionEvent.ARRIVAL,
 				VisitorType.EMPLOYEE, "Fred", "log1");
@@ -81,8 +81,8 @@ public class AppendCommandOracleTest {
 
 	@Test
 	public void testMultipleEventsDeparture() {
-		testCommand("-T 1 -K secret -A -A -E Fred log1");
-		assertCommand(1, "secret", TransitionEvent.ARRIVAL,
+		testCommand("-T 1 -K secret -L -L -E Fred log1");
+		assertCommand(1, "secret", TransitionEvent.DEPARTURE,
 				VisitorType.EMPLOYEE, "Fred", "log1");
 	}
 
@@ -130,6 +130,7 @@ public class AppendCommandOracleTest {
 				VisitorType.EMPLOYEE, "Fred", "log1");
 	}
 
+	@Test
 	public void testTwoEmployees() {
 		testCommand("-T 1 -K secret -A -E Fred -E Jill log1");
 		assertCommand(1, "secret", TransitionEvent.ARRIVAL,
