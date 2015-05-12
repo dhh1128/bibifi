@@ -12,7 +12,6 @@ import java.util.Arrays;
 
 import org.builditbreakit.seada.common.data.GalleryState;
 import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
-import org.builditbreakit.seada.common.exceptions.UnexpectedException;
 
 public final class LogFileReader {
 	private File file;
@@ -31,7 +30,7 @@ public final class LogFileReader {
 
 		Key key = Crypto.genKey(password);
 		if (!Crypto.authenticate(key, mac, ciphertext)) {
-			throw new IntegrityViolationException();
+			throw new SecurityException();
 		}
 		return fromBytes(Crypto.decrypt(key, ciphertext));
 	}
@@ -42,7 +41,7 @@ public final class LogFileReader {
 				ObjectInput a = new ObjectInputStream(b)) {
 			return (GalleryState) a.readObject();
 		} catch (ClassNotFoundException e) {
-			throw new UnexpectedException(e);
+			throw new IntegrityViolationException(e);
 		}
 	}
 }
