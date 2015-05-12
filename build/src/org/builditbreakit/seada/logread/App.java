@@ -10,6 +10,11 @@ public class App {
 			// because there's no point in doing that work if cmd is bad.
 			cmd.parse(args);
 			// TODO: Query the model with this cmd.
+			
+			System.exit(0);
+		} catch (SecurityException e) {
+			System.out.println("integrity violation");
+			System.exit(255);
 		} catch (Throwable e) {
 			System.out.println("invalid");
 			System.exit(255);

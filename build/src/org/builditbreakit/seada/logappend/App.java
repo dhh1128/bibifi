@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public class App {
 	
-	private static void applyCommand(String[] args, GalleryUpdateManager gum) throws IOException {
+	private static void applyCommand(String[] args, GalleryUpdateManager gum) throws IOException, SecurityException {
 		// This line with throw if cmdline syntax is bad.
 		AppendCommand cmd = new AppendCommand(args);
 		
@@ -43,7 +43,9 @@ public class App {
 		BatchProcessor b = new BatchProcessor(batchFilePath);
 		while (b.hasNextLine()) {
 			try {
-				applyCommand(b.nextLine(), gum);				
+				applyCommand(b.nextLine(), gum);
+			} catch (SecurityException e) {
+				System.out.println("integrity violation");
 			} catch (Throwable e) {
 				System.out.println("invalid");
 			}
@@ -65,7 +67,11 @@ public class App {
 			}
 			
 			gum.save();
+			System.exit(0);
 			
+		} catch (SecurityException e) {
+			System.out.println("integrity violation");
+			System.exit(exitCodeForErrors);
 		} catch (Throwable e) {
 			System.out.println("invalid");
 			System.exit(exitCodeForErrors);

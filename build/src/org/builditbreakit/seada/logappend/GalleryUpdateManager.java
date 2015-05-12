@@ -18,7 +18,7 @@ public class GalleryUpdateManager {
 	 * the path doesn't exist yet. This allows the same state to be reused without being
 	 * read/written between each use.
 	 */
-	public GalleryUpdate getGalleryFor(AppendCommand cmd) throws IOException {
+	public GalleryUpdate getGalleryFor(AppendCommand cmd) throws IOException, SecurityException {
 		GalleryUpdate item = null;
 		File f = new File(cmd.getLogfile());
 		String password = cmd.getToken();
