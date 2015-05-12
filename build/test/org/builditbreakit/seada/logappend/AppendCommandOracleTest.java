@@ -10,12 +10,9 @@ import java.util.Random;
 
 import org.builditbreakit.seada.common.TransitionEvent;
 import org.builditbreakit.seada.common.data.VisitorType;
-import org.builditbreakit.seada.logappend.AppendCommand;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
 
-@Ignore
 public class AppendCommandOracleTest {
 	private static long NO_ROOM = -1;
 	private AppendCommand cmd;
@@ -112,6 +109,16 @@ public class AppendCommandOracleTest {
 		testCommand("-T 1 -K secret log1 -Z -A -E Fred");
 	}
 	
+	@Test(expected = Exception.class)
+	public void testBatchNotAcceptedInCommand() {
+		testCommand("-T 1 -K secret log1 -B -A -E Fred");
+	}
+	
+	@Test(expected = Exception.class)
+	public void testBatchNotAcceptedByItself() {
+		testCommand("-B batch");
+	}
+
 	@Test(expected = Exception.class)
 	public void testMultipeLogs() {
 		testCommand("-T 1 -K secret log1 -A  log2 -E Fred");
