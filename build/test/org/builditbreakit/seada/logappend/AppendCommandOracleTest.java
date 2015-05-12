@@ -1,4 +1,4 @@
-package org.builditbreakit.seada.logappend.io;
+package org.builditbreakit.seada.logappend;
 
 import static org.junit.Assert.*;
 
