@@ -878,6 +878,26 @@ public class GalleryStateTest {
 		testGalleryStateSerialization(state);
 	}
 
+	@Test(expected = IllegalStateException.class)
+	public void testGalleryStateSerializationWrongTime() throws IOException,
+			ClassNotFoundException {
+		GalleryState state = new GalleryState();
+		long time = 1;
+		state.arriveAtBuilding(time++, "Bob", VisitorType.EMPLOYEE);
+		state.arriveAtRoom(time++, "Bob", VisitorType.EMPLOYEE, 101);
+		state.arriveAtBuilding(time++, "Jill", VisitorType.EMPLOYEE);
+		state.arriveAtBuilding(time++, "Alice", VisitorType.EMPLOYEE);
+		state.arriveAtRoom(time++, "Jill", VisitorType.EMPLOYEE, 101);
+		state.departRoom(time++, "Bob", VisitorType.EMPLOYEE, 101);
+		state.arriveAtBuilding(time++, "John", VisitorType.GUEST);
+		state.departBuilding(time++, "John", VisitorType.GUEST);
+		state.arriveAtBuilding(time++, "John", VisitorType.GUEST);
+		state.departBuilding(time++, "John", VisitorType.GUEST);
+
+		TestUtil.testSerialization(state, (result) -> result.arriveAtBuilding(
+				1, "Mary", VisitorType.GUEST));
+	}
+
 	@Test
 	public void testReadObjectFails() {
 		GalleryState galleryState = new GalleryState();

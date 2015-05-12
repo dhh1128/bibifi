@@ -85,6 +85,24 @@ public final class Visitor implements Serializable {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Visitor [name=");
+		builder.append(name);
+		builder.append(", visitorType=");
+		builder.append(visitorType);
+	
+		builder.append(", lastLocationRecord=");
+		if (history.isEmpty()) {
+			builder.append(Location.OFF_PREMISES);
+		} else {
+			builder.append(history.get(history.size() - 1));
+		}
+		builder.append("]");
+		return builder.toString();
+	}
+
 	void moveTo(long timestamp, Location newLocation) {
 		ValidationUtil.assertValidUINT32(timestamp, "Timestamp");
 		ValidationUtil.assertNotNull(newLocation, "Location");
