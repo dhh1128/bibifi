@@ -62,7 +62,7 @@ public class App {
 	
 	private static void logError(Throwable e, String[] args) {
 		try {
-			File tempFile = File.createTempFile("seada-logappend", "tmp");
+			File tempFile = File.createTempFile("seada-logappend", ".tmp");
 			FileOutputStream fout = new FileOutputStream(tempFile);
 			PrintWriter out = new PrintWriter(fout);
 			out.print("Error with");
@@ -72,6 +72,9 @@ public class App {
 			}
 			out.println("\n");
 			e.printStackTrace(out);
+			out.println("\nclasspath = " + java.lang.System.getProperty("java.class.path"));
+			out.close();
+			fout.close();
 		} catch (IOException e1) {
 		}
 	}

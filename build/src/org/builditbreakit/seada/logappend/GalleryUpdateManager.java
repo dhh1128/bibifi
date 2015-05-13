@@ -27,7 +27,12 @@ public class GalleryUpdateManager {
 		String key = f.getCanonicalPath();
 		if (!states.containsKey(key)) {
 			LogFileReader reader = new LogFileReader(new File(key));
-			GalleryState state = reader.read(password);
+			GalleryState state;
+			if (f.exists()) {
+				state = reader.read(password);
+			} else {
+				state = new GalleryState();
+			}
 			item = new GalleryUpdate(state, key, password);
 			states.put(key, item);
 		} else {

@@ -38,8 +38,7 @@
 		<jar destfile="bin/common.jar" duplicate="fail">
 		    <!-- <zipfileset src="libs/args4j-2.32.jar" /> -->
 			<fileset dir="bin/classes/src">
-				<include name="**/common/*"/>
-				<include name="**/data/*"/>
+				<include name="**/common/**/*.class"/>
 			</fileset>
 			<manifest>
 	        	<attribute name="Main-Class" value="bibifi.App1" />
@@ -48,17 +47,19 @@
 	</target>
 	<target name="logappend-jar" depends="build-project">
 		<jar destfile="bin/logappend.jar" duplicate="fail">
-			<fileset dir="bin/classes/src" includes="**/logappend/*" />
+			<fileset dir="bin/classes/src" includes="**/logappend/**/*.class" />
 			<manifest>
 	        	<attribute name="Main-Class" value="org.builditbreakit.seada.logappend.App" />
+				<attribute name="Class-Path" value="common.jar"/>
 	    	</manifest>
 		</jar>
 	</target>
 	<target name="logread-jar" depends="build-project">
 		<jar destfile="bin/logread.jar" duplicate="fail">
-			<fileset dir="bin/classes/src" includes="**/logread/*" />
+			<fileset dir="bin/classes/src" includes="**/logread/**/*.class" />
 			<manifest>
 	        	<attribute name="Main-Class" value="org.builditbreakit.seada.logread.App" />
+				<attribute name="Class-Path" value="common.jar"/>
 	    	</manifest>
 		</jar>
 	</target>
@@ -97,7 +98,6 @@
       	    	<pathelement location="libs/junit.jar"/>
       	    	<pathelement location="libs/hamcrest-core-1.3.jar"/>
       	    	<pathelement location="libs/equalsverifier-1.7.2.jar"/>
-        		<pathelement location="bin/common.jar"/>
         		<pathelement location="bin/logappend.jar"/>
         		<pathelement location="bin/logread.jar"/>
         		<pathelement location="bin/classes/test"/>
