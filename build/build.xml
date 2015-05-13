@@ -11,18 +11,14 @@
     <target name="init">
         <mkdir dir="bin/classes/src"/>
         <mkdir dir="bin/classes/test"/>
-        <copy includeemptydirs="false" todir="bin">
+        <copy includeemptydirs="false" todir=".">
             <fileset dir="src">
-                <exclude name="**/*.java"/>
+                <include name="logappend"/>
+                <include name="logread"/>
             </fileset>
         </copy>
-        <copy includeemptydirs="false" todir="bin">
-            <fileset dir="test">
-                <exclude name="**/*.java"/>
-            </fileset>
-        </copy>
-    	<chmod file="bin/logappend" perm="+x"/>
-    	<chmod file="bin/logread" perm="+x"/>
+    	<chmod file="logappend" perm="+x"/>
+    	<chmod file="logread" perm="+x"/>
     </target>
     <target name="clean">
         <delete dir="bin"/>
