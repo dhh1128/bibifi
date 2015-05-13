@@ -92,6 +92,11 @@ public class AppendCommandOracleTest {
 		assertCommand(1, "secret", TransitionEvent.ARRIVAL,
 				VisitorType.EMPLOYEE, "Fred", "log1");
 	}
+
+	@Test(expected = Exception.class)
+	public void testValuelessLast() {
+		testCommand("-T 1 -K secret log1 -A -E");
+	}
 	
 	@Test(expected = Exception.class)
 	public void testIncompleteCommand() {
