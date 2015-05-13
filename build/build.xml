@@ -88,6 +88,8 @@
     	<delete dir="${junit.output.dir}"/>
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr" haltonfailure="true">
+        	<sysproperty key="java.security.egd"
+        	            value="file:/dev/./urandom"/>
             <formatter type="xml"/>
 			<batchtest todir="${junit.output.dir}">
 				<fileset dir="bin/classes/test">

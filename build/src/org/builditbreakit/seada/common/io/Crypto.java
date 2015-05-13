@@ -22,6 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
 public final class Crypto {
 	public static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding";
 	public static final String HASH_ALGORITHM = "SHA-1";
+	public static final String PRNG_ALGORITHM = "SHA1PRNG";
 	public static final String MAC_ALGORITHM = "HmacSHA1";
 	public static final String KEY_ALGORITHM = "AES";
 	public static final int KEY_BYTES = 16;
@@ -48,9 +49,10 @@ public final class Crypto {
 
 	public static byte[] encrypt(Key key, byte[] bytes) {
 		try {
-			SecureRandom rand = SecureRandom.getInstanceStrong();
-			IvParameterSpec iv = new IvParameterSpec(
-					rand.generateSeed(IV_BYTES));
+			SecureRandom rand = SecureRandom.getInstance(PRNG_ALGORITHM);
+			byte[] iv_bytes = new byte[IV_BYTES];
+			rand.nextBytes(iv_bytes);
+			IvParameterSpec iv = new IvParameterSpec(iv_bytes);
 
 			Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
 			cipher.init(Cipher.ENCRYPT_MODE, key, iv);
