@@ -19,8 +19,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.builditbreakit.seada.common.exceptions.SecurityException;
-
 public final class Crypto {
 	public static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding";
 	public static final String HASH_ALGORITHM = "SHA-1";
