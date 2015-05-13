@@ -1,6 +1,9 @@
 package org.builditbreakit.seada.logappend;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 public class App {
 	
@@ -42,13 +45,37 @@ public class App {
 		
 		BatchProcessor b = new BatchProcessor(batchFilePath);
 		while (b.hasNextLine()) {
+			String[] args = b.nextLine();
 			try {
-				applyCommand(b.nextLine(), gum);
+				applyCommand(args, gum);
 			} catch (SecurityException e) {
+				logError(e, args);
 				System.out.println("integrity violation");
 			} catch (Throwable e) {
+				logError(e, args);
 				System.out.println("invalid");
 			}
+		}
+	}
+	
+	private static final boolean PRINT_ERRORS = true; // disable before final build
+	
+	private static void logError(Throwable e, String[] args) {
+		try {
+			File tempFile = File.createTempFile("seada-logappend", ".tmp");
+			FileOutputStream fout = new FileOutputStream(tempFile);
+			PrintWriter out = new PrintWriter(fout);
+			out.print("Error with");
+			for (String arg: args) {
+				out.print(' ');
+				out.print(arg);
+			}
+			out.println("\n");
+			e.printStackTrace(out);
+			out.println("\nclasspath = " + java.lang.System.getProperty("java.class.path"));
+			out.close();
+			fout.close();
+		} catch (IOException e1) {
 		}
 	}
 	
@@ -70,9 +97,11 @@ public class App {
 			System.exit(0);
 			
 		} catch (SecurityException e) {
+			logError(e, args);
 			System.out.println("integrity violation");
 			System.exit(exitCodeForErrors);
 		} catch (Throwable e) {
+			logError(e, args);
 			System.out.println("invalid");
 			System.exit(exitCodeForErrors);
 		}
