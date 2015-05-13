@@ -69,6 +69,14 @@ public class GalleryState implements Serializable {
 		assertMatchingVisitorType(visitor, visitorType);
 		return visitor;
 	}
+	
+	public boolean containsVisitor(String name, VisitorType visitorType) {
+		Visitor visitor = visitorMap.get(name);
+		if (visitor == null) {
+			return false;
+		}
+		return visitor.getVisitorType() == visitorType;
+	}
 
 	public void arriveAtBuilding(long timestamp, String name,
 			VisitorType visitorType) {

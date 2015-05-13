@@ -20,23 +20,45 @@ public class App {
 		try {
 			ReadCommand cmd = new ReadCommand();
 			cmd.parse(args);
-			
+
 			File file = new File(cmd.getLogfile());
+			if (!file.exists()) {
+				switch (cmd.getStyle()) {
+				case DUMP_CURRENT_STATE:
+					System.out.println();
+					System.out.println();
+					break;
+				case TOTAL_TIME:
+					System.out.println(0);
+					break;
+				default:
+					break;
+				}
+				System.exit(0);
+			}
+
 			LogFileReader reader = new LogFileReader(file);
 			GalleryState state = reader.read(cmd.getToken());
-			
+
 			Formatter formatter;
 			switch (cmd.getStyle()) {
 			case DUMP_CURRENT_STATE:
 				formatter = new StateFormatter(state);
 				break;
 			case DUMP_ENTERED_ROOMS:
-				formatter = new VisitorRoomFormatter(extractSingleVisitor(cmd,
-						state));
+				Visitor roomVisitor = extractSingleVisitor(cmd, state);
+				if (roomVisitor == null) {
+					System.exit(0);
+				}
+				formatter = new VisitorRoomFormatter(roomVisitor);
 				break;
 			case TOTAL_TIME:
-				formatter = new VisitorTimeFormatter(extractSingleVisitor(cmd,
-						state));
+				Visitor timeVisitor = extractSingleVisitor(cmd, state);
+				if (timeVisitor == null) {
+					System.out.println(0);
+					System.exit(0);
+				}
+				formatter = new VisitorTimeFormatter(timeVisitor);
 				break;
 			case ROOMS_OCCUPIED_TOGETHER:
 				ConcurrentVisitorsFormatter occupedRoomsFrmt = new ConcurrentVisitorsFormatter(
@@ -50,10 +72,10 @@ public class App {
 			default:
 				throw new IllegalArgumentException("Bad style");
 			}
-			
+
 			System.out.print(formatter.format());
 			System.out.flush();
-			
+
 			System.exit(0);
 		} catch (IntegrityViolationException | SecurityException e) {
 			System.out.println("integrity violation");
@@ -71,7 +93,9 @@ public class App {
 			throw new IllegalArgumentException("Too many visitors");
 		}
 		VisitorSpec spec = visitors.iterator().next();
-		Visitor visitor = state.getVisitor(spec.name, spec.type);
-		return visitor;
+		if(!state.containsVisitor(spec.name, spec.type)) {
+			return null;
+		}
+		return state.getVisitor(spec.name, spec.type);
 	}
 }
