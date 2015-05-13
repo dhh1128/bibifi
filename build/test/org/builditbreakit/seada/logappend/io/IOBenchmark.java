@@ -27,7 +27,7 @@ public class IOBenchmark {
 		Thread.sleep(10000);
 
 		while (true) {
-			testSerialization(new GalleryState());
+			testSerialization(state);
 			Thread.sleep(1000);
 		}
 	}
