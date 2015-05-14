@@ -15,7 +15,7 @@ import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
 public class GalleryState implements Serializable {
 	private static final long serialVersionUID = 6928424752159836102L;
 
-	private transient long lastTimestamp = 0;
+	private transient int lastTimestamp = 0;
 	private transient final Map<String, Visitor> visitorMap;
 
 	public GalleryState() {
@@ -42,7 +42,7 @@ public class GalleryState implements Serializable {
 				}
 				List<LocationRecord> history = visitor.getHistory();
 				if (!history.isEmpty()) {
-					long lastVisitTime = history.get(history.size() - 1)
+					int lastVisitTime = history.get(history.size() - 1)
 							.getArrivalTime();
 					if (lastVisitTime > lastTimestamp) {
 						lastTimestamp = lastVisitTime;
@@ -78,7 +78,7 @@ public class GalleryState implements Serializable {
 		return visitor.getVisitorType() == visitorType;
 	}
 
-	public void arriveAtBuilding(long timestamp, String name,
+	public void arriveAtBuilding(int timestamp, String name,
 			VisitorType visitorType) {
 		ValidationUtil.assertValidVisitorType(visitorType);
 		ValidationUtil.assertValidVisitorName(name);
@@ -100,8 +100,8 @@ public class GalleryState implements Serializable {
 		lastTimestamp = timestamp;
 	}
 
-	public void arriveAtRoom(long timestamp, String name,
-			VisitorType visitorType, long roomNumber) {
+	public void arriveAtRoom(int timestamp, String name,
+			VisitorType visitorType, int roomNumber) {
 		ValidationUtil.assertValidVisitorType(visitorType);
 		ValidationUtil.assertValidVisitorName(name);
 		ValidationUtil.assertValidRoomNumber(roomNumber);
@@ -117,7 +117,7 @@ public class GalleryState implements Serializable {
 		lastTimestamp = timestamp;
 	}
 
-	public void departRoom(long timestamp, String name, VisitorType visitorType, long roomNumber) {
+	public void departRoom(int timestamp, String name, VisitorType visitorType, int roomNumber) {
 		ValidationUtil.assertValidVisitorType(visitorType);
 		ValidationUtil.assertValidVisitorName(name);
 		ValidationUtil.assertValidRoomNumber(roomNumber);
@@ -133,7 +133,7 @@ public class GalleryState implements Serializable {
 		lastTimestamp = timestamp;
 	}
 
-	public void departBuilding(long timestamp, String name, VisitorType visitorType) {
+	public void departBuilding(int timestamp, String name, VisitorType visitorType) {
 		ValidationUtil.assertValidVisitorType(visitorType);
 		ValidationUtil.assertValidVisitorName(name);
 		assertValidTimestamp(timestamp);
@@ -148,7 +148,7 @@ public class GalleryState implements Serializable {
 		lastTimestamp = timestamp;
 	}
 
-	private void assertValidTimestamp(long timestamp) {
+	private void assertValidTimestamp(int timestamp) {
 		ValidationUtil.assertValidUINT32(timestamp, "Timestamp");
 		if (timestamp <= lastTimestamp) {
 			throw new IllegalStateException("Timestamp " + timestamp

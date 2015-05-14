@@ -7,8 +7,8 @@ public final class ValidationUtil {
 		super();
 	}
 	
-	public static final long UINT32_MIN = 0L;
-	public static final long UINT32_MAX = 4294967295L;
+	public static final int UINT32_MIN = 0;
+	public static final int UINT32_MAX = 1073741823;
 
 	public static void assertNotNull(Object value, String param) {
 		if (value == null) {
@@ -16,7 +16,7 @@ public final class ValidationUtil {
 		}
 	}
 
-	public static void assertValidUINT32(long value, String param) {
+	public static void assertValidUINT32(int value, String param) {
 		if ((value < UINT32_MIN) || (value > UINT32_MAX)) {
 			throw new IllegalArgumentException(param
 					+ " is not a valid integer: " + value);
@@ -41,11 +41,11 @@ public final class ValidationUtil {
 		assertNotNull(visitorType, "Visitor Type");
 	}
 	
-	public static void assertValidRoomNumber(long roomNumber) {
+	public static void assertValidRoomNumber(int roomNumber) {
 		assertValidUINT32(roomNumber, "Room number");
 	}
 
-	public static void assertValidTimestamp(long timestamp) {
+	public static void assertValidTimestamp(int timestamp) {
 		assertValidUINT32(timestamp, "Timestamp");
 	}
 

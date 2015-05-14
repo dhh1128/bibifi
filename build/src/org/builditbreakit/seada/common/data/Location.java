@@ -19,11 +19,11 @@ import java.util.Map;
  * 
  * {@link #OFF_PREMISES} and {@link #IN_GALLERY} locations are obtained by
  * accessing the corresponding constant field. {@code IN_ROOM(N)} instances are
- * obtained by calling {@link #locationOfRoom(long)}. All instances are
+ * obtained by calling {@link #locationOfRoom(int)}. All instances are
  * immutable.
  */
 public final class Location implements Serializable {
-	private static final long serialVersionUID = -2330173990359232226L;
+	private static final long serialVersionUID = 9175166416238529214L;
 
 	/**
 	 * A location outside the building
@@ -41,18 +41,18 @@ public final class Location implements Serializable {
 	 * Since there could be lots of rooms we limit the number of objects. For
 	 * example, room #5 will always be represented by the same object.
 	 */
-	private static final Map<Long, Location> cache = new HashMap<>();
+	private static final Map<Integer, Location> cache = new HashMap<>();
 
 	/*
 	 * Transient to avoid wasting time when SerializationProxy does the real
 	 * work
 	 */
-	private transient final long state;
+	private transient final int state;
 
 	/**
-	 * Private. Object creation is managed by {@link #locationOfRoom(long)}
+	 * Private. Object creation is managed by {@link #locationOfRoom(int)}
 	 */
-	private Location(long location) {
+	private Location(int location) {
 		this.state = location;
 	}
 
@@ -94,7 +94,7 @@ public final class Location implements Serializable {
 	 *         Otherwise returns {@code null}
 	 * @see #isInRoom()
 	 */
-	public Long getRoomNumber() {
+	public Integer getRoomNumber() {
 		if (!isInRoom()) {
 			return null;
 		}
@@ -133,13 +133,10 @@ public final class Location implements Serializable {
 		}
 		return true;
 	}
-
+	
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (int) (state ^ (state >>> 32));
-		return result;
+		return state;
 	}
 
 	/**
@@ -151,7 +148,7 @@ public final class Location implements Serializable {
 	 * @return the location {@code IN_ROOM(N)}, where N is the
 	 *         {@code roomNumber} parameter
 	 */
-	public synchronized static Location locationOfRoom(long roomNumber) {
+	public synchronized static Location locationOfRoom(int roomNumber) {
 		ValidationUtil.assertValidRoomNumber(roomNumber);
 
 		Location result = cache.get(roomNumber);
@@ -166,7 +163,7 @@ public final class Location implements Serializable {
 	private static class SerializationProxy implements Serializable {
 		private static final long serialVersionUID = -6040714525289607781L;
 
-		private final long state;
+		private final int state;
 
 		SerializationProxy(Location location) {
 			this.state = location.state;

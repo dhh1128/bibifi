@@ -12,7 +12,7 @@ public class IOBenchmark {
 	public static void main(String[] args) throws InterruptedException,
 			IOException {
 		GalleryState state = new GalleryState();
-		long time = 1;
+		int time = 1;
 		state.arriveAtBuilding(time++, "Bob", VisitorType.EMPLOYEE);
 		state.arriveAtRoom(time++, "Bob", VisitorType.EMPLOYEE, 101);
 		state.arriveAtBuilding(time++, "Jill", VisitorType.EMPLOYEE);

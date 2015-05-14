@@ -18,7 +18,7 @@ public class StateFormatter implements Formatter {
 
 	private final Set<String> employees = new TreeSet<>();
 	private final Set<String> guests = new TreeSet<>();
-	private final Map<Long, Set<String>> rooms = new TreeMap<>();
+	private final Map<Integer, Set<String>> rooms = new TreeMap<>();
 
 	public StateFormatter(GalleryState galleryState) {
 		ValidationUtil.assertNotNull(galleryState, "Gallery State");
@@ -40,8 +40,8 @@ public class StateFormatter implements Formatter {
 	}
 
 	private StringBuilder appendRooms(StringBuilder strBuilder) {
-		for (Entry<Long, Set<String>> roomEntry : rooms.entrySet()) {
-			strBuilder.append(Long.toString(roomEntry.getKey())).append(":");
+		for (Entry<Integer, Set<String>> roomEntry : rooms.entrySet()) {
+			strBuilder.append(Integer.toString(roomEntry.getKey())).append(":");
 			join(strBuilder, roomEntry.getValue()).append(FormatUtil.NEWLINE);
 		}
 		return strBuilder;
@@ -66,7 +66,7 @@ public class StateFormatter implements Formatter {
 				}
 
 				if (visitorLocation.isInRoom()) {
-					long roomNumber = visitorLocation.getRoomNumber();
+					int roomNumber = visitorLocation.getRoomNumber();
 					Set<String> room = rooms.get(roomNumber);
 					if (room == null) {
 						room = new TreeSet<String>();

@@ -12,8 +12,8 @@ import nl.jqno.equalsverifier.Warning;
 import org.junit.Test;
 
 public class LocationTest {
-	private static final long ROOM_LOWER_BOUND = 0L;
-	private static final long ROOM_UPPER_BOUND = 4294967295L;
+	private static final int ROOM_LOWER_BOUND = 0;
+	private static final int ROOM_UPPER_BOUND = 1073741823;
 
 	/* isOffPremises Tests */
 
@@ -80,7 +80,7 @@ public class LocationTest {
 
 	@Test
 	public void testRoomHasRoomNumber() {
-		assertEquals(Long.valueOf(101), Location.locationOfRoom(101)
+		assertEquals(Integer.valueOf(101), Location.locationOfRoom(101)
 				.getRoomNumber());
 	}
 
@@ -93,13 +93,13 @@ public class LocationTest {
 
 	@Test
 	public void testLocationOfRoomLowerBound() {
-		assertEquals(Long.valueOf(ROOM_LOWER_BOUND),
+		assertEquals(Integer.valueOf(ROOM_LOWER_BOUND),
 				Location.locationOfRoom(ROOM_LOWER_BOUND).getRoomNumber());
 	}
 
 	@Test
 	public void testLocationOfRoomUpperBound() {
-		assertEquals(Long.valueOf(ROOM_UPPER_BOUND),
+		assertEquals(Integer.valueOf(ROOM_UPPER_BOUND),
 				Location.locationOfRoom(ROOM_UPPER_BOUND).getRoomNumber());
 	}
 
@@ -170,7 +170,7 @@ public class LocationTest {
 	
 	private static Location createMaliciousLocation() throws Exception {
 		Class<Location> clazz = Location.class;
-		Constructor<Location> ctor = clazz.getDeclaredConstructor(Long.TYPE);
+		Constructor<Location> ctor = clazz.getDeclaredConstructor(Integer.TYPE);
 		ctor.setAccessible(true);
 		Location maliciousObj = ctor.newInstance(ROOM_LOWER_BOUND + 1);
 		
@@ -178,7 +178,7 @@ public class LocationTest {
 		stateField.setAccessible(true);
 		
 		// Set the field to something illegal
-		stateField.setLong(maliciousObj, ROOM_LOWER_BOUND - 10);
+		stateField.setInt(maliciousObj, ROOM_LOWER_BOUND - 10);
 		
 		return maliciousObj;
 	}
