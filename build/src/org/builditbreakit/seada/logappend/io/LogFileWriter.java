@@ -36,9 +36,9 @@ public final class LogFileWriter {
 			out.write(ciphertext);
 			out.flush();
 		}
-		
-		// TODO verify VM supports this option
-		Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.ATOMIC_MOVE);
+
+		Files.move(tempFile.toPath(), file.toPath(),
+				StandardCopyOption.ATOMIC_MOVE);
 	}
 
 	private static byte[] toBytes(GalleryState galleryState) throws IOException {
