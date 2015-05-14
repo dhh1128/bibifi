@@ -1,8 +1,5 @@
 package org.builditbreakit.seada.common.data;
 
-import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,20 +19,20 @@ import java.util.Map;
  * obtained by calling {@link #locationOfRoom(int)}. All instances are
  * immutable.
  */
-public final class Location implements Serializable {
-	private static final long serialVersionUID = 9175166416238529214L;
+public final class Location {
+	static final int OFF_PREMISES_STATE = ValidationUtil.UINT32_MIN - 2;
+
+	static final int IN_GALLERY_STATE = ValidationUtil.UINT32_MIN - 1;
 
 	/**
 	 * A location outside the building
 	 */
-	public static final Location OFF_PREMISES = new Location(
-			ValidationUtil.UINT32_MIN - 2);
+	public static final Location OFF_PREMISES = new Location(OFF_PREMISES_STATE);
 
 	/**
 	 * The Gallery location inside the building
 	 */
-	public static final Location IN_GALLERY = new Location(
-			ValidationUtil.UINT32_MIN - 1);
+	public static final Location IN_GALLERY = new Location(IN_GALLERY_STATE);
 
 	/*
 	 * Since there could be lots of rooms we limit the number of objects. For
@@ -43,11 +40,9 @@ public final class Location implements Serializable {
 	 */
 	private static final Map<Integer, Location> cache = new HashMap<>();
 
-	/*
-	 * Transient to avoid wasting time when SerializationProxy does the real
-	 * work
-	 */
-	private transient final int state;
+
+	
+	private final int state;
 
 	/**
 	 * Private. Object creation is managed by {@link #locationOfRoom(int)}
@@ -157,37 +152,5 @@ public final class Location implements Serializable {
 			cache.put(roomNumber, result);
 		}
 		return result;
-	}
-
-	// Serialization Proxy pattern. Provides robustness and security
-	private static class SerializationProxy implements Serializable {
-		private static final long serialVersionUID = -6040714525289607781L;
-
-		private final int state;
-
-		SerializationProxy(Location location) {
-			this.state = location.state;
-		}
-
-		private Object readResolve() {
-			if (state == OFF_PREMISES.state) {
-				return OFF_PREMISES;
-			}
-			if (state == IN_GALLERY.state) {
-				return IN_GALLERY;
-			}
-			return locationOfRoom(state);
-		}
-	}
-
-	// Serialization method
-	private Object writeReplace() {
-		return new SerializationProxy(this);
-	}
-
-	// Serialization method
-	private void readObject(ObjectInputStream ois)
-			throws InvalidObjectException {
-		throw new InvalidObjectException("Proxy required");
 	}
 }

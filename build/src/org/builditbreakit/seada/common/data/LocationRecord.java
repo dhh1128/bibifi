@@ -5,10 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 public final class LocationRecord implements Serializable {
-	private static final long serialVersionUID = 5097760039407445632L;
+	private static final long serialVersionUID = -9012533294897310918L;
 	
-	private transient final Location location;
-	private transient final int arrivalTime;
+	private final Location location;
+	private final int arrivalTime;
 	
 	LocationRecord(int arrivalTime, Location location) {
 		ValidationUtil.assertValidTimestamp(arrivalTime);
@@ -38,17 +38,32 @@ public final class LocationRecord implements Serializable {
 	}
 
 	private static class SerializationProxy implements Serializable {
-		private static final long serialVersionUID = 1009514308536095709L;
+		private static final long serialVersionUID = -4050269614086351057L;
 		
-		private final Location location;
+		private final int locationState;
 		private final int arrivalTime;
 		
 		SerializationProxy(LocationRecord record) {
-			this.location = record.location;
+			Location location = record.location;
+			if(location.isOffPremises()) {
+				this.locationState = Location.OFF_PREMISES_STATE;
+			} else if(location.isInGallery()){
+				this.locationState = Location.IN_GALLERY_STATE;
+			} else {
+				this.locationState = location.getRoomNumber();
+			}
 			this.arrivalTime = record.arrivalTime;
 		}
 		
 		private Object readResolve() {
+			Location location;
+			if (locationState == Location.OFF_PREMISES_STATE) {
+				location = Location.OFF_PREMISES;
+			} else if (locationState == Location.IN_GALLERY_STATE) {
+				location = Location.IN_GALLERY;
+			} else {
+				location = Location.locationOfRoom(locationState);
+			}
 			return new LocationRecord(arrivalTime, location);
 		}
 	}
