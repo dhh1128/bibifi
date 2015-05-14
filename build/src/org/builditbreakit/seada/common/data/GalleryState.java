@@ -70,6 +70,14 @@ public class GalleryState implements Serializable {
 		return visitor;
 	}
 
+	public boolean containsVisitor(String name, VisitorType visitorType) {
+		Visitor visitor = visitorMap.get(name);
+		if (visitor == null) {
+			return false;
+		}
+		return visitor.getVisitorType() == visitorType;
+	}
+
 	public void arriveAtBuilding(int timestamp, String name,
 			VisitorType visitorType) {
 		ValidationUtil.assertValidVisitorType(visitorType);
@@ -144,7 +152,7 @@ public class GalleryState implements Serializable {
 		ValidationUtil.assertValidUINT32(timestamp, "Timestamp");
 		if (timestamp <= lastTimestamp) {
 			throw new IllegalStateException("Timestamp " + timestamp
-					+ " is prior to the current timestamp: " + lastTimestamp);
+					+ " does not follow the current timestamp: " + lastTimestamp);
 		}
 	}
 

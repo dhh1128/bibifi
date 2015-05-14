@@ -36,7 +36,7 @@ public class LogFileWriterTest {
 	}
 
 	private void testSerialization(GalleryState galleryState) throws IOException {
-		printEntropySource();
+		//printEntropySource();
 		final double millisToNanos = 1000000.0;
 		
 		String password = "secret";
@@ -55,9 +55,9 @@ public class LogFileWriterTest {
 		
 		EquivalenceUtil.assertEquivalent(galleryState, recoveredGalleryState);
 		
-		System.out.println("Runtime: " + runtime + " ms");
-		System.out.println("Log file size: " + logFileSize + " bytes");
-		System.out.println();
+		//System.out.println("Runtime: " + runtime + " ms");
+		//System.out.println("Log file size: " + logFileSize + " bytes");
+		//System.out.println();
 	}
 
 	private static void printEntropySource() {
