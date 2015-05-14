@@ -74,10 +74,6 @@ public final class Crypto {
 		getRandom().nextBytes(result);
 		return result;
 	}
-
-	public static byte[] getBlankMacArray() {
-		return new byte[MAC_SIZE];
-	}
 	
 	private static Cipher getCipher(Key key, byte[] iv, int mode) {
 		try {
