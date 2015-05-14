@@ -6,22 +6,22 @@ import org.builditbreakit.seada.common.data.VisitorType;
 
 public class AppendCommand {
 	
-	private long timestamp = -1;
+	private int timestamp = -1;
 	private String token;
 	private String logfile;
 	private String visitorName;	
-	private long room = -1;	
+	private int room = -1;	
 	private TransitionEvent event;
 	
 	public AppendCommand(String[] args) {
 		parse(args);
 	}
 
-	public long getTimestamp() {
+	public int getTimestamp() {
 		return timestamp;
 	}
 	
-	public void setTimestamp(long value) {
+	public void setTimestamp(int value) {
 		ValidationUtil.assertValidTimestamp(value);
 		timestamp = value;
 	}
@@ -68,11 +68,11 @@ public class AppendCommand {
 		visitorName = value;
 	}
 	
-	public long getRoom() {
+	public int getRoom() {
 		return room;
 	}
 	
-	public void setRoom(long value) {
+	public void setRoom(int value) {
 		ValidationUtil.assertValidRoomNumber(value);
 		room = value;
 	}
@@ -111,7 +111,7 @@ public class AppendCommand {
 				}
 				switch (arg.charAt(1)) {
 				case 'T':
-					setTimestamp(Long.parseLong(args[++i]));
+					setTimestamp(Integer.parseInt(args[++i]));
 					break;
 				case 'K':
 					setToken(args[++i]);
@@ -131,7 +131,7 @@ public class AppendCommand {
 					setEvent(TransitionEvent.DEPARTURE);
 					break;
 				case 'R':
-					setRoom(Long.parseLong(args[++i]));
+					setRoom(Integer.parseInt(args[++i]));
 					break;
 				default:
 					throw new IllegalArgumentException(arg + " not recognized");

@@ -18,10 +18,10 @@ public class VisitorTimeFormatter implements Formatter {
 
 	@Override
 	public String format() {
-		long totalTime = 0;
+		int totalTime = 0;
 		
 		Location lastLocation = Location.OFF_PREMISES;
-		long lastTime = 0;
+		int lastTime = 0;
 		
 		for (LocationRecord record : history) {
 			Location currentLocation = record.getLocation();

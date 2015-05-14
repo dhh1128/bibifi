@@ -90,7 +90,7 @@ public class GalleryStateTest {
 	public void testArriveAtBuilding() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
@@ -113,7 +113,7 @@ public class GalleryStateTest {
 	public void testArriveAtBuildingWrongType() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName,
@@ -128,7 +128,7 @@ public class GalleryStateTest {
 	public void testArriveAtBuildingWrongOrderDifferentPerson() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		galleryState.arriveAtBuilding(arrivalTime, "Bob", VisitorType.GUEST);
 		galleryState.arriveAtBuilding(arrivalTime, "Tom", VisitorType.EMPLOYEE);
 	}
@@ -137,7 +137,7 @@ public class GalleryStateTest {
 	public void testArriveAtBuildingFromGallery() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		galleryState.arriveAtBuilding(arrivalTime++, "Bob", VisitorType.GUEST);
 		galleryState.arriveAtBuilding(arrivalTime++, "Bob", VisitorType.GUEST);
 	}
@@ -146,7 +146,7 @@ public class GalleryStateTest {
 	public void testArriveAtBuildingFromRoom() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		galleryState.arriveAtBuilding(arrivalTime++, "Bob", VisitorType.GUEST);
 		galleryState.arriveAtRoom(arrivalTime++, "Bob", VisitorType.GUEST, 101);
 		galleryState.arriveAtBuilding(arrivalTime++, "Bob", VisitorType.GUEST);
@@ -188,8 +188,8 @@ public class GalleryStateTest {
 	public void testArriveAtRoom() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
-		long roomNumber = 101;
+		int arrivalTime = 5;
+		int roomNumber = 101;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
@@ -215,7 +215,7 @@ public class GalleryStateTest {
 	public void testArriveAtRoomWrongType() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName,
@@ -228,7 +228,7 @@ public class GalleryStateTest {
 	public void testArriveAtRoomSamePersonTimeCheck() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
@@ -240,7 +240,7 @@ public class GalleryStateTest {
 	public void testArriveAtRoomDifferentPersonTimeCheck() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
@@ -253,7 +253,7 @@ public class GalleryStateTest {
 	public void testArriveAtRoomDifferentPersonTimeUpdate() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
@@ -272,7 +272,7 @@ public class GalleryStateTest {
 	public void testArriveAtRoomFromOffPremises() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
@@ -285,8 +285,8 @@ public class GalleryStateTest {
 	public void testArriveAtRoomFromSameRoom() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
-		long roomNumber = 101;
+		int arrivalTime = 5;
+		int roomNumber = 101;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
@@ -301,8 +301,8 @@ public class GalleryStateTest {
 	public void testArriveAtRoomFromDifferentRoom() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
-		long roomNumber = 101;
+		int arrivalTime = 5;
+		int roomNumber = 101;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
@@ -317,8 +317,8 @@ public class GalleryStateTest {
 	public void testArriveAtRoomNullName() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
-		long roomNumber = 101;
+		int arrivalTime = 5;
+		int roomNumber = 101;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
@@ -330,8 +330,8 @@ public class GalleryStateTest {
 	public void testArriveAtRoomEmptyName() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
-		long roomNumber = 101;
+		int arrivalTime = 5;
+		int roomNumber = 101;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
@@ -343,8 +343,8 @@ public class GalleryStateTest {
 	public void testArriveAtRoomInvalidName() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
-		long roomNumber = 101;
+		int arrivalTime = 5;
+		int roomNumber = 101;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
@@ -356,13 +356,13 @@ public class GalleryStateTest {
 	public void testArriveAtRoomInvalidTime() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
-		long roomNumber = 101;
+		int arrivalTime = 5;
+		int roomNumber = 101;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.arriveAtRoom(Long.MAX_VALUE, visitorName, visitorType,
+		galleryState.arriveAtRoom(Integer.MAX_VALUE, visitorName, visitorType,
 				roomNumber);
 	}
 
@@ -370,8 +370,8 @@ public class GalleryStateTest {
 	public void testArriveAtRoomNullVisitorType() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
-		long roomNumber = 101;
+		int arrivalTime = 5;
+		int roomNumber = 101;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
@@ -383,7 +383,7 @@ public class GalleryStateTest {
 	public void testArriveAtRoomInvalidRoomNumber() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
@@ -397,7 +397,7 @@ public class GalleryStateTest {
 	public void testDepartBuilding() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
@@ -422,7 +422,7 @@ public class GalleryStateTest {
 	public void testDepartBuildingFromOffPremises() {
 		GalleryState galleryState = new GalleryState();
 	
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 	
@@ -435,7 +435,7 @@ public class GalleryStateTest {
 	public void testDepartBuildingFromRoom() {
 		GalleryState galleryState = new GalleryState();
 	
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 	
@@ -454,7 +454,7 @@ public class GalleryStateTest {
 	public void testDepartBuildingWrongType() {
 		GalleryState galleryState = new GalleryState();
 	
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 	
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName,
@@ -467,7 +467,7 @@ public class GalleryStateTest {
 	public void testDepartBuildingWrongOrderSamePerson() {
 		GalleryState galleryState = new GalleryState();
 	
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 	
@@ -479,7 +479,7 @@ public class GalleryStateTest {
 	public void testDepartBuildingSamePersonTimeCheck() {
 		GalleryState galleryState = new GalleryState();
 	
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 	
@@ -491,7 +491,7 @@ public class GalleryStateTest {
 	public void testDepartBuildingDifferentPersonTimeCheck() {
 		GalleryState galleryState = new GalleryState();
 	
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		VisitorType visitorType = VisitorType.GUEST;
 	
 		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
@@ -504,7 +504,7 @@ public class GalleryStateTest {
 	public void testDepartBuildingDifferentPersonTimeUpdate() {
 		GalleryState galleryState = new GalleryState();
 	
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		VisitorType visitorType = VisitorType.GUEST;
 	
 		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
@@ -517,7 +517,7 @@ public class GalleryStateTest {
 	public void testDepartBuildingNullName() {
 		GalleryState galleryState = new GalleryState();
 	
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 	
@@ -529,7 +529,7 @@ public class GalleryStateTest {
 	public void testDepartBuildingEmptyName() {
 		GalleryState galleryState = new GalleryState();
 	
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 	
@@ -541,7 +541,7 @@ public class GalleryStateTest {
 	public void testDepartBuildingInvalidName() {
 		GalleryState galleryState = new GalleryState();
 	
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 	
@@ -553,19 +553,19 @@ public class GalleryStateTest {
 	public void testDepartBuildingInvalidTime() {
 		GalleryState galleryState = new GalleryState();
 	
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 	
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.departBuilding(Long.MAX_VALUE, visitorName, visitorType);
+		galleryState.departBuilding(Integer.MAX_VALUE, visitorName, visitorType);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testDepartBuildingNullVisitorType() {
 		GalleryState galleryState = new GalleryState();
 	
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 	
@@ -579,8 +579,8 @@ public class GalleryStateTest {
 	public void testDepartRoom() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
-		long roomNumber = 101;
+		int arrivalTime = 5;
+		int roomNumber = 101;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
@@ -610,7 +610,7 @@ public class GalleryStateTest {
 	public void testDepartRoomFromOffPremises() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
@@ -623,7 +623,7 @@ public class GalleryStateTest {
 	public void testDepartRoomFromGallery() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
@@ -641,9 +641,9 @@ public class GalleryStateTest {
 	public void testDepartRoomWrongType() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
-		long roomNumber = 101;
+		int roomNumber = 101;
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName,
 				VisitorType.GUEST);
@@ -657,9 +657,9 @@ public class GalleryStateTest {
 	public void testDepartRoomWrongRoom() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
-		long roomNumber = 101;
+		int roomNumber = 101;
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName,
 				VisitorType.GUEST);
@@ -673,10 +673,10 @@ public class GalleryStateTest {
 	public void testDepartRoomWrongOrderSamePerson() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
-		long roomNumber = 101;
+		int roomNumber = 101;
 
 		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
 		galleryState.arriveAtRoom(arrivalTime + 1, visitorName, visitorType,
@@ -689,10 +689,10 @@ public class GalleryStateTest {
 	public void testDepartRoomSamePersonTimeCheck() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
-		long roomNumber = 101;
+		int roomNumber = 101;
 
 		galleryState.arriveAtBuilding(arrivalTime, visitorName, visitorType);
 		galleryState.arriveAtRoom(arrivalTime + 1, visitorName, visitorType,
@@ -705,9 +705,9 @@ public class GalleryStateTest {
 	public void testDepartRoomDifferentPersonInBuidlingTimeCheck() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		VisitorType visitorType = VisitorType.GUEST;
-		long roomNumber = 101;
+		int roomNumber = 101;
 
 		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
 		galleryState.arriveAtRoom(arrivalTime + 1, "Bob", visitorType,
@@ -722,7 +722,7 @@ public class GalleryStateTest {
 	public void testDepartRoomDifferentPersonInRoomTimeCheck() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
@@ -738,9 +738,9 @@ public class GalleryStateTest {
 	public void testDepartRoomDifferentPersonInRoomTimeUpdate() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		VisitorType visitorType = VisitorType.GUEST;
-		long roomNumber = 101;
+		int roomNumber = 101;
 
 		galleryState.arriveAtBuilding(arrivalTime, "Bob", visitorType);
 		galleryState.arriveAtRoom(arrivalTime + 1, "Bob", visitorType,
@@ -757,10 +757,10 @@ public class GalleryStateTest {
 	public void testDepartRoomNullName() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
-		long roomNumber = 101;
+		int roomNumber = 101;
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
 		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType,
@@ -772,10 +772,10 @@ public class GalleryStateTest {
 	public void testDepartRoomEmptyName() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
-		long roomNumber = 101;
+		int roomNumber = 101;
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
 		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType,
@@ -787,10 +787,10 @@ public class GalleryStateTest {
 	public void testDepartRoomInvalidName() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
-		long roomNumber = 101;
+		int roomNumber = 101;
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
 		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType,
@@ -802,15 +802,15 @@ public class GalleryStateTest {
 	public void testDepartRoomInvalidTime() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
-		long roomNumber = 101;
+		int roomNumber = 101;
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
 		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType,
 				roomNumber);
-		galleryState.departRoom(Long.MAX_VALUE, visitorName, visitorType,
+		galleryState.departRoom(Integer.MAX_VALUE, visitorName, visitorType,
 				roomNumber);
 	}
 
@@ -818,10 +818,10 @@ public class GalleryStateTest {
 	public void testDepartRoomNullVisitorType() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
-		long roomNumber = 101;
+		int roomNumber = 101;
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
 		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType,
@@ -833,7 +833,7 @@ public class GalleryStateTest {
 	public void testDepartRoomInvalidRoomNumber() {
 		GalleryState galleryState = new GalleryState();
 
-		long arrivalTime = 5;
+		int arrivalTime = 5;
 		String visitorName = "Bob";
 		VisitorType visitorType = VisitorType.GUEST;
 
@@ -863,7 +863,7 @@ public class GalleryStateTest {
 	public void testGalleryStateSerialization() throws IOException,
 			ClassNotFoundException {
 		GalleryState state = new GalleryState();
-		long time = 1;
+		int time = 1;
 		state.arriveAtBuilding(time++, "Bob", VisitorType.EMPLOYEE);
 		state.arriveAtRoom(time++, "Bob", VisitorType.EMPLOYEE, 101);
 		state.arriveAtBuilding(time++, "Jill", VisitorType.EMPLOYEE);
@@ -882,7 +882,7 @@ public class GalleryStateTest {
 	public void testGalleryStateSerializationWrongTime() throws IOException,
 			ClassNotFoundException {
 		GalleryState state = new GalleryState();
-		long time = 1;
+		int time = 1;
 		state.arriveAtBuilding(time++, "Bob", VisitorType.EMPLOYEE);
 		state.arriveAtRoom(time++, "Bob", VisitorType.EMPLOYEE, 101);
 		state.arriveAtBuilding(time++, "Jill", VisitorType.EMPLOYEE);

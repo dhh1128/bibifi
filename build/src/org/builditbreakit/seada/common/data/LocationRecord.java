@@ -5,12 +5,12 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 public final class LocationRecord implements Serializable {
-	private static final long serialVersionUID = 3368039496562510892L;
+	private static final long serialVersionUID = 5097760039407445632L;
 	
 	private transient final Location location;
-	private transient final long arrivalTime;
+	private transient final int arrivalTime;
 	
-	LocationRecord(long arrivalTime, Location location) {
+	LocationRecord(int arrivalTime, Location location) {
 		ValidationUtil.assertValidTimestamp(arrivalTime);
 		ValidationUtil.assertValidLocation(location);
 
@@ -22,7 +22,7 @@ public final class LocationRecord implements Serializable {
 		return location;
 	}
 	
-	public long getArrivalTime() {
+	public int getArrivalTime() {
 		return arrivalTime;
 	}
 
@@ -41,7 +41,7 @@ public final class LocationRecord implements Serializable {
 		private static final long serialVersionUID = 1009514308536095709L;
 		
 		private final Location location;
-		private final long arrivalTime;
+		private final int arrivalTime;
 		
 		SerializationProxy(LocationRecord record) {
 			this.location = record.location;

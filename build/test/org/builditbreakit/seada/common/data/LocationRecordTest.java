@@ -8,8 +8,8 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
 public class LocationRecordTest {
-	private static final long TIME_LOWER_BOUND = 0L;
-	private static final long TIME_UPPER_BOUND = 4294967295L;
+	private static final int TIME_LOWER_BOUND = 0;
+	private static final int TIME_UPPER_BOUND = 1073741823;
 
 	/* Constructor Tests */
 
@@ -86,7 +86,7 @@ public class LocationRecordTest {
 		stateField.setAccessible(true);
 		
 		// Set the field to something illegal
-		stateField.setLong(maliciousObj, TIME_LOWER_BOUND - 10);
+		stateField.setInt(maliciousObj, TIME_LOWER_BOUND - 10);
 		
 		return maliciousObj;
 	}

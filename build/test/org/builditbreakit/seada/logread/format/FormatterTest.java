@@ -13,7 +13,7 @@ public class FormatterTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		state = new GalleryState();
-		long time = 1;
+		int time = 1;
 		state.arriveAtBuilding(time++, "Jake", VisitorType.GUEST);
 		state.arriveAtRoom(time++, "Jake", VisitorType.GUEST, 102);
 		state.arriveAtBuilding(time++, "Bob", VisitorType.EMPLOYEE);
