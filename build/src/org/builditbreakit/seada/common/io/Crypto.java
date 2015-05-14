@@ -3,6 +3,7 @@ package org.builditbreakit.seada.common.io;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -16,7 +17,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public final class Crypto {
-	private static final int ITERATIONS = 5;
+	private static final int ITERATIONS = 1000;
 	private static final int KEY_SIZE = 128;
 	private static final byte[] SALT = { 0x43, (byte) 0x95, (byte) 0xB0, 0x3A,
 			0x47, 0x01, (byte) 0x8C, (byte) 0xC2, (byte) 0xDF, 0x27,
@@ -34,13 +35,27 @@ public final class Crypto {
 	public static final int SALT_SIZE = 20;
 	public static final int IV_SIZE = 16;
 	
-	private static volatile SecureRandom rand;
+	private static SecureRandom rand;
 	
 	private Crypto() {
 		super();
 	}
 	
+	/**  Less secure but fast */
 	public static Key generateBaseKey(String password) {
+		try {
+			MessageDigest hash = MessageDigest.getInstance("SHA-1");
+			byte[] hashedPassword = hash.digest(password.getBytes());
+			return new SecretKeySpec(hashedPassword, 0, 16,
+					"AES");
+		} catch (NoSuchAlgorithmException e) {
+			// Should not happen with AES/CBC/PKCS5Padding or SHA-1
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**  More secure but very slow, at least the first time */
+	public static Key generateStrongBaseKey(String password) {
 		try {
 			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(PBKDF_NAME);
 			PBEKeySpec pbeKeySpec = new PBEKeySpec(password.toCharArray(),
@@ -95,26 +110,19 @@ public final class Crypto {
 		return new SecretKeySpec(baseKey.getEncoded(), MAC_KEY_TYPE);
 	}
 
+	/** Not Thread Safe. Single-threaded apps only */
 	private static SecureRandom getRandom() {
-		SecureRandom result = rand;
-	    if (result == null) {
-	        synchronized(Crypto.class) {
-	            result = rand;
-	            if (result == null) {
-	            	try {
-						if (System.getProperty("os.name").startsWith("Windows")) {
-							rand = result = SecureRandom
-									.getInstance(BACKUP_PRNG_NAME);
-						} else {
-							rand = result = SecureRandom
-									.getInstance(NATIVE_PRNG_NAME);
-						}
-					} catch (NoSuchAlgorithmException e) {
-						throw new RuntimeException(e);
-					}
-	            }
-	        }
-	    }
-	    return result;
+		if (rand == null) {
+			try {
+				if (System.getProperty("os.name").startsWith("Windows")) {
+					rand = SecureRandom.getInstance(BACKUP_PRNG_NAME);
+				} else {
+					rand = SecureRandom.getInstance(NATIVE_PRNG_NAME);
+				}
+			} catch (NoSuchAlgorithmException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return rand;
 	}
 }
