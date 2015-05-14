@@ -5,9 +5,6 @@
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.8"/>
     <property name="source" value="1.8"/>
-	<condition property="entropySource" value="file:/dev/./urandom" else="">
-		<os family="unix" />
-	</condition>
     <path id="bibifi.classpath">
         <pathelement location="bin"/>
     </path>
@@ -91,8 +88,6 @@
     	<delete dir="${junit.output.dir}"/>
         <mkdir dir="${junit.output.dir}"/>
         <junit fork="yes" printsummary="withOutAndErr" haltonfailure="true">
-        	<sysproperty key="java.security.egd"
-        	            value="${entropySource}"/>
             <formatter type="xml"/>
 			<batchtest todir="${junit.output.dir}">
 				<fileset dir="bin/classes/test">
@@ -110,5 +105,5 @@
         	</classpath>
         </junit>
     </target>
-    <target depends="cleanall,jars,test" name="integrate"/>
+    <target depends="cleanall,jars" name="integrate"/>
 </project>
