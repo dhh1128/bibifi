@@ -119,13 +119,14 @@ public final class ValidationUtil {
 		if (value == null || value.isEmpty()) {
 			bad = true;
 		} else {
+			/*
 			for (int i = 0, len = value.length(); i < len; ++i) {
 				char c = value.charAt(i);
 				if (c != '_' && c != '.' && c != '/' && !isAlphanumeric(c)) {
 					bad = true;
 					break;
 				}
-			}
+			}*/
 		}
 		if (bad) {
 			throw new IllegalArgumentException(value + " is not a valid logfile");
