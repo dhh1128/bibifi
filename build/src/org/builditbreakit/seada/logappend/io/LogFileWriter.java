@@ -67,7 +67,6 @@ public final class LogFileWriter {
 		}
 
 		// Atomically overwrite existing file, if there is one, with new data
-		System.out.println(tempFile.length());
 		Files.move(tempFile.toPath(), file.toPath(),
 				StandardCopyOption.ATOMIC_MOVE);
 	}
