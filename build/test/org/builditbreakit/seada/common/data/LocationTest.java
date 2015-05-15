@@ -1,19 +1,18 @@
 package org.builditbreakit.seada.common.data;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 
 import org.junit.Test;
 
 public class LocationTest {
-	private static final long ROOM_LOWER_BOUND = 0L;
-	private static final long ROOM_UPPER_BOUND = 4294967295L;
+	public static final int ROOM_LOWER_BOUND = 0;
+	public static final int ROOM_UPPER_BOUND = 1073741823;
 
 	/* isOffPremises Tests */
 
@@ -80,7 +79,7 @@ public class LocationTest {
 
 	@Test
 	public void testRoomHasRoomNumber() {
-		assertEquals(Long.valueOf(101), Location.locationOfRoom(101)
+		assertEquals(Integer.valueOf(101), Location.locationOfRoom(101)
 				.getRoomNumber());
 	}
 
@@ -93,13 +92,13 @@ public class LocationTest {
 
 	@Test
 	public void testLocationOfRoomLowerBound() {
-		assertEquals(Long.valueOf(ROOM_LOWER_BOUND),
+		assertEquals(Integer.valueOf(ROOM_LOWER_BOUND),
 				Location.locationOfRoom(ROOM_LOWER_BOUND).getRoomNumber());
 	}
 
 	@Test
 	public void testLocationOfRoomUpperBound() {
-		assertEquals(Long.valueOf(ROOM_UPPER_BOUND),
+		assertEquals(Integer.valueOf(ROOM_UPPER_BOUND),
 				Location.locationOfRoom(ROOM_UPPER_BOUND).getRoomNumber());
 	}
 
@@ -123,63 +122,5 @@ public class LocationTest {
 		 */
 		EqualsVerifier.forClass(Location.class).usingGetClass()
 				.suppress(Warning.TRANSIENT_FIELDS).verify();
-	}
-
-	/* Serialization Tests */
-
-	@Test
-	public void testOffPremisesSerialization() throws IOException,
-			ClassNotFoundException {
-		testLocationSerialization(Location.OFF_PREMISES);
-	}
-
-	@Test
-	public void testInGallerySerialization() throws IOException,
-			ClassNotFoundException {
-		testLocationSerialization(Location.IN_GALLERY);
-	}
-
-	@Test
-	public void testInRoomSerialization() throws IOException,
-			ClassNotFoundException {
-		testLocationSerialization(Location.locationOfRoom(101));
-	}
-
-	/**
-	 * Checks that deserialized data is actually validated. Java's default
-	 * serialization will fail this test. This is a white-box test.
-	 */
-	@Test(expected = IllegalArgumentException.class)
-	public void testMaliciousSerialization() throws Exception {
-		testLocationSerialization(createMaliciousLocation());
-	}
-
-	@Test
-	public void testReadObjectFails() {
-		Location location = Location.locationOfRoom(101);
-		TestUtil.assertReadObjectFails(location);
-	}
-	
-	/* Private helpers */
-
-	private static void testLocationSerialization(Location location)
-			throws ClassNotFoundException, IOException {
-		TestUtil.testSerialization(location,
-				(result) -> EquivalenceUtil.assertEquivalent(location, result));
-	}
-	
-	private static Location createMaliciousLocation() throws Exception {
-		Class<Location> clazz = Location.class;
-		Constructor<Location> ctor = clazz.getDeclaredConstructor(Long.TYPE);
-		ctor.setAccessible(true);
-		Location maliciousObj = ctor.newInstance(ROOM_LOWER_BOUND + 1);
-		
-		Field stateField = clazz.getDeclaredField("state");
-		stateField.setAccessible(true);
-		
-		// Set the field to something illegal
-		stateField.setLong(maliciousObj, ROOM_LOWER_BOUND - 10);
-		
-		return maliciousObj;
 	}
 }

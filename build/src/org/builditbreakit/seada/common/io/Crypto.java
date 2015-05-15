@@ -1,101 +1,128 @@
 package org.builditbreakit.seada.common.io;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Arrays;
+import java.security.spec.InvalidKeySpecException;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public final class Crypto {
-	public static final String CIPHER_ALGORITHM = "AES/CBC/PKCS5Padding";
-	public static final String HASH_ALGORITHM = "SHA-1";
-	public static final String MAC_ALGORITHM = "HmacSHA1";
-	public static final String KEY_ALGORITHM = "AES";
-	public static final int KEY_BYTES = 16;
-	public static final int IV_BYTES = 16;
-	public static final int MAC_BYTES = 20;
-	public static final String STRING_ENCODING = "ASCII";
+	private static final int ITERATIONS = 1000;
+	private static final int KEY_SIZE = 128;
+	private static final byte[] SALT = { 0x43, (byte) 0x95, (byte) 0xB0, 0x3A,
+			0x47, 0x01, (byte) 0x8C, (byte) 0xC2, (byte) 0xDF, 0x27,
+			(byte) 0xF4, (byte) 0xE5, 0x6E, 0x40, 0x1D, 0x05, 0x76, 0x3F, 0x10,
+			0x1D };
+
+	public static final String PBKDF_NAME = "PBKDF2WithHmacSHA1";
+	public static final String CIPHER_KEY_TYPE = "AES";
+	public static final String CIPHER_NAME = "AES/CBC/PKCS5Padding";
+	public static final String NATIVE_PRNG_NAME = "NativePRNGNonBlocking";
+	public static final String BACKUP_PRNG_NAME = "SHA1PRNG";
+	public static final String MAC_NAME = "HmacSHA1";
+	public static final String MAC_KEY_TYPE = "HmacSHA1";
+	public static final int MAC_SIZE = 20;
+	public static final int SALT_SIZE = 20;
+	public static final int IV_SIZE = 16;
+	
+	private static SecureRandom rand;
 	
 	private Crypto() {
-		// Utility class
+		super();
 	}
-
-	public static Key genKey(String password) {
+	
+	/**  Less secure but fast */
+	public static Key generateBaseKey(String password) {
 		try {
-			MessageDigest hash = MessageDigest.getInstance(HASH_ALGORITHM);
-			byte[] hashedPassword = hash.digest(password
-					.getBytes(STRING_ENCODING));
-			return new SecretKeySpec(Arrays.copyOf(hashedPassword, KEY_BYTES),
-					KEY_ALGORITHM);
-		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+			MessageDigest hash = MessageDigest.getInstance("SHA-1");
+			byte[] hashedPassword = hash.digest(password.getBytes());
+			return new SecretKeySpec(hashedPassword, 0, 16,
+					"AES");
+		} catch (NoSuchAlgorithmException e) {
 			// Should not happen with AES/CBC/PKCS5Padding or SHA-1
-			throw new SecurityException(e);
+			throw new RuntimeException(e);
 		}
 	}
 
-	public static byte[] encrypt(Key key, byte[] bytes) {
+	/**  More secure but very slow, at least the first time */
+	public static Key generateStrongBaseKey(String password) {
 		try {
-			SecureRandom rand = SecureRandom.getInstanceStrong();
-			IvParameterSpec iv = new IvParameterSpec(
-					rand.generateSeed(IV_BYTES));
-
-			Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
-			cipher.init(Cipher.ENCRYPT_MODE, key, iv);
-
-			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-			byteStream.write(iv.getIV());
-			byteStream.write(cipher.doFinal(bytes));
-			
-			return byteStream.toByteArray();
-		} catch (IllegalBlockSizeException | BadPaddingException
-				| InvalidKeyException | NoSuchAlgorithmException
-				| NoSuchPaddingException | InvalidAlgorithmParameterException
-				| IOException e) {
-			throw new SecurityException(e);
+			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(PBKDF_NAME);
+			PBEKeySpec pbeKeySpec = new PBEKeySpec(password.toCharArray(),
+					SALT, ITERATIONS, KEY_SIZE);
+			return keyFactory.generateSecret(pbeKeySpec);
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+			throw new RuntimeException(e);
 		}
 	}
-
-	public static byte[] decrypt(Key key, byte[] ciphertext) {
+	
+	public static Mac getMac(Key key) {
 		try {
-			IvParameterSpec iv = new IvParameterSpec(ciphertext, 0, IV_BYTES);
-
-			Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
-			cipher.init(Cipher.DECRYPT_MODE, key, iv);
-
-			return cipher.doFinal(ciphertext, IV_BYTES, ciphertext.length
-					- IV_BYTES);
-		} catch (IllegalBlockSizeException | BadPaddingException
-				| InvalidKeyException | NoSuchAlgorithmException
-				| NoSuchPaddingException | InvalidAlgorithmParameterException e) {
-			throw new SecurityException(e);
-		}
-	}
-
-	public static byte[] mac(Key key, byte[] message) {
-		try {
-			Mac mac = Mac.getInstance(MAC_ALGORITHM);
-			mac.init(key);
-			return mac.doFinal(message);
+			Mac mac = Mac.getInstance(MAC_NAME);
+			mac.init(generateMacKey(key));
+			return mac;
 		} catch (NoSuchAlgorithmException | InvalidKeyException e) {
-			throw new SecurityException(e);
+			throw new RuntimeException(e);
 		}
 	}
+	
+	public static Cipher getEncryptingCipher(Key key, byte[] iv) {
+		return getCipher(key, iv, Cipher.ENCRYPT_MODE);
+	}
 
-	public static boolean authenticate(Key key, byte[] mac, byte[] ciphertext) {
-		byte[] currentMac = mac(key, ciphertext);
-		return Arrays.equals(mac, currentMac);
+	public static Cipher getDecryptingCipher(Key key, byte[] iv) {
+		return getCipher(key, iv, Cipher.DECRYPT_MODE);
+	}
+
+	public static byte[] generateIV() {
+		byte[] result = new byte[IV_SIZE];
+		getRandom().nextBytes(result);
+		return result;
+	}
+	
+	private static Cipher getCipher(Key key, byte[] iv, int mode) {
+		try {
+			Cipher cipher = Cipher.getInstance(CIPHER_NAME);
+			IvParameterSpec ivParam = new IvParameterSpec(iv);
+			cipher.init(mode, generateCipherKey(key), ivParam);
+			return cipher;
+		} catch (NoSuchPaddingException | NoSuchAlgorithmException
+				| InvalidKeyException | InvalidAlgorithmParameterException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private static Key generateCipherKey(Key baseKey) {
+		return new SecretKeySpec(baseKey.getEncoded(), CIPHER_KEY_TYPE);
+	}
+
+	private static Key generateMacKey(Key baseKey) {
+		return new SecretKeySpec(baseKey.getEncoded(), MAC_KEY_TYPE);
+	}
+
+	/** Not Thread Safe. Single-threaded apps only */
+	private static SecureRandom getRandom() {
+		if (rand == null) {
+			try {
+				if (System.getProperty("os.name").startsWith("Windows")) {
+					rand = SecureRandom.getInstance(BACKUP_PRNG_NAME);
+				} else {
+					rand = SecureRandom.getInstance(NATIVE_PRNG_NAME);
+				}
+			} catch (NoSuchAlgorithmException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return rand;
 	}
 }

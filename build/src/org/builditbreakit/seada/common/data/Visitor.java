@@ -103,7 +103,7 @@ public final class Visitor implements Serializable {
 		return builder.toString();
 	}
 
-	void moveTo(long timestamp, Location newLocation) {
+	void moveTo(int timestamp, Location newLocation) {
 		ValidationUtil.assertValidUINT32(timestamp, "Timestamp");
 		ValidationUtil.assertNotNull(newLocation, "Location");
 		
@@ -112,9 +112,9 @@ public final class Visitor implements Serializable {
 		history.add(new LocationRecord(timestamp, newLocation));
 	}
 
-	private void assertValidTime(long timestamp) {
+	private void assertValidTime(int timestamp) {
 		if (!history.isEmpty()) {
-			long lastTimestamp = history.get(history.size() - 1)
+			int lastTimestamp = history.get(history.size() - 1)
 					.getArrivalTime();
 			if (lastTimestamp >= timestamp) {
 				throw new IllegalStateException("New timestamp " + timestamp

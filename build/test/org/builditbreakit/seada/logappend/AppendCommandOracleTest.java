@@ -13,7 +13,7 @@ import org.builditbreakit.seada.common.data.VisitorType;
 import org.junit.Test;
 
 public class AppendCommandOracleTest {
-	private static long NO_ROOM = -1;
+	private static int NO_ROOM = -1;
 	private AppendCommand cmd;
 
 	@Test
@@ -183,7 +183,7 @@ public class AppendCommandOracleTest {
 	public void fuzzyArgumentOrderTest() {
 		final Random rand = new Random();
 		boolean useRoom = rand.nextBoolean();
-		long room = (useRoom) ? 101 : NO_ROOM;
+		int room = (useRoom) ? 101 : NO_ROOM;
 		
 		List<String> args = new LinkedList<>(Arrays.asList("-T 1", "-K secret",
 				"-A", "-E Fred", "log1"));
@@ -206,7 +206,7 @@ public class AppendCommandOracleTest {
 		}
 	}
 
-	private void assertCommand(String message, long expectedTime,
+	private void assertCommand(String message, int expectedTime,
 			String expectedToken, TransitionEvent expectedEvent,
 			VisitorType expectedVisitorType, String expectedName,
 			String expectedLogFile) {
@@ -214,10 +214,10 @@ public class AppendCommandOracleTest {
 				expectedVisitorType, expectedName, NO_ROOM, expectedLogFile);
 	}
 
-	private void assertCommand(String message, long expectedTime,
+	private void assertCommand(String message, int expectedTime,
 			String expectedToken, TransitionEvent expectedEvent,
 			VisitorType expectedVisitorType, String expectedName,
-			long expectedRoom, String expectedLogFile) {
+			int expectedRoom, String expectedLogFile) {
 		if (message != null && !message.isEmpty()) {
 			message += " | ";
 		} else {
@@ -235,16 +235,16 @@ public class AppendCommandOracleTest {
 		assertEquals(message + "Log File", expectedLogFile, cmd.getLogfile());
 	}
 
-	private void assertCommand(long expectedTime, String expectedToken,
+	private void assertCommand(int expectedTime, String expectedToken,
 			TransitionEvent expectedEvent, VisitorType expectedVisitorType,
 			String expectedName, String expectedLogFile) {
 		assertCommand(null, expectedTime, expectedToken, expectedEvent,
 				expectedVisitorType, expectedName, expectedLogFile);
 	}
 	
-	private void assertCommand(long expectedTime, String expectedToken,
+	private void assertCommand(int expectedTime, String expectedToken,
 			TransitionEvent expectedEvent, VisitorType expectedVisitorType,
-			String expectedName, long room, String expectedLogFile) {
+			String expectedName, int room, String expectedLogFile) {
 		assertCommand(null, expectedTime, expectedToken, expectedEvent,
 				expectedVisitorType, expectedName, room, expectedLogFile);
 	}

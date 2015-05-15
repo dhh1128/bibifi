@@ -23,7 +23,7 @@ public class ValidationUtilTest extends TestCase {
 	public void test_assertValidUINT32() {
 		ValidationUtil.assertValidUINT32(0, "x");
 		ValidationUtil.assertValidUINT32(100, "x");
-		ValidationUtil.assertValidUINT32(1024*1024*1024, "x");
+		ValidationUtil.assertValidUINT32(1024*1024, "x");
 		
 		try {
 			ValidationUtil.assertValidUINT32(-1, "x");
@@ -31,7 +31,7 @@ public class ValidationUtilTest extends TestCase {
 		} catch (IllegalArgumentException e) {
 		}
 		
-		long n = 1024L * 1024L * 1024L * 4;
+		int n = 1024 * 1024 * 1024;
 		ValidationUtil.assertValidUINT32(n - 1, "x");
 		try {
 			ValidationUtil.assertValidUINT32(n, "x");
@@ -41,7 +41,7 @@ public class ValidationUtilTest extends TestCase {
 	}
 	
 	public void testLeadingZeros() {
-		long n = Long.parseLong("0000000000000000000000000000000000001024");
+		int n = Integer.parseInt("0000000000000000000000000000000000001024");
 		assertEquals(1024L, n);
 	}
 	

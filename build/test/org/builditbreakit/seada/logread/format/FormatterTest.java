@@ -13,7 +13,7 @@ public class FormatterTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		state = new GalleryState();
-		long time = 1;
+		int time = 1;
 		state.arriveAtBuilding(time++, "Jake", VisitorType.GUEST);
 		state.arriveAtRoom(time++, "Jake", VisitorType.GUEST, 102);
 		state.arriveAtBuilding(time++, "Bob", VisitorType.EMPLOYEE);
@@ -59,8 +59,19 @@ public class FormatterTest {
 	public void testTimeOutput() {
 		String expected = "11\n";
 		
-		Formatter formatter = new VisitorTimeFormatter(state.getVisitor("Bob",
-				VisitorType.EMPLOYEE));
+		Formatter formatter = new VisitorTimeFormatter(state, state.getVisitor(
+				"Bob", VisitorType.EMPLOYEE));
+		String actual = formatter.format();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testTimeOutputWithUnrelatedEvents() {
+		String expected = "3\n";
+		
+		Formatter formatter = new VisitorTimeFormatter(state, state.getVisitor(
+				"John", VisitorType.GUEST));
 		String actual = formatter.format();
 
 		assertEquals(expected, actual);

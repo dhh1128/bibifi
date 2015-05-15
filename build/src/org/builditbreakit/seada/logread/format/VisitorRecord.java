@@ -4,17 +4,17 @@ import org.builditbreakit.seada.common.TransitionEvent;
 import org.builditbreakit.seada.common.data.Visitor;
 
 final class VisitorRecord implements Comparable<VisitorRecord> {
-	private final long time;
+	private final int time;
 	private final Visitor visitor;
 	private final TransitionEvent event;
 
-	public VisitorRecord(long time, Visitor visitor, TransitionEvent event) {
+	public VisitorRecord(int time, Visitor visitor, TransitionEvent event) {
 		this.time = time;
 		this.visitor = visitor;
 		this.event = event;
 	}
 
-	public long getTime() {
+	public int getTime() {
 		return time;
 	}
 
@@ -28,7 +28,7 @@ final class VisitorRecord implements Comparable<VisitorRecord> {
 
 	@Override
 	public int compareTo(VisitorRecord other) {
-		return Long.compare(this.time, other.time);
+		return Integer.compare(this.time, other.time);
 	}
 
 	@Override

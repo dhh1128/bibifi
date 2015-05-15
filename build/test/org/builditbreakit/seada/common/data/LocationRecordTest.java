@@ -1,6 +1,7 @@
 package org.builditbreakit.seada.common.data;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -8,8 +9,8 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
 public class LocationRecordTest {
-	private static final long TIME_LOWER_BOUND = 0L;
-	private static final long TIME_UPPER_BOUND = 4294967295L;
+	public static final int TIME_LOWER_BOUND = 0;
+	public static final int TIME_UPPER_BOUND = 1073741823;
 
 	/* Constructor Tests */
 
@@ -55,14 +56,41 @@ public class LocationRecordTest {
 		testLocationRecordSerialization(new LocationRecord(5,
 				Location.locationOfRoom(101)));
 	}
-	
+
+	@Test
+	public void testOffPremisesSerialization() throws IOException,
+			ClassNotFoundException {
+		testLocationSerialization(Location.OFF_PREMISES);
+	}
+
+	@Test
+	public void testInGallerySerialization() throws IOException,
+			ClassNotFoundException {
+		testLocationSerialization(Location.IN_GALLERY);
+	}
+
+	@Test
+	public void testInRoomSerialization() throws IOException,
+			ClassNotFoundException {
+		testLocationSerialization(Location.locationOfRoom(101));
+	}
+
 	/**
 	 * Checks that deserialized data is actually validated. Java's default
 	 * serialization will fail this test. This is a white-box test.
 	 */
-	@Test(expected = IllegalArgumentException.class)
-	public void testMaliciousSerialization() throws Exception {
+	@Test(expected = Exception.class)
+	public void testMaliciousRecordSerialization() throws Exception {
 		testLocationRecordSerialization(createMaliciousRecord());
+	}
+
+	/**
+	 * Checks that deserialized data is actually validated. Java's default
+	 * serialization will fail this test. This is a white-box test.
+	 */
+	@Test(expected = Exception.class)
+	public void testMaliciousLocationSerialization() throws Exception {
+		testLocationSerialization(createMaliciousLocation());
 	}
 
 	@Test
@@ -79,6 +107,11 @@ public class LocationRecordTest {
 				(result) -> EquivalenceUtil.assertEquivalent(record, result));
 	}
 	
+	private static void testLocationSerialization(Location location)
+			throws ClassNotFoundException, IOException {
+		testLocationRecordSerialization(new LocationRecord(5, location));
+	}
+
 	private static LocationRecord createMaliciousRecord() throws Exception {
 		LocationRecord maliciousObj = new LocationRecord(5, Location.IN_GALLERY);
 		
@@ -86,7 +119,22 @@ public class LocationRecordTest {
 		stateField.setAccessible(true);
 		
 		// Set the field to something illegal
-		stateField.setLong(maliciousObj, TIME_LOWER_BOUND - 10);
+		stateField.setInt(maliciousObj, TIME_LOWER_BOUND - 10);
+		
+		return maliciousObj;
+	}
+	
+	private static Location createMaliciousLocation() throws Exception {
+		Class<Location> clazz = Location.class;
+		Constructor<Location> ctor = clazz.getDeclaredConstructor(Integer.TYPE);
+		ctor.setAccessible(true);
+		Location maliciousObj = ctor.newInstance(LocationTest.ROOM_UPPER_BOUND + 1);
+		
+		Field stateField = clazz.getDeclaredField("state");
+		stateField.setAccessible(true);
+		
+		// Set the field to something illegal
+		stateField.setInt(maliciousObj, LocationTest.ROOM_LOWER_BOUND - 3);
 		
 		return maliciousObj;
 	}

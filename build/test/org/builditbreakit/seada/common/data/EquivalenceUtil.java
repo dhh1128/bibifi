@@ -46,8 +46,8 @@ public class EquivalenceUtil {
 			actual.getVisitors().forEach(
 					(visitor) -> actualVisitors.put(visitor.getName(), visitor));
 
-			assertEquals(message, expectedVisitors.keySet(),
-					actualVisitors.keySet());
+			assertEquals(buildDebugMessage(message, "Visitors"),
+					expectedVisitors.keySet(), actualVisitors.keySet());
 
 			expectedVisitors.values().forEach(
 					(expectedVisitor) -> {

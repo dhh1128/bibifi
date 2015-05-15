@@ -1,15 +1,21 @@
 package org.builditbreakit.seada.logappend.io;
 
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.security.Key;
+import java.util.zip.DeflaterOutputStream;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.Mac;
 
 import org.builditbreakit.seada.common.data.GalleryState;
 import org.builditbreakit.seada.common.io.Crypto;
@@ -21,32 +27,55 @@ public final class LogFileWriter {
 		this.file = file;
 	}
 
-	public void write(GalleryState galleryState, String password) throws IOException {
-		Key key = Crypto.genKey(password);
-		
-		byte[] plaintext = toBytes(galleryState);
-		
-		byte[] ciphertext = Crypto.encrypt(key, plaintext);
-		byte[] mac = Crypto.mac(key, ciphertext);
-		
-		File tempFile = File.createTempFile("bibifi-seada", "tmp");
+	public void write(GalleryState galleryState, String password)
+			throws IOException {
+		// Configure Crypto
+		Key key = Crypto.generateBaseKey(password);
+
+		byte[] iv = Crypto.generateIV();
+		Cipher encryptor = Crypto.getEncryptingCipher(key, iv);
+		Mac mac = Crypto.getMac(key);
+
+		// Create a temporary working file
+		File tempFile = File.createTempFile("bibifi-seada-", ".tmp");
 		tempFile.deleteOnExit();
-		try(BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(tempFile))) {
-			out.write(mac);
-			out.write(ciphertext);
-			out.flush();
+
+		// Chain output streams. Final result is:
+		// Serialization -> Compression -> Encryption|-> Buffer -> Disk
+		//                                           |-> Mac
+		try (FileOutputStream fos = new FileOutputStream(tempFile);
+				FileChannel fileChannel = fos.getChannel();
+				OutputStream plaintextOut = new BufferedOutputStream(fos);
+				ObjectOutputStream objectOut = buildOutputStreams(plaintextOut,
+						encryptor, mac)) {
+			// Make room for the mac in the header
+			fileChannel.position(Crypto.MAC_SIZE);
+
+			// Write the initialization vector
+			plaintextOut.write(iv);
+
+			// IV is not encrypted, so we add it to the mac manually
+			mac.update(iv);
+
+			// Write the data
+			objectOut.writeObject(galleryState);
 		}
 		
-		// TODO verify VM supports this option
-		Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.ATOMIC_MOVE);
+		// Go back and add the mac
+		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "rw")) {
+			raf.write(mac.doFinal());
+		}
+
+		// Atomically overwrite existing file, if there is one, with new data
+		Files.move(tempFile.toPath(), file.toPath(),
+				StandardCopyOption.ATOMIC_MOVE);
 	}
 
-	private static byte[] toBytes(GalleryState galleryState) throws IOException {
-		try (ByteArrayOutputStream b = new ByteArrayOutputStream();
-				ObjectOutput a = new ObjectOutputStream(b)) {
-			a.writeObject(galleryState);
-			a.flush();
-			return b.toByteArray();
-		}
+	private static ObjectOutputStream buildOutputStreams(
+			OutputStream plaintextOut, Cipher encryptor, Mac mac)
+			throws IOException {
+		return new ObjectOutputStream(new DeflaterOutputStream(
+				new CipherOutputStream(new MacBuildingOutputStream(
+						plaintextOut, mac), encryptor)));
 	}
 }

@@ -105,5 +105,5 @@
         	</classpath>
         </junit>
     </target>
-    <target depends="cleanall,jars,test" name="integrate"/>
+    <target depends="cleanall,jars" name="integrate"/>
 </project>

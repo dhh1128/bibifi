@@ -33,10 +33,10 @@ public class ConcurrentVisitorsFormatter implements Formatter {
 
 	@Override
 	public String format() {
-		Map<Long, SortedSet<VisitorRecord>> roomIndex = buildIndex(visitors);
+		Map<Integer, SortedSet<VisitorRecord>> roomIndex = buildIndex(visitors);
 
-		SortedSet<Long> results = new TreeSet<>();
-		for (Entry<Long, SortedSet<VisitorRecord>> entry : roomIndex.entrySet()) {
+		SortedSet<Integer> results = new TreeSet<>();
+		for (Entry<Integer, SortedSet<VisitorRecord>> entry : roomIndex.entrySet()) {
 			if (allVisitorsInRoom(entry.getValue())) {
 				results.add(entry.getKey());
 			}
@@ -64,9 +64,9 @@ public class ConcurrentVisitorsFormatter implements Formatter {
 		return false;
 	}
 
-	private static Map<Long, SortedSet<VisitorRecord>> buildIndex(
+	private static Map<Integer, SortedSet<VisitorRecord>> buildIndex(
 			Set<Visitor> visitors) {
-		Map<Long, SortedSet<VisitorRecord>> roomIndex = new HashMap<>();
+		Map<Integer, SortedSet<VisitorRecord>> roomIndex = new HashMap<>();
 		for (Visitor visitor : visitors) {
 			List<LocationRecord> history = visitor.getHistory();
 
@@ -90,8 +90,8 @@ public class ConcurrentVisitorsFormatter implements Formatter {
 	}
 
 	private static void addVisitRecord(
-			Map<Long, SortedSet<VisitorRecord>> roomIndex, long roomNumber,
-			long time, Visitor visitor, TransitionEvent event) {
+			Map<Integer, SortedSet<VisitorRecord>> roomIndex, int roomNumber,
+			int time, Visitor visitor, TransitionEvent event) {
 		SortedSet<VisitorRecord> roomVisitors = roomIndex.get(roomNumber);
 		if (roomVisitors == null) {
 			roomVisitors = new TreeSet<>();
