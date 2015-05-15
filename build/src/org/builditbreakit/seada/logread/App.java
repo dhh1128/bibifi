@@ -1,6 +1,9 @@
 package org.builditbreakit.seada.logread;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import org.builditbreakit.seada.common.data.GalleryState;
@@ -16,7 +19,9 @@ import org.builditbreakit.seada.logread.format.VisitorRoomFormatter;
 import org.builditbreakit.seada.logread.format.VisitorTimeFormatter;
 
 public class App {
+	
 	public static void main(String[] args) {
+		
 		try {
 			ReadCommand cmd = new ReadCommand();
 			cmd.parse(args);
@@ -25,20 +30,19 @@ public class App {
 			if (!file.exists()) {
 				switch (cmd.getStyle()) {
 				case DUMP_CURRENT_STATE:
-					System.out.println();
-					System.out.println();
+					harness.println();
+					harness.println();
 					break;
 				case TOTAL_TIME:
-					System.out.println(0);
+					harness.println(0);
 					break;
 				default:
 					break;
 				}
-				System.exit(0);
+				harness.exit(0);
 			}
 
-			LogFileReader reader = new LogFileReader(file);
-			GalleryState state = reader.read(cmd.getToken());
+			GalleryState state = harness.loadFile(file, cmd.getToken());
 
 			Formatter formatter;
 			switch (cmd.getStyle()) {
@@ -55,8 +59,8 @@ public class App {
 			case TOTAL_TIME:
 				Visitor timeVisitor = extractSingleVisitor(cmd, state);
 				if (timeVisitor == null) {
-					System.out.println(0);
-					System.exit(0);
+					harness.println(0);
+					harness.exit(0);
 				}
 				formatter = new VisitorTimeFormatter(timeVisitor);
 				break;
@@ -73,19 +77,83 @@ public class App {
 				throw new IllegalArgumentException("Bad style");
 			}
 
-			System.out.print(formatter.format());
-			System.out.flush();
-
-			System.exit(0);
+			harness.print(formatter.format());
+			harness.exit(0);
+			
 		} catch (IntegrityViolationException | SecurityException e) {
-			System.out.println("integrity violation");
-			System.exit(255);
+			logError(e, args);
+			harness.println("integrity violation");
+			harness.exit(255);
+			
+		} catch (Harness.ExitException e) {
+			// do nothing. This code path only happens in unit tests.
+			
 		} catch (Throwable e) {
-			System.out.println("invalid");
-			System.exit(255);
+			logError(e, args);
+			harness.println("invalid");
+			harness.exit(255);
 		}
 	}
-
+	
+	private static final boolean DEBUG_ERRORS = true; // disable before final build
+	
+	private static void logError(Throwable e, String[] args) {
+		if (DEBUG_ERRORS) {
+			try {
+				File tempFile = File.createTempFile("seada-logread", ".tmp");
+				FileOutputStream fout = new FileOutputStream(tempFile);
+				PrintWriter out = new PrintWriter(fout);
+				out.print("Error with");
+				for (String arg: args) {
+					out.print(' ');
+					out.print(arg);
+				}
+				out.println("\n");
+				e.printStackTrace(out);
+				out.println("\nclasspath = " + java.lang.System.getProperty("java.class.path"));
+				out.close();
+				fout.close();
+			} catch (IOException e1) {
+			}
+		}
+	}
+	
+	/**
+	 * I encapsulated these OS calls into a class so I can override them
+	 * in a test.
+	 */
+	static class Harness {
+		@SuppressWarnings("serial")
+		static class ExitException extends RuntimeException {}
+		
+		GalleryState loadFile(File f, String password) throws IOException {
+			LogFileReader reader = new LogFileReader(f);
+			return reader.read(password);
+		}
+	
+		void exit(int code) {
+			System.exit(code);
+		}
+		
+		void println() {
+			System.out.println();
+		}
+		
+		void println(String msg) {
+			System.out.println(msg);
+		}
+		
+		void println(int n) {
+			System.out.println(n);
+		}
+		
+		void print(String txt) {
+			System.out.print(txt);
+		}
+	}
+	
+	static Harness harness = new Harness();
+	
 	private static Visitor extractSingleVisitor(ReadCommand cmd,
 			GalleryState state) {
 		List<VisitorSpec> visitors = cmd.getVisitors();

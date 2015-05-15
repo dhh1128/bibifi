@@ -58,24 +58,26 @@ public class App {
 		}
 	}
 	
-	private static final boolean PRINT_ERRORS = true; // disable before final build
+	private static final boolean DEBUG_ERRORS = true; // disable before final build
 	
 	private static void logError(Throwable e, String[] args) {
-		try {
-			File tempFile = File.createTempFile("seada-logappend", ".tmp");
-			FileOutputStream fout = new FileOutputStream(tempFile);
-			PrintWriter out = new PrintWriter(fout);
-			out.print("Error with");
-			for (String arg: args) {
-				out.print(' ');
-				out.print(arg);
+		if (DEBUG_ERRORS) {
+			try {
+				File tempFile = File.createTempFile("seada-logappend", ".tmp");
+				FileOutputStream fout = new FileOutputStream(tempFile);
+				PrintWriter out = new PrintWriter(fout);
+				out.print("Error with");
+				for (String arg: args) {
+					out.print(' ');
+					out.print(arg);
+				}
+				out.println("\n");
+				e.printStackTrace(out);
+				out.println("\nclasspath = " + java.lang.System.getProperty("java.class.path"));
+				out.close();
+				fout.close();
+			} catch (IOException e1) {
 			}
-			out.println("\n");
-			e.printStackTrace(out);
-			out.println("\nclasspath = " + java.lang.System.getProperty("java.class.path"));
-			out.close();
-			fout.close();
-		} catch (IOException e1) {
 		}
 	}
 	

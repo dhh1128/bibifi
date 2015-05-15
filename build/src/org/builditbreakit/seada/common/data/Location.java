@@ -40,7 +40,6 @@ public final class Location {
 	 */
 	private static final Map<Integer, Location> cache = new HashMap<>();
 
-
 	
 	private final int state;
 

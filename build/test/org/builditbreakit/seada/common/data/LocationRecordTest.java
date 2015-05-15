@@ -134,7 +134,7 @@ public class LocationRecordTest {
 		stateField.setAccessible(true);
 		
 		// Set the field to something illegal
-		stateField.setInt(maliciousObj, LocationTest.ROOM_UPPER_BOUND - 3);
+		stateField.setInt(maliciousObj, LocationTest.ROOM_LOWER_BOUND - 3);
 		
 		return maliciousObj;
 	}

@@ -152,7 +152,7 @@ public class GalleryState implements Serializable {
 		ValidationUtil.assertValidUINT32(timestamp, "Timestamp");
 		if (timestamp <= lastTimestamp) {
 			throw new IllegalStateException("Timestamp " + timestamp
-					+ " is prior to the current timestamp: " + lastTimestamp);
+					+ " does not follow the current timestamp: " + lastTimestamp);
 		}
 	}
 
