@@ -102,7 +102,7 @@ public class AppTest extends TestCase {
 		harness.fillGallery(20);
 		runCommand("-K secret -T -G Bob " + osIndependentPath(existingLogFile));
 		assertEquals(0, harness.exitCode);
-		assertEquals("15", harness.stdout.toString().trim());
+		assertEquals("18", harness.stdout.toString().trim());
 	}
 	
 	@Test

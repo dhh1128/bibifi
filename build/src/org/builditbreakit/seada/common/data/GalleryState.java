@@ -70,6 +70,10 @@ public class GalleryState implements Serializable {
 		return visitor;
 	}
 	
+	public int getLastTimestamp() {
+		return lastTimestamp;
+	}
+	
 	public boolean containsVisitor(String name, VisitorType visitorType) {
 		Visitor visitor = visitorMap.get(name);
 		if (visitor == null) {

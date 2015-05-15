@@ -62,7 +62,7 @@ public class App {
 					harness.println(0);
 					harness.exit(0);
 				}
-				formatter = new VisitorTimeFormatter(timeVisitor);
+				formatter = new VisitorTimeFormatter(state, timeVisitor);
 				break;
 			case ROOMS_OCCUPIED_TOGETHER:
 				ConcurrentVisitorsFormatter occupedRoomsFrmt = new ConcurrentVisitorsFormatter(

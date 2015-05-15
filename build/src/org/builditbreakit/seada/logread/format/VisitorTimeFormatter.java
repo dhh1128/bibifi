@@ -2,6 +2,7 @@ package org.builditbreakit.seada.logread.format;
 
 import java.util.List;
 
+import org.builditbreakit.seada.common.data.GalleryState;
 import org.builditbreakit.seada.common.data.Location;
 import org.builditbreakit.seada.common.data.LocationRecord;
 import org.builditbreakit.seada.common.data.ValidationUtil;
@@ -9,10 +10,12 @@ import org.builditbreakit.seada.common.data.Visitor;
 import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
 
 public class VisitorTimeFormatter implements Formatter {
+	private final GalleryState state;
 	private final List<LocationRecord> history;
 
-	public VisitorTimeFormatter(Visitor visitor) {
+	public VisitorTimeFormatter(GalleryState state, Visitor visitor) {
 		ValidationUtil.assertNotNull(visitor, "Visitor");
+		this.state = state;
 		this.history = visitor.getHistory();
 	}
 
@@ -33,6 +36,9 @@ public class VisitorTimeFormatter implements Formatter {
 			}
 			lastTime = record.getArrivalTime();
 			lastLocation = record.getLocation();
+		}
+		if(!lastLocation.isOffPremises()) {
+			totalTime += (state.getLastTimestamp() - lastTime);
 		}
 		
 		// Add extra newline to match oracle output
