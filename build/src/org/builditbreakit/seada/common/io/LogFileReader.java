@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.zip.InflaterInputStream;
@@ -17,6 +16,8 @@ import javax.crypto.Mac;
 
 import org.builditbreakit.seada.common.data.GalleryState;
 import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
+
+import com.esotericsoftware.kryo.io.Input;
 
 public class LogFileReader {
 	private File file;
@@ -75,13 +76,11 @@ public class LogFileReader {
 
 			// Chain input streams. Final result is:
 			// Disk -> Buffer -> Decryption -> Decompression -> Deserialization
-			try (ObjectInputStream objectIn = new ObjectInputStream(
-					new InflaterInputStream(new CipherInputStream(ciphertextIn,
-							decryptor)))) {
+			try (Input objectIn = new Input(new InflaterInputStream(
+					new CipherInputStream(ciphertextIn, decryptor)))) {
 				// Read the data and return the gallery state
-				return (GalleryState) objectIn.readObject();
-			} catch (ClassNotFoundException e) {
-				throw new IntegrityViolationException("Unknown Object");
+				return KryoInstance.getInstance().readObject(objectIn,
+						GalleryState.class);
 			}
 		}
 	}

@@ -93,12 +93,6 @@ public class LocationRecordTest {
 		testLocationSerialization(createMaliciousLocation());
 	}
 
-	@Test
-	public void testReadObjectFails() {
-		LocationRecord record = new LocationRecord(5, Location.OFF_PREMISES);
-		TestUtil.assertReadObjectFails(record);
-	}
-
 	/* Private helpers */
 
 	private static void testLocationRecordSerialization(LocationRecord record)

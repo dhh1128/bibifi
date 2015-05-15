@@ -1,14 +1,19 @@
 package org.builditbreakit.seada.common.data;
 
-import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class Visitor implements Serializable {
-	private static final long serialVersionUID = -8422758600278331225L;
+import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
+
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.Serializer;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.CollectionSerializer;
+
+public final class Visitor {
 	
 	private transient final String name;
 	private transient final VisitorType visitorType;
@@ -144,32 +149,39 @@ public final class Visitor implements Serializable {
 				.append(" to state ").append(newLocation);
 		return builder.toString();
 	}
-	
-	
-	private static class SerializationProxy implements Serializable {
-		private static final long serialVersionUID = -6377133384230120340L;
-		
-		private final String name;
-		private final VisitorType visitorType;
-		private final List<LocationRecord> history;
-		
-		SerializationProxy(Visitor visitor) {
-			this.name = visitor.name;
-			this.visitorType = visitor.visitorType;
-			this.history = visitor.history;
+
+	private static final Serializer<Visitor> serializer = new VisitorSerializer();
+	public static Serializer<Visitor> getSerializer() {
+		return serializer;
+	}
+
+	private static class VisitorSerializer extends
+			Serializer<Visitor> {
+		private static CollectionSerializer historySerializer = new CollectionSerializer(
+				LocationRecord.class, LocationRecord.getSerializer(), false);
+
+		public VisitorSerializer() {
+			super(true);
 		}
-		
-		private Object readResolve() {
+
+		@Override
+		public Visitor read(Kryo kryo, Input in, Class<Visitor> clazz) {
+			String name = kryo.readObject(in, String.class);
+			VisitorType visitorType = kryo.readObject(in, VisitorType.class);
+			@SuppressWarnings("unchecked")
+			List<LocationRecord> history = kryo.readObject(in, ArrayList.class,
+					historySerializer);
 			return new Visitor(name, visitorType, history);
 		}
-	}
 
-	private Object writeReplace() {
-		return new SerializationProxy(this);
-	}
-
-	private void readObject(ObjectInputStream ois)
-			throws InvalidObjectException {
-		throw new InvalidObjectException("Proxy required");
+		@Override
+		public void write(Kryo kryo, Output out, Visitor object) {
+			if(object == null) {
+				throw new IntegrityViolationException();
+			}
+			kryo.writeObject(out, object.name);
+			kryo.writeObject(out, object.visitorType);
+			kryo.writeObject(out, object.history, historySerializer);
+		}
 	}
 }

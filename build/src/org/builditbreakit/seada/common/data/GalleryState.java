@@ -1,8 +1,5 @@
 package org.builditbreakit.seada.common.data;
 
-import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,9 +9,13 @@ import java.util.Map;
 
 import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
 
-public class GalleryState implements Serializable {
-	private static final long serialVersionUID = 6928424752159836102L;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.Serializer;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.CollectionSerializer;
 
+public class GalleryState {
 	private transient int lastTimestamp = 0;
 	private transient final Map<String, Visitor> visitorMap;
 
@@ -62,8 +63,7 @@ public class GalleryState implements Serializable {
 
 		Visitor visitor = visitorMap.get(name);
 		if (visitor == null) {
-			// TODO Message
-			throw new IllegalStateException();
+			throw new IllegalStateException("Visitor does not exist");
 		}
 
 		assertMatchingVisitorType(visitor, visitorType);
@@ -97,8 +97,7 @@ public class GalleryState implements Serializable {
 		}
 
 		if(!visitor.getCurrentLocation().isOffPremises()) {
-			// TODO Message
-			throw new IllegalStateException();
+			throw new IllegalStateException("Visitor is already in the gallery");
 		}
 		visitor.moveTo(timestamp, Location.IN_GALLERY);
 		lastTimestamp = timestamp;
@@ -113,8 +112,7 @@ public class GalleryState implements Serializable {
 
 		Visitor visitor = getVisitor(name, visitorType);
 		if (visitor == null) {
-			// TODO Message
-			throw new IllegalStateException();
+			throw new IllegalStateException("Visitor does not exist");
 		}
 		
 		visitor.moveTo(timestamp, Location.locationOfRoom(roomNumber));
@@ -130,8 +128,7 @@ public class GalleryState implements Serializable {
 		Visitor visitor = getVisitor(name, visitorType);
 		Location currentLocation = visitor.getCurrentLocation();
 		if (!currentLocation.equals(Location.locationOfRoom(roomNumber))) {
-			// TODO Message
-			throw new IllegalStateException();
+			throw new IllegalStateException("Visitor is not in that room");
 		}
 		visitor.moveTo(timestamp, Location.IN_GALLERY);
 		lastTimestamp = timestamp;
@@ -145,8 +142,7 @@ public class GalleryState implements Serializable {
 		Visitor visitor = getVisitor(name, visitorType);
 		Location currentLocation = visitor.getCurrentLocation();
 		if (!currentLocation.isInGallery()) {
-			// TODO Message
-			throw new IllegalStateException();
+			throw new IllegalStateException("Visitor is not in the lobby");
 		}
 		visitor.moveTo(timestamp, Location.OFF_PREMISES);
 		lastTimestamp = timestamp;
@@ -163,32 +159,32 @@ public class GalleryState implements Serializable {
 	private void assertMatchingVisitorType(Visitor visitor,
 			VisitorType visitorType) {
 		if (visitor.getVisitorType() != visitorType) {
-			// TODO Message
-			throw new IllegalStateException();
+			throw new IllegalStateException("Incorrect visitor type");
 		}
 	}
+	
+	private static final Serializer<GalleryState> serializer = new GalleryStateSerializer();
+	public static Serializer<GalleryState> getSerializer() {
+		return serializer;
+	}
 
-	private static class SerializationProxy implements Serializable {
-		private static final long serialVersionUID = 8768461134732556971L;
+	private static class GalleryStateSerializer extends
+			Serializer<GalleryState> {
+		private static CollectionSerializer visitorsSerializer = new CollectionSerializer(
+				Visitor.class, Visitor.getSerializer(), false);
 
-		private final Collection<Visitor> visitors;
-
-		SerializationProxy(GalleryState galleryState) {
-			// Need to make a copy. Map values are not serializable
-			this.visitors = new ArrayList<>(galleryState.visitorMap.values());
-		}
-
-		private Object readResolve() {
+		@Override
+		public GalleryState read(Kryo kryo, Input in, Class<GalleryState> clazz) {
+			@SuppressWarnings("unchecked")
+			Collection<Visitor> visitors = kryo.readObject(in,
+					ArrayList.class, visitorsSerializer);
 			return new GalleryState(visitors);
 		}
-	}
 
-	private Object writeReplace() {
-		return new SerializationProxy(this);
-	}
-
-	private void readObject(ObjectInputStream ois)
-			throws InvalidObjectException {
-		throw new InvalidObjectException("Proxy required");
+		@Override
+		public void write(Kryo kryo, Output out, GalleryState object) {
+			Collection<Visitor> visitors = object.visitorMap.values();
+			kryo.writeObject(out, visitors, visitorsSerializer);
+		}
 	}
 }

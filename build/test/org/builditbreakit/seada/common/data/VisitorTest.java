@@ -134,12 +134,6 @@ public class VisitorTest {
 		testVisitorSerialization(new Visitor("Bob", VisitorType.EMPLOYEE));
 	}
 
-	@Test
-	public void testReadObjectFails() {
-		Visitor visitor = new Visitor("Bob", VisitorType.EMPLOYEE);
-		TestUtil.assertReadObjectFails(visitor);
-	}
-
 	/* Serialization White-box Tests */
 
 	@Test

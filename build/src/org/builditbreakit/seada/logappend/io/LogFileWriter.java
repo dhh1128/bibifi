@@ -4,7 +4,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
@@ -19,6 +18,9 @@ import javax.crypto.Mac;
 
 import org.builditbreakit.seada.common.data.GalleryState;
 import org.builditbreakit.seada.common.io.Crypto;
+import org.builditbreakit.seada.common.io.KryoInstance;
+
+import com.esotericsoftware.kryo.io.Output;
 
 public final class LogFileWriter {
 	private File file;
@@ -46,7 +48,7 @@ public final class LogFileWriter {
 		try (FileOutputStream fos = new FileOutputStream(tempFile);
 				FileChannel fileChannel = fos.getChannel();
 				OutputStream plaintextOut = new BufferedOutputStream(fos);
-				ObjectOutputStream objectOut = buildOutputStreams(plaintextOut,
+				Output objectOut = buildOutputStreams(plaintextOut,
 						encryptor, mac)) {
 			// Make room for the mac in the header
 			fileChannel.position(Crypto.MAC_SIZE);
@@ -58,7 +60,8 @@ public final class LogFileWriter {
 			mac.update(iv);
 
 			// Write the data
-			objectOut.writeObject(galleryState);
+			KryoInstance.getInstance().writeObject(objectOut, galleryState);
+			objectOut.flush();
 		}
 		
 		// Go back and add the mac
@@ -71,11 +74,9 @@ public final class LogFileWriter {
 				StandardCopyOption.ATOMIC_MOVE);
 	}
 
-	private static ObjectOutputStream buildOutputStreams(
-			OutputStream plaintextOut, Cipher encryptor, Mac mac)
-			throws IOException {
-		return new ObjectOutputStream(new DeflaterOutputStream(
-				new CipherOutputStream(new MacBuildingOutputStream(
-						plaintextOut, mac), encryptor)));
+	private static Output buildOutputStreams(OutputStream plaintextOut,
+			Cipher encryptor, Mac mac) throws IOException {
+		return new Output(new DeflaterOutputStream(new CipherOutputStream(
+				new MacBuildingOutputStream(plaintextOut, mac), encryptor)));
 	}
 }
