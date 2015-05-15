@@ -102,7 +102,7 @@ public class App {
 			
 		} catch (IntegrityViolationException | SecurityException e) {
 			logError(e, args);
-			System.out.println("integrity violation");
+			System.out.println("invalid");
 			System.exit(exitCodeForErrors);
 		} catch (Throwable e) {
 			logError(e, args);
