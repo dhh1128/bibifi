@@ -4,13 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
+import junit.framework.TestCase;
+
 import org.builditbreakit.seada.common.data.GalleryState;
 import org.builditbreakit.seada.common.data.VisitorType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import junit.framework.TestCase;
 
 public class AppTest extends TestCase {
 	
@@ -76,7 +76,7 @@ public class AppTest extends TestCase {
 	@Test
 	public void testIntegrityViolation() {
 		harness.pretendFileIsCorrupt = true;
-		runCommand("-K secret -I -E Alice -G Bob " + existingLogFile.getPath());
+		runCommand("-K secret -I -E Alice -G Bob " + osIndependentPath(existingLogFile));
 		assertEquals(255, harness.exitCode);
 		assertEquals("integrity violation", harness.stdout.toString().trim());
 	}
@@ -84,7 +84,7 @@ public class AppTest extends TestCase {
 	@Test
 	public void test_DUMP_CURRENT_STATE_15() {
 		harness.fillGallery(15);
-		runCommand("-K secret -S " + existingLogFile.getPath());
+		runCommand("-K secret -S " + osIndependentPath(existingLogFile));
 		assertEquals(0, harness.exitCode);
 		assertEquals("Alice\nBob,Fred,Mary\n\n204:Mary\n400:Alice", harness.stdout.toString());
 	}
@@ -92,7 +92,7 @@ public class AppTest extends TestCase {
 	@Test
 	public void test_DUMP_CURRENT_STATE_30() {
 		harness.fillGallery(30);
-		runCommand("-K secret -S " + existingLogFile.getPath());
+		runCommand("-K secret -S " + osIndependentPath(existingLogFile));
 		assertEquals(0, harness.exitCode);
 		assertEquals("Alice\nFred,Mary\n\n204:Mary\n301:Alice", harness.stdout.toString());
 	}
@@ -100,7 +100,7 @@ public class AppTest extends TestCase {
 	@Test
 	public void test_TOTAL_TIME_Bob_at_20() {
 		harness.fillGallery(20);
-		runCommand("-K secret -T -G Bob " + existingLogFile.getPath());
+		runCommand("-K secret -T -G Bob " + osIndependentPath(existingLogFile));
 		assertEquals(0, harness.exitCode);
 		assertEquals("15", harness.stdout.toString().trim());
 	}
@@ -108,7 +108,7 @@ public class AppTest extends TestCase {
 	@Test
 	public void test_ENTERED_ROOMS_Bob_at_25() {
 		harness.fillGallery(25);
-		runCommand("-K secret -R -G Bob " + existingLogFile.getPath());
+		runCommand("-K secret -R -G Bob " + osIndependentPath(existingLogFile));
 		assertEquals(0, harness.exitCode);
 		assertEquals("101,102,103,301", harness.stdout.toString().trim());
 	}
@@ -116,7 +116,7 @@ public class AppTest extends TestCase {
 	@Test
 	public void test_ROOMS_OCCUPIED_TOGETHER_Bob_and_Alice() {
 		harness.fillGallery(30);
-		runCommand("-K secret -I -G Bob -E Alice " + existingLogFile.getPath());
+		runCommand("-K secret -I -G Bob -E Alice " + osIndependentPath(existingLogFile));
 		assertEquals(0, harness.exitCode);
 		assertEquals("301", harness.stdout.toString().trim());
 	}
@@ -124,9 +124,18 @@ public class AppTest extends TestCase {
 	@Test
 	public void test_ROOMS_OCCUPIED_TOGETHER_Bob_and_Mary() {
 		harness.fillGallery(30);
-		runCommand("-K secret -I -G Bob -G Mary " + existingLogFile.getPath());
+		runCommand("-K secret -I -G Bob -G Mary " + osIndependentPath(existingLogFile));
 		assertEquals(0, harness.exitCode);
 		assertEquals("", harness.stdout.toString().trim());
+	}
+	
+	private String osIndependentPath(File file) {
+		String osPath = file.getPath();
+		if(osPath.contains("\\")) {
+			osPath = osPath.replaceAll("\\\\", "/");
+			osPath = osPath.replaceAll("[A-Z]:", "");
+		}
+		return osPath;
 	}
 	
 	static class MockHarness extends App.Harness {
@@ -203,6 +212,4 @@ public class AppTest extends TestCase {
 		}
 		
 	}
-	
-
 }

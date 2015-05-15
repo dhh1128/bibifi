@@ -36,7 +36,7 @@ public class LogFileWriterTest {
 	}
 
 	private void testSerialization(GalleryState galleryState) throws IOException {
-		printEntropySource();
+		//printEntropySource();
 		final double millisToNanos = 1000000.0;
 		
 		String password = "secret";
@@ -60,6 +60,7 @@ public class LogFileWriterTest {
 		System.out.println();
 	}
 
+	@SuppressWarnings("unused")
 	private static void printEntropySource() {
 		System.out.println(System.getProperty("java.security.egd"));
 	}

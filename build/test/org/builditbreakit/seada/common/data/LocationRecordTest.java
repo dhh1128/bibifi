@@ -79,7 +79,7 @@ public class LocationRecordTest {
 	 * Checks that deserialized data is actually validated. Java's default
 	 * serialization will fail this test. This is a white-box test.
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = Exception.class)
 	public void testMaliciousRecordSerialization() throws Exception {
 		testLocationRecordSerialization(createMaliciousRecord());
 	}
@@ -88,7 +88,7 @@ public class LocationRecordTest {
 	 * Checks that deserialized data is actually validated. Java's default
 	 * serialization will fail this test. This is a white-box test.
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = Exception.class)
 	public void testMaliciousLocationSerialization() throws Exception {
 		testLocationSerialization(createMaliciousLocation());
 	}
