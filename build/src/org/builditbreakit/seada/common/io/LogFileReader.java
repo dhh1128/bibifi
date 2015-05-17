@@ -68,7 +68,9 @@ public class LogFileReader {
 
 			// Read the initialization vector
 			byte[] iv = new byte[Crypto.IV_SIZE];
-			ciphertextIn.read(iv);
+			if(ciphertextIn.read(iv) != iv.length) {
+				throw new IntegrityViolationException("Unexpected EOF");
+			}
 
 			// Configure crypto
 			Cipher decryptor = Crypto.getDecryptingCipher(key, iv);
