@@ -6,34 +6,25 @@ import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
 
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public final class Crypto {
-	private static final int ITERATIONS = 1000;
-	private static final int KEY_SIZE = 128;
-	private static final byte[] SALT = { 0x43, (byte) 0x95, (byte) 0xB0, 0x3A,
-			0x47, 0x01, (byte) 0x8C, (byte) 0xC2, (byte) 0xDF, 0x27,
-			(byte) 0xF4, (byte) 0xE5, 0x6E, 0x40, 0x1D, 0x05, 0x76, 0x3F, 0x10,
-			0x1D };
-
-	public static final String PBKDF_NAME = "PBKDF2WithHmacSHA1";
-	public static final String CIPHER_KEY_TYPE = "AES";
-	public static final String CIPHER_NAME = "AES/CBC/PKCS5Padding";
+	private static final int KEY_SIZE = 16;
+	public static final String CIPHER_KEY_TYPE = "Blowfish";
+	public static final String KEY_HASH_NAME = "SHA-1";
+	
+	public static final String CIPHER_NAME = "Blowfish/CBC/PKCS5Padding";
 	public static final String NATIVE_PRNG_NAME = "NativePRNGNonBlocking";
 	public static final String BACKUP_PRNG_NAME = "SHA1PRNG";
 	public static final String MAC_NAME = "HmacSHA1";
 	public static final String MAC_KEY_TYPE = "HmacSHA1";
 	public static final int MAC_SIZE = 20;
-	public static final int SALT_SIZE = 20;
-	public static final int IV_SIZE = 16;
+	public static final int IV_SIZE = 8;
 	
 	private static SecureRandom rand;
 	
@@ -41,27 +32,13 @@ public final class Crypto {
 		super();
 	}
 	
-	/**  Less secure but fast */
 	public static Key generateBaseKey(String password) {
 		try {
-			MessageDigest hash = MessageDigest.getInstance("SHA-1");
+			MessageDigest hash = MessageDigest.getInstance(KEY_HASH_NAME);
 			byte[] hashedPassword = hash.digest(password.getBytes());
-			return new SecretKeySpec(hashedPassword, 0, 16,
-					"AES");
+			return new SecretKeySpec(hashedPassword, 0, KEY_SIZE,
+					CIPHER_KEY_TYPE);
 		} catch (NoSuchAlgorithmException e) {
-			// Should not happen with AES/CBC/PKCS5Padding or SHA-1
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**  More secure but very slow, at least the first time */
-	public static Key generateStrongBaseKey(String password) {
-		try {
-			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(PBKDF_NAME);
-			PBEKeySpec pbeKeySpec = new PBEKeySpec(password.toCharArray(),
-					SALT, ITERATIONS, KEY_SIZE);
-			return keyFactory.generateSecret(pbeKeySpec);
-		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 			throw new RuntimeException(e);
 		}
 	}

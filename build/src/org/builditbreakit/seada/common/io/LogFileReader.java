@@ -82,8 +82,10 @@ public class LogFileReader {
 							decryptor)))) {
 				// Read the data and return the gallery state
 				return (GalleryState) objectIn.readObject();
-			} catch (ClassNotFoundException e) {
-				throw new IntegrityViolationException("Unknown Object");
+			} catch(FileNotFoundException e) {
+				throw e;
+			} catch (ClassNotFoundException | IOException e) {
+				throw new IntegrityViolationException(e);
 			}
 		}
 	}
