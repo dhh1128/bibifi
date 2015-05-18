@@ -7,38 +7,37 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.security.Key;
 import java.util.Arrays;
 import java.util.zip.InflaterInputStream;
 
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.Mac;
-
+import org.bouncycastle.crypto.BufferedBlockCipher;
+import org.bouncycastle.crypto.Mac;
 import org.builditbreakit.seada.common.data.GalleryState;
 import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
 
 public class LogFileReader {
 	private File file;
+	private int macSize;
 
 	public LogFileReader(File file) {
 		this.file = file;
 	}
 
 	public GalleryState read(String password) throws IOException {
-		Key key = Crypto.generateBaseKey(password);
+		byte[] key = Crypto.generateKey(password);
 		assertAuthenticLogFile(key);
 		return decryptGalleryState(key);
 	}
 
-	private void assertAuthenticLogFile(Key key) throws IOException,
+	private void assertAuthenticLogFile(byte[] key) throws IOException,
 			FileNotFoundException {
 		// Configure crypto
 		Mac mac = Crypto.getMac(key);
 
 		try (InputStream in = new BufferedInputStream(new FileInputStream(file))) {
 			// Read in the file's claimed mac
-			byte[] expectedMac = new byte[Crypto.MAC_SIZE];
+			macSize = mac.getMacSize();
+			byte[] expectedMac = new byte[macSize];
 			if (in.read(expectedMac) != expectedMac.length) {
 				throw new IntegrityViolationException("Unexpected EOF");
 			}
@@ -49,7 +48,8 @@ public class LogFileReader {
 			while ((readBytes = in.read(buf)) != -1) {
 				mac.update(buf, 0, readBytes);
 			}
-			byte[] actualMac = mac.doFinal();
+			byte[] actualMac = new byte[macSize];
+			mac.doFinal(actualMac, 0);
 
 			// Check if the mac is authentic
 			if (!Arrays.equals(expectedMac, actualMac)) {
@@ -58,13 +58,13 @@ public class LogFileReader {
 		}
 	}
 
-	private GalleryState decryptGalleryState(Key key) throws IOException,
+	private GalleryState decryptGalleryState(byte[] key) throws IOException,
 			FileNotFoundException {
 		// Open the file
 		try (InputStream ciphertextIn = new BufferedInputStream(
 				new FileInputStream(file))) {
 			// Skip the mac
-			ciphertextIn.skip(Crypto.MAC_SIZE);
+			ciphertextIn.skip(macSize);
 
 			// Read the initialization vector
 			byte[] iv = new byte[Crypto.IV_SIZE];
@@ -73,16 +73,17 @@ public class LogFileReader {
 			}
 
 			// Configure crypto
-			Cipher decryptor = Crypto.getDecryptingCipher(key, iv);
+			BufferedBlockCipher decryptor = Crypto.getDecryptingCipher(key, iv);
 
 			// Chain input streams. Final result is:
 			// Disk -> Buffer -> Decryption -> Decompression -> Deserialization
 			try (ObjectInputStream objectIn = new ObjectInputStream(
-					new InflaterInputStream(new CipherInputStream(ciphertextIn,
-							decryptor)))) {
+					new InflaterInputStream(
+							new org.bouncycastle.crypto.io.CipherInputStream(
+									ciphertextIn, decryptor)))) {
 				// Read the data and return the gallery state
 				return (GalleryState) objectIn.readObject();
-			} catch(FileNotFoundException e) {
+			} catch (FileNotFoundException e) {
 				throw e;
 			} catch (ClassNotFoundException | IOException e) {
 				throw new IntegrityViolationException(e);
