@@ -68,7 +68,9 @@ public class LogFileReader {
 
 			// Read the initialization vector
 			byte[] iv = new byte[Crypto.IV_SIZE];
-			ciphertextIn.read(iv);
+			if(ciphertextIn.read(iv) != iv.length) {
+				throw new IntegrityViolationException("Unexpected EOF");
+			}
 
 			// Configure crypto
 			Cipher decryptor = Crypto.getDecryptingCipher(key, iv);
@@ -80,8 +82,10 @@ public class LogFileReader {
 							decryptor)))) {
 				// Read the data and return the gallery state
 				return (GalleryState) objectIn.readObject();
-			} catch (ClassNotFoundException e) {
-				throw new IntegrityViolationException("Unknown Object");
+			} catch(FileNotFoundException e) {
+				throw e;
+			} catch (ClassNotFoundException | IOException e) {
+				throw new IntegrityViolationException(e);
 			}
 		}
 	}

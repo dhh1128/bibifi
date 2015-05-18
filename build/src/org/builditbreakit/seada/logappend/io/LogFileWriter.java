@@ -45,9 +45,7 @@ public final class LogFileWriter {
 		//                                           |-> Mac
 		try (FileOutputStream fos = new FileOutputStream(tempFile);
 				FileChannel fileChannel = fos.getChannel();
-				OutputStream plaintextOut = new BufferedOutputStream(fos);
-				ObjectOutputStream objectOut = buildOutputStreams(plaintextOut,
-						encryptor, mac)) {
+				OutputStream plaintextOut = new BufferedOutputStream(fos)) {
 			// Make room for the mac in the header
 			fileChannel.position(Crypto.MAC_SIZE);
 
@@ -57,8 +55,11 @@ public final class LogFileWriter {
 			// IV is not encrypted, so we add it to the mac manually
 			mac.update(iv);
 
-			// Write the data
-			objectOut.writeObject(galleryState);
+			try (ObjectOutputStream objectOut = buildOutputStreams(
+					plaintextOut, encryptor, mac)) {
+				// Write the data
+				objectOut.writeObject(galleryState);
+			}
 		}
 		
 		// Go back and add the mac

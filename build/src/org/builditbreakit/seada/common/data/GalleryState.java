@@ -62,8 +62,7 @@ public class GalleryState implements Serializable {
 
 		Visitor visitor = visitorMap.get(name);
 		if (visitor == null) {
-			// TODO Message
-			throw new IllegalStateException();
+			throw new IllegalStateException("Visitor does not exist");
 		}
 
 		assertMatchingVisitorType(visitor, visitorType);
@@ -97,8 +96,7 @@ public class GalleryState implements Serializable {
 		}
 
 		if(!visitor.getCurrentLocation().isOffPremises()) {
-			// TODO Message
-			throw new IllegalStateException();
+			throw new IllegalStateException("Visitor is already in the gallery");
 		}
 		visitor.moveTo(timestamp, Location.IN_GALLERY);
 		lastTimestamp = timestamp;
@@ -113,8 +111,7 @@ public class GalleryState implements Serializable {
 
 		Visitor visitor = getVisitor(name, visitorType);
 		if (visitor == null) {
-			// TODO Message
-			throw new IllegalStateException();
+			throw new IllegalStateException("Visitor does not exist");
 		}
 		
 		visitor.moveTo(timestamp, Location.locationOfRoom(roomNumber));
@@ -130,8 +127,7 @@ public class GalleryState implements Serializable {
 		Visitor visitor = getVisitor(name, visitorType);
 		Location currentLocation = visitor.getCurrentLocation();
 		if (!currentLocation.equals(Location.locationOfRoom(roomNumber))) {
-			// TODO Message
-			throw new IllegalStateException();
+			throw new IllegalStateException("Visitor is not in that room");
 		}
 		visitor.moveTo(timestamp, Location.IN_GALLERY);
 		lastTimestamp = timestamp;
@@ -145,8 +141,7 @@ public class GalleryState implements Serializable {
 		Visitor visitor = getVisitor(name, visitorType);
 		Location currentLocation = visitor.getCurrentLocation();
 		if (!currentLocation.isInGallery()) {
-			// TODO Message
-			throw new IllegalStateException();
+			throw new IllegalStateException("Visitor is not in the lobby");
 		}
 		visitor.moveTo(timestamp, Location.OFF_PREMISES);
 		lastTimestamp = timestamp;
@@ -163,8 +158,7 @@ public class GalleryState implements Serializable {
 	private void assertMatchingVisitorType(Visitor visitor,
 			VisitorType visitorType) {
 		if (visitor.getVisitorType() != visitorType) {
-			// TODO Message
-			throw new IllegalStateException();
+			throw new IllegalStateException("Incorrect visitor type");
 		}
 	}
 
