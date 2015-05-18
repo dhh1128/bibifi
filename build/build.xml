@@ -34,15 +34,18 @@
             <classpath refid="bibifi.classpath"/>
         </javac>
     </target>
-	<target name="jars" depends="common-jar,logappend-jar,logread-jar"/>
+	<target name="jars" depends="bc-jar,common-jar,logappend-jar,logread-jar"/>
+	<target name="bc-jar" depends="build-project">
+		<copy file="libs/bcprov-jdk15on-152.jar" toDir="bin" />
+	</target>
 	<target name="common-jar" depends="build-project">
 		<jar destfile="bin/common.jar" duplicate="fail">
-  	    	<zipfileset src="libs/bcprov-jdk15on-152.jar"/>
+  	    	<!-- <zipfileset src="libs/bcprov-jdk15on-152.jar"/> -->
 			<fileset dir="bin/classes/src">
 				<include name="**/common/**/*.class"/>
 			</fileset>
 			<manifest>
-	        	<attribute name="Main-Class" value="bibifi.App1" />
+				<attribute name="Class-Path" value="bcprov-jdk15on-152.jar"/>
 	    	</manifest>
 		</jar>
 	</target>
