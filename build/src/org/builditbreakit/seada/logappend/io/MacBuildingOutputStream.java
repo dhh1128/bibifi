@@ -3,8 +3,7 @@ package org.builditbreakit.seada.logappend.io;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.crypto.Mac;
-
+import org.bouncycastle.crypto.Mac;
 import org.builditbreakit.seada.common.data.ValidationUtil;
 
 class MacBuildingOutputStream extends OutputStream {
@@ -26,7 +25,7 @@ class MacBuildingOutputStream extends OutputStream {
 
 	@Override
 	public void write(byte[] b) throws IOException {
-		mac.update(b);
+		mac.update(b, 0, b.length);
 		os.write(b);
 	}
 

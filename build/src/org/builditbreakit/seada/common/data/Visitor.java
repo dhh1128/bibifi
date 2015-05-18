@@ -150,17 +150,18 @@ public final class Visitor implements Serializable {
 		private static final long serialVersionUID = -6377133384230120340L;
 		
 		private final String name;
-		private final VisitorType visitorType;
+		private final int visitorTypeNumber;
 		private final List<LocationRecord> history;
 		
 		SerializationProxy(Visitor visitor) {
 			this.name = visitor.name;
-			this.visitorType = visitor.visitorType;
+			this.visitorTypeNumber = visitor.visitorType.ordinal();
 			this.history = visitor.history;
 		}
 		
 		private Object readResolve() {
-			return new Visitor(name, visitorType, history);
+			VisitorType type = VisitorType.values()[visitorTypeNumber];
+			return new Visitor(name, type, history);
 		}
 	}
 

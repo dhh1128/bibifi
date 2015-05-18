@@ -10,13 +10,11 @@ import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.security.Key;
 import java.util.zip.DeflaterOutputStream;
 
-import javax.crypto.Cipher;
-import javax.crypto.CipherOutputStream;
-import javax.crypto.Mac;
-
+import org.bouncycastle.crypto.BufferedBlockCipher;
+import org.bouncycastle.crypto.Mac;
+import org.bouncycastle.crypto.io.CipherOutputStream;
 import org.builditbreakit.seada.common.data.GalleryState;
 import org.builditbreakit.seada.common.io.Crypto;
 
@@ -30,10 +28,10 @@ public final class LogFileWriter {
 	public void write(GalleryState galleryState, String password)
 			throws IOException {
 		// Configure Crypto
-		Key key = Crypto.generateBaseKey(password);
+		byte[] key = Crypto.generateKey(password);
 
 		byte[] iv = Crypto.generateIV();
-		Cipher encryptor = Crypto.getEncryptingCipher(key, iv);
+		BufferedBlockCipher encryptor = Crypto.getEncryptingCipher(key, iv);
 		Mac mac = Crypto.getMac(key);
 
 		// Create a temporary working file
@@ -47,13 +45,13 @@ public final class LogFileWriter {
 				FileChannel fileChannel = fos.getChannel();
 				OutputStream plaintextOut = new BufferedOutputStream(fos)) {
 			// Make room for the mac in the header
-			fileChannel.position(Crypto.MAC_SIZE);
+			fileChannel.position(mac.getMacSize());
 
 			// Write the initialization vector
 			plaintextOut.write(iv);
 
 			// IV is not encrypted, so we add it to the mac manually
-			mac.update(iv);
+			mac.update(iv, 0, iv.length);
 
 			try (ObjectOutputStream objectOut = buildOutputStreams(
 					plaintextOut, encryptor, mac)) {
@@ -63,8 +61,10 @@ public final class LogFileWriter {
 		}
 		
 		// Go back and add the mac
+		byte[] cipherMac = new byte[mac.getMacSize()];
+		mac.doFinal(cipherMac, 0);
 		try (RandomAccessFile raf = new RandomAccessFile(tempFile, "rw")) {
-			raf.write(mac.doFinal());
+			raf.write(cipherMac);
 		}
 
 		// Atomically overwrite existing file, if there is one, with new data
@@ -73,7 +73,7 @@ public final class LogFileWriter {
 	}
 
 	private static ObjectOutputStream buildOutputStreams(
-			OutputStream plaintextOut, Cipher encryptor, Mac mac)
+			OutputStream plaintextOut, BufferedBlockCipher encryptor, Mac mac)
 			throws IOException {
 		return new ObjectOutputStream(new DeflaterOutputStream(
 				new CipherOutputStream(new MacBuildingOutputStream(
