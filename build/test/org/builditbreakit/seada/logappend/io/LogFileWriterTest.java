@@ -42,7 +42,7 @@ public class LogFileWriterTest {
 		String password = "secret";
 		
 		long start = System.nanoTime();
-		File logFile = File.createTempFile("bibifi-test", ".tmp");
+		File logFile = File.createTempFile("bibifi-test", "tmp");
 		logFile.deleteOnExit();
 		
 		LogFileWriter writer = new LogFileWriter(logFile);
