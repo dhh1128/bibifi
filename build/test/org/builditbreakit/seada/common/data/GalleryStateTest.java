@@ -18,9 +18,15 @@ public class GalleryStateTest {
 	/* getVisitors Tests */
 
 	@Test(expected = UnsupportedOperationException.class)
-	public void testUnmodifiableVisitors() {
+	public void testUnmodifiableEmployees() {
 		GalleryState galleryState = new GalleryState();
-		galleryState.getVisitors().clear();
+		galleryState.getEmployees().clear();
+	}
+	
+	@Test(expected = UnsupportedOperationException.class)
+	public void testUnmodifiableGuests() {
+		GalleryState galleryState = new GalleryState();
+		galleryState.getGuests().clear();
 	}
 
 	/* getVisitor Tests */
@@ -106,7 +112,6 @@ public class GalleryStateTest {
 
 		assertEquals("Location", expectedLocation, visitor.getCurrentLocation());
 		assertEquals("Name", visitorName, visitor.getName());
-		assertEquals("Visitor Type", visitorType, visitor.getVisitorType());
 
 		List<LocationRecord> expectedHistory = Arrays
 				.asList(new LocationRecord(arrivalTime, expectedLocation));
@@ -114,7 +119,6 @@ public class GalleryStateTest {
 				visitor.getHistory());
 	}
 
-	@Test(expected = IllegalStateException.class)
 	public void testArriveAtBuildingWrongType() {
 		GalleryState galleryState = new GalleryState();
 
@@ -122,8 +126,6 @@ public class GalleryStateTest {
 		String visitorName = "Bob";
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName,
-				VisitorType.GUEST);
-		galleryState.departBuilding(arrivalTime++, visitorName,
 				VisitorType.GUEST);
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName,
 				VisitorType.EMPLOYEE);
@@ -212,7 +214,6 @@ public class GalleryStateTest {
 
 		assertEquals("Location", expectedLocation, visitor.getCurrentLocation());
 		assertEquals("Name", visitorName, visitor.getName());
-		assertEquals("Visitor Type", visitorType, visitor.getVisitorType());
 
 		List<LocationRecord> expectedHistory = Arrays.asList(
 				new LocationRecord(arrivalTime, Location.IN_GALLERY),
@@ -424,7 +425,6 @@ public class GalleryStateTest {
 
 		assertEquals("Location", expectedLocation, visitor.getCurrentLocation());
 		assertEquals("Name", visitorName, visitor.getName());
-		assertEquals("Visitor Type", visitorType, visitor.getVisitorType());
 
 		List<LocationRecord> expectedHistory = Arrays.asList(
 				new LocationRecord(arrivalTime, Location.IN_GALLERY),
@@ -615,7 +615,6 @@ public class GalleryStateTest {
 
 		assertEquals("Location", expectedLocation, visitor.getCurrentLocation());
 		assertEquals("Name", visitorName, visitor.getName());
-		assertEquals("Visitor Type", visitorType, visitor.getVisitorType());
 
 		List<LocationRecord> expectedHistory = Arrays.asList(
 				new LocationRecord(arrivalTime, Location.IN_GALLERY),
@@ -947,7 +946,7 @@ public class GalleryStateTest {
 	private static GalleryState createMaliciousGalleryState() throws Exception {
 		GalleryState maliciousObj = new GalleryState();
 
-		Field visitorsField = GalleryState.class.getDeclaredField("visitorMap");
+		Field visitorsField = GalleryState.class.getDeclaredField("guestMap");
 		visitorsField.setAccessible(true);
 
 		@SuppressWarnings("unchecked")
@@ -955,8 +954,8 @@ public class GalleryStateTest {
 				.get(maliciousObj);
 
 		// Duplicate visitor (trick the map by lying about visitor's name)
-		visitorMap.put("John", new Visitor("John", VisitorType.EMPLOYEE));
-		visitorMap.put("Mike", new Visitor("John", VisitorType.EMPLOYEE));
+		visitorMap.put("John", new Visitor("John"));
+		visitorMap.put("Mike", new Visitor("John"));
 
 		return maliciousObj;
 	}

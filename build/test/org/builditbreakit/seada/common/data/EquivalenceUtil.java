@@ -37,22 +37,46 @@ public class EquivalenceUtil {
 	public static void assertEquivalent(String message, GalleryState expected,
 			GalleryState actual) {
 		if (checkBothNotNull(message, expected, actual)) {
-			Map<String, Visitor> expectedVisitors = new HashMap<>();
-			expected.getVisitors().forEach(
-					(visitor) -> expectedVisitors.put(visitor.getName(),
+			// Compare employees
+			Map<String, Visitor> expectedEmployees = new HashMap<>();
+			expected.getEmployees().forEach(
+					(visitor) -> expectedEmployees.put(visitor.getName(),
 							visitor));
-
-			Map<String, Visitor> actualVisitors = new HashMap<>();
-			actual.getVisitors().forEach(
-					(visitor) -> actualVisitors.put(visitor.getName(), visitor));
-
-			assertEquals(buildDebugMessage(message, "Visitors"),
-					expectedVisitors.keySet(), actualVisitors.keySet());
-
-			expectedVisitors.values().forEach(
+			
+			Map<String, Visitor> actualEmployees = new HashMap<>();
+			actual.getEmployees().forEach(
+					(visitor) -> actualEmployees.put(visitor.getName(),
+							visitor));
+			
+			assertEquals(buildDebugMessage(message, "Employees"),
+					expectedEmployees.keySet(), actualEmployees.keySet());
+			
+			expectedEmployees.values().forEach(
 					(expectedVisitor) -> {
 						String name = expectedVisitor.getName();
-						Visitor actualVisitor = actualVisitors.get(name);
+						Visitor actualVisitor = actualEmployees.get(name);
+						assertEquivalent(
+								buildDebugMessage(message, "Visitor: " + name),
+								expectedVisitor, actualVisitor);
+					});
+							
+			// Compare guests
+			Map<String, Visitor> expectedGuests = new HashMap<>();
+			expected.getGuests().forEach(
+					(visitor) -> expectedGuests.put(visitor.getName(),
+							visitor));
+			
+			Map<String, Visitor> actualGuests = new HashMap<>();
+			actual.getGuests().forEach(
+					(visitor) -> actualGuests.put(visitor.getName(), visitor));
+
+			assertEquals(buildDebugMessage(message, "Guests"),
+					expectedGuests.keySet(), actualGuests.keySet());
+
+			expectedGuests.values().forEach(
+					(expectedVisitor) -> {
+						String name = expectedVisitor.getName();
+						Visitor actualVisitor = actualGuests.get(name);
 						assertEquivalent(
 								buildDebugMessage(message, "Visitor: " + name),
 								expectedVisitor, actualVisitor);
@@ -65,8 +89,6 @@ public class EquivalenceUtil {
 		if (checkBothNotNull(message, expected, actual)) {
 			assertEquals(buildDebugMessage(message, "Name"),
 					expected.getName(), actual.getName());
-			assertEquals(buildDebugMessage(message, "Visitor Type"),
-					expected.getVisitorType(), actual.getVisitorType());
 			assertEquivalent(buildDebugMessage(message, "History"),
 					expected.getHistory(), actual.getHistory());
 			assertEquivalent(buildDebugMessage(message, "Location"),

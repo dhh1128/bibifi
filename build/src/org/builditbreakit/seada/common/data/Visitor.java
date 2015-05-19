@@ -11,26 +11,20 @@ public final class Visitor implements Serializable {
 	private static final long serialVersionUID = -8422758600278331225L;
 	
 	private transient final String name;
-	private transient final VisitorType visitorType;
 	private transient final List<LocationRecord> history;
 
-	public Visitor(String name, VisitorType visitorType) {
+	public Visitor(String name) {
 		ValidationUtil.assertValidVisitorName(name);
-		ValidationUtil.assertValidVisitorType(visitorType);
 		
 		this.name = name;
-		this.visitorType = visitorType;
 		this.history = new LinkedList<>();
 	}
 	
-	private Visitor(String name, VisitorType visitorType,
-			List<LocationRecord> history) {
+	private Visitor(String name, List<LocationRecord> history) {
 		ValidationUtil.assertValidVisitorName(name);
-		ValidationUtil.assertValidVisitorType(visitorType);
 		ValidationUtil.assertNotNull(history, "History");
 		
 		this.name = name;
-		this.visitorType = visitorType;
 		this.history = new LinkedList<>(history);
 	}
 
@@ -43,10 +37,6 @@ public final class Visitor implements Serializable {
 	
 	public String getName() {
 		return name;
-	}
-	
-	public VisitorType getVisitorType() {
-		return visitorType;
 	}
 	
 	public List<LocationRecord> getHistory() {
@@ -90,9 +80,6 @@ public final class Visitor implements Serializable {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Visitor [name=");
 		builder.append(name);
-		builder.append(", visitorType=");
-		builder.append(visitorType);
-	
 		builder.append(", lastLocationRecord=");
 		if (history.isEmpty()) {
 			builder.append(Location.OFF_PREMISES);
@@ -150,18 +137,15 @@ public final class Visitor implements Serializable {
 		private static final long serialVersionUID = -6377133384230120340L;
 		
 		private final String name;
-		private final int visitorTypeNumber;
 		private final List<LocationRecord> history;
 		
 		SerializationProxy(Visitor visitor) {
 			this.name = visitor.name;
-			this.visitorTypeNumber = visitor.visitorType.ordinal();
 			this.history = visitor.history;
 		}
 		
 		private Object readResolve() {
-			VisitorType type = VisitorType.values()[visitorTypeNumber];
-			return new Visitor(name, type, history);
+			return new Visitor(name, history);
 		}
 	}
 
