@@ -14,46 +14,36 @@ import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.CollectionSerializer;
 
 public final class Visitor {
-	
+
 	private transient final String name;
-	private transient final VisitorType visitorType;
 	private transient final List<LocationRecord> history;
 
-	public Visitor(String name, VisitorType visitorType) {
+	public Visitor(String name) {
 		ValidationUtil.assertValidVisitorName(name);
-		ValidationUtil.assertValidVisitorType(visitorType);
-		
+
 		this.name = name;
-		this.visitorType = visitorType;
 		this.history = new LinkedList<>();
 	}
-	
-	private Visitor(String name, VisitorType visitorType,
-			List<LocationRecord> history) {
+
+	private Visitor(String name, List<LocationRecord> history) {
 		ValidationUtil.assertValidVisitorName(name);
-		ValidationUtil.assertValidVisitorType(visitorType);
 		ValidationUtil.assertNotNull(history, "History");
-		
+
 		this.name = name;
-		this.visitorType = visitorType;
 		this.history = new LinkedList<>(history);
 	}
 
 	public Location getCurrentLocation() {
-		if(history.isEmpty()) {
+		if (history.isEmpty()) {
 			return Location.OFF_PREMISES;
 		}
 		return history.get(history.size() - 1).getLocation();
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
-	public VisitorType getVisitorType() {
-		return visitorType;
-	}
-	
+
 	public List<LocationRecord> getHistory() {
 		return Collections.unmodifiableList(history);
 	}
@@ -95,9 +85,6 @@ public final class Visitor {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Visitor [name=");
 		builder.append(name);
-		builder.append(", visitorType=");
-		builder.append(visitorType);
-	
 		builder.append(", lastLocationRecord=");
 		if (history.isEmpty()) {
 			builder.append(Location.OFF_PREMISES);
@@ -111,7 +98,7 @@ public final class Visitor {
 	void moveTo(int timestamp, Location newLocation) {
 		ValidationUtil.assertValidUINT32(timestamp, "Timestamp");
 		ValidationUtil.assertNotNull(newLocation, "Location");
-		
+
 		assertValidStateTransition(newLocation);
 		assertValidTime(timestamp);
 		history.add(new LocationRecord(timestamp, newLocation));
@@ -141,7 +128,7 @@ public final class Visitor {
 					currentLocation, newLocation));
 		}
 	}
-	
+
 	private static String getStateTransitionErrorMsg(Location currentLocation,
 			Location newLocation) {
 		StringBuilder builder = new StringBuilder(80);
@@ -151,12 +138,12 @@ public final class Visitor {
 	}
 
 	private static final Serializer<Visitor> serializer = new VisitorSerializer();
+
 	public static Serializer<Visitor> getSerializer() {
 		return serializer;
 	}
 
-	private static class VisitorSerializer extends
-			Serializer<Visitor> {
+	private static class VisitorSerializer extends Serializer<Visitor> {
 		private static CollectionSerializer historySerializer = new CollectionSerializer(
 				LocationRecord.class, LocationRecord.getSerializer(), false);
 
@@ -167,20 +154,18 @@ public final class Visitor {
 		@Override
 		public Visitor read(Kryo kryo, Input in, Class<Visitor> clazz) {
 			String name = kryo.readObject(in, String.class);
-			VisitorType visitorType = kryo.readObject(in, VisitorType.class);
 			@SuppressWarnings("unchecked")
 			List<LocationRecord> history = kryo.readObject(in, ArrayList.class,
 					historySerializer);
-			return new Visitor(name, visitorType, history);
+			return new Visitor(name, history);
 		}
 
 		@Override
 		public void write(Kryo kryo, Output out, Visitor object) {
-			if(object == null) {
+			if (object == null) {
 				throw new IntegrityViolationException();
 			}
 			kryo.writeObject(out, object.name);
-			kryo.writeObject(out, object.visitorType);
 			kryo.writeObject(out, object.history, historySerializer);
 		}
 	}

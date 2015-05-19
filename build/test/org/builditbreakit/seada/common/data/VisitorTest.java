@@ -19,17 +19,12 @@ public class VisitorTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testEmptyNameCtor() {
-		new Visitor("", VisitorType.EMPLOYEE);
+		new Visitor("");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullNameCtor() {
-		new Visitor(null, VisitorType.EMPLOYEE);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testNullVisitorTypeCtor() {
-		new Visitor("Bob", null);
+		new Visitor(null);
 	}
 
 	/* moveTo tests */
@@ -86,7 +81,7 @@ public class VisitorTest {
 	
 	@Test(expected = IllegalStateException.class)
 	public void testOutOfOrderMove() {
-		Visitor visitor = new Visitor("Bob", VisitorType.EMPLOYEE);
+		Visitor visitor = new Visitor("Bob");
 		visitor.moveTo(4, Location.IN_GALLERY);
 		visitor.moveTo(1, Location.OFF_PREMISES);
 	}
@@ -95,7 +90,7 @@ public class VisitorTest {
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void testUnmodifiableHistory() {
-		Visitor visitor = new Visitor("Bob", VisitorType.EMPLOYEE);
+		Visitor visitor = new Visitor("Bob");
 		visitor.getHistory().add(new LocationRecord(5, Location.IN_GALLERY));
 	}
 
@@ -103,13 +98,13 @@ public class VisitorTest {
 
 	@Test
 	public void testGetCurrentLocationNoHistory() {
-		Visitor visitor = new Visitor("Bob", VisitorType.EMPLOYEE);
+		Visitor visitor = new Visitor("Bob");
 		assertEquals(Location.OFF_PREMISES, visitor.getCurrentLocation());
 	}
 
 	@Test
 	public void testGetCurrentLocationWithHistory() {
-		Visitor visitor = new Visitor("Bob", VisitorType.EMPLOYEE);
+		Visitor visitor = new Visitor("Bob");
 		visitor.moveTo(5, Location.IN_GALLERY);
 		assertEquals(Location.IN_GALLERY, visitor.getCurrentLocation());
 	}
@@ -131,7 +126,7 @@ public class VisitorTest {
 	@Test
 	public void testVisitorSerialization() throws IOException,
 			ClassNotFoundException {
-		testVisitorSerialization(new Visitor("Bob", VisitorType.EMPLOYEE));
+		testVisitorSerialization(new Visitor("Bob"));
 	}
 
 	/* Serialization White-box Tests */
@@ -141,8 +136,7 @@ public class VisitorTest {
 		Constructor<Visitor> ctor = getPrivateConstructor();
 
 		List<LocationRecord> originalList = new LinkedList<>();
-		Visitor visitor = ctor.newInstance("Bob", VisitorType.EMPLOYEE,
-				originalList);
+		Visitor visitor = ctor.newInstance("Bob", originalList);
 
 		originalList.add(new LocationRecord(5, Location.IN_GALLERY));
 
@@ -151,30 +145,22 @@ public class VisitorTest {
 
 	@Test
 	public void testNullNamePrivateCtor() throws Exception {
-		assertPrivateCtorValidationCheck(null, VisitorType.EMPLOYEE,
-				new LinkedList<>());
+		assertPrivateCtorValidationCheck(null, new LinkedList<>());
 	}
 
 	@Test
 	public void testEmptyNamePrivateCtor() throws Exception {
-		assertPrivateCtorValidationCheck("", VisitorType.EMPLOYEE,
-				new LinkedList<>());
+		assertPrivateCtorValidationCheck("", new LinkedList<>());
 	}
 
 	@Test
 	public void testBadNamePrivateCtor() throws Exception {
-		assertPrivateCtorValidationCheck("&", VisitorType.EMPLOYEE,
-				new LinkedList<>());
-	}
-
-	@Test
-	public void testNullVisitorTypePrivateCtor() throws Exception {
-		assertPrivateCtorValidationCheck("Bob", null, new LinkedList<>());
+		assertPrivateCtorValidationCheck("&", new LinkedList<>());
 	}
 
 	@Test
 	public void testNullHistoryPrivateCtor() throws Exception {
-		assertPrivateCtorValidationCheck("Bob", VisitorType.EMPLOYEE, null);
+		assertPrivateCtorValidationCheck("Bob", null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -185,7 +171,7 @@ public class VisitorTest {
 	/* Private helpers */
 
 	private static void runMoveTest(Location from, Location to) {
-		Visitor visitor = new Visitor("Bob", VisitorType.EMPLOYEE);
+		Visitor visitor = new Visitor("Bob");
 		if (from != Location.OFF_PREMISES) {
 			if(from != Location.IN_GALLERY) {
 				visitor.moveTo(4, Location.IN_GALLERY);
@@ -203,7 +189,7 @@ public class VisitorTest {
 	}
 
 	private static Visitor createMaliciousVisitor() throws Exception {
-		Visitor maliciousObj = new Visitor("Bob", VisitorType.EMPLOYEE);
+		Visitor maliciousObj = new Visitor("Bob");
 
 		Field stateField = Visitor.class.getDeclaredField("name");
 		stateField.setAccessible(true);
@@ -215,11 +201,10 @@ public class VisitorTest {
 	}
 
 	private static void assertPrivateCtorValidationCheck(String name,
-			VisitorType visitorType, List<LocationRecord> history)
-			throws Exception {
+			List<LocationRecord> history) throws Exception {
 		Constructor<Visitor> ctor = getPrivateConstructor();
 		try {
-			ctor.newInstance(name, visitorType, history);
+			ctor.newInstance(name, history);
 		} catch (InvocationTargetException e) {
 			if (e.getCause() instanceof IllegalArgumentException) {
 				// Do nothing. Expected Exception
@@ -230,7 +215,7 @@ public class VisitorTest {
 	private static Constructor<Visitor> getPrivateConstructor()
 			throws Exception {
 		Constructor<Visitor> ctor = Visitor.class.getDeclaredConstructor(
-				String.class, VisitorType.class, List.class);
+				String.class, List.class);
 		ctor.setAccessible(true);
 		return ctor;
 	}

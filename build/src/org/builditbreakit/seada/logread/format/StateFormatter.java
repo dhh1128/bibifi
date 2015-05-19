@@ -1,5 +1,8 @@
 package org.builditbreakit.seada.logread.format;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -10,15 +13,13 @@ import org.builditbreakit.seada.common.data.GalleryState;
 import org.builditbreakit.seada.common.data.Location;
 import org.builditbreakit.seada.common.data.ValidationUtil;
 import org.builditbreakit.seada.common.data.Visitor;
-import org.builditbreakit.seada.common.data.VisitorType;
-import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
 
 public class StateFormatter implements Formatter {
 	private final GalleryState galleryState;
 
 	private final Set<String> employees = new TreeSet<>();
 	private final Set<String> guests = new TreeSet<>();
-	private final Map<Integer, Set<String>> rooms = new TreeMap<>();
+	private final Map<Integer, List<String>> rooms = new TreeMap<>();
 
 	public StateFormatter(GalleryState galleryState) {
 		ValidationUtil.assertNotNull(galleryState, "Gallery State");
@@ -40,7 +41,7 @@ public class StateFormatter implements Formatter {
 	}
 
 	private StringBuilder appendRooms(StringBuilder strBuilder) {
-		for (Entry<Integer, Set<String>> roomEntry : rooms.entrySet()) {
+		for (Entry<Integer, List<String>> roomEntry : rooms.entrySet()) {
 			strBuilder.append(Integer.toString(roomEntry.getKey())).append(":");
 			join(strBuilder, roomEntry.getValue()).append(FormatUtil.NEWLINE);
 		}
@@ -48,37 +49,34 @@ public class StateFormatter implements Formatter {
 	}
 
 	private void buildIndex() {
-		for (Visitor visitor : galleryState.getVisitors()) {
+		buildIndex(employees, galleryState.getEmployees());
+		buildIndex(guests, galleryState.getGuests());
+		for(List<String> list : rooms.values()) {
+			list.sort(null);
+		}
+	}
+	
+	private void buildIndex(Set<String> index, Collection<Visitor> visitors) {
+		for (Visitor visitor : visitors) {
 			Location visitorLocation = visitor.getCurrentLocation();
 			if (!visitorLocation.isOffPremises()) {
-				String visitorName = visitor.getName();
-				VisitorType visitorType = visitor.getVisitorType();
-				switch (visitorType) {
-				case EMPLOYEE:
-					employees.add(visitorName);
-					break;
-				case GUEST:
-					guests.add(visitorName);
-					break;
-				default:
-					throw new IntegrityViolationException(
-							"Unknwon visitor type: " + visitorType);
-				}
-
+				String name = visitor.getName();
+				index.add(name);
+				
 				if (visitorLocation.isInRoom()) {
 					int roomNumber = visitorLocation.getRoomNumber();
-					Set<String> room = rooms.get(roomNumber);
+					List<String> room = rooms.get(roomNumber);
 					if (room == null) {
-						room = new TreeSet<String>();
+						room = new ArrayList<String>();
 						rooms.put(roomNumber, room);
 					}
-					room.add(visitorName);
+					room.add(name);
 				}
 			}
 		}
 	}
 
-	private static StringBuilder join(StringBuilder strBuilder, Set<String> set) {
+	private static StringBuilder join(StringBuilder strBuilder, Collection<String> set) {
 		return FormatUtil.join(strBuilder, set, FormatUtil.COMMA);
 	}
 }

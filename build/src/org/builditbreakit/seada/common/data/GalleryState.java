@@ -17,56 +17,57 @@ import com.esotericsoftware.kryo.serializers.CollectionSerializer;
 
 public class GalleryState {
 	private transient int lastTimestamp = 0;
-	private transient final Map<String, Visitor> visitorMap;
+	private transient final Map<String, Visitor> guestMap;
+	private transient final Map<String, Visitor> employeeMap;
 
 	public GalleryState() {
-		this.visitorMap = new HashMap<>();
+		this.guestMap = new HashMap<>();
+		this.employeeMap = new HashMap<>();
 	}
 
-	private GalleryState(Collection<? extends Visitor> visitors) {
-		ValidationUtil.assertNotNull(visitors, "Imported data");
+	private GalleryState(Collection<? extends Visitor> guests,
+			Collection<? extends Visitor> employees) {
+		this.employeeMap = buildMap(employees);
+		this.guestMap = buildMap(guests);
+	}
+	
+	public Collection<Visitor> getGuests() {
+		return Collections.unmodifiableCollection(guestMap.values());
+	}
 
-		final float load_factor = 0.75f;
-		final int default_capacity = 16;
-		final int extra_space = 10;
-		final int initial_capacity = Math.max(
-				(int) (visitors.size() / load_factor) + extra_space,
-				default_capacity);
-
-		this.visitorMap = new HashMap<>(initial_capacity, load_factor);
-
-		if (!visitors.isEmpty()) {
-			visitors.forEach((visitor) -> {
-				if (visitorMap.put(visitor.getName(), visitor) != null) {
-					throw new IntegrityViolationException("Duplicate visitor: "
-							+ visitor.getName());
-				}
-				List<LocationRecord> history = visitor.getHistory();
-				if (!history.isEmpty()) {
-					int lastVisitTime = history.get(history.size() - 1)
-							.getArrivalTime();
-					if (lastVisitTime > lastTimestamp) {
-						lastTimestamp = lastVisitTime;
-					}
-				}
-			});
+	public Collection<Visitor> getEmployees() {
+		return Collections.unmodifiableCollection(employeeMap.values());
+	}
+	
+	private Map<String, Visitor> getMap(VisitorType visitorType) {
+		if (visitorType == VisitorType.EMPLOYEE) {
+			return employeeMap;
 		}
-	}
-
-	public Collection<Visitor> getVisitors() {
-		return Collections.unmodifiableCollection(visitorMap.values());
+		if (visitorType == VisitorType.GUEST) {
+			return guestMap;
+		}
+		throw new IntegrityViolationException("Unknown visitor type: "
+				+ visitorType);
 	}
 
 	public Visitor getVisitor(String name, VisitorType visitorType) {
 		ValidationUtil.assertValidVisitorType(visitorType);
 		ValidationUtil.assertValidVisitorName(name);
+		
+		Visitor visitor = getMap(visitorType).get(name);
+		if (visitorType == VisitorType.EMPLOYEE) {
+			visitor = employeeMap.get(name);
+		} else if (visitorType == VisitorType.GUEST) {
+			visitor = guestMap.get(name);
+		} else {
+			throw new IntegrityViolationException("Unknown visitor type: "
+					+ visitorType);
+		}
 
-		Visitor visitor = visitorMap.get(name);
 		if (visitor == null) {
 			throw new IllegalStateException("Visitor does not exist");
 		}
 
-		assertMatchingVisitorType(visitor, visitorType);
 		return visitor;
 	}
 	
@@ -75,11 +76,7 @@ public class GalleryState {
 	}
 	
 	public boolean containsVisitor(String name, VisitorType visitorType) {
-		Visitor visitor = visitorMap.get(name);
-		if (visitor == null) {
-			return false;
-		}
-		return visitor.getVisitorType() == visitorType;
+		return getMap(visitorType).get(name) != null;
 	}
 
 	public void arriveAtBuilding(int timestamp, String name,
@@ -88,12 +85,11 @@ public class GalleryState {
 		ValidationUtil.assertValidVisitorName(name);
 		assertValidTimestamp(timestamp);
 
-		Visitor visitor = visitorMap.get(name);
+		Map<String, Visitor> map = getMap(visitorType);
+		Visitor visitor = map.get(name);
 		if (visitor == null) {
-			visitor = new Visitor(name, visitorType);
-			visitorMap.put(name, visitor);
-		} else {
-			assertMatchingVisitorType(visitor, visitorType);
+			visitor = new Visitor(name);
+			map.put(name, visitor);
 		}
 
 		if(!visitor.getCurrentLocation().isOffPremises()) {
@@ -111,10 +107,6 @@ public class GalleryState {
 		assertValidTimestamp(timestamp);
 
 		Visitor visitor = getVisitor(name, visitorType);
-		if (visitor == null) {
-			throw new IllegalStateException("Visitor does not exist");
-		}
-		
 		visitor.moveTo(timestamp, Location.locationOfRoom(roomNumber));
 		lastTimestamp = timestamp;
 	}
@@ -156,11 +148,36 @@ public class GalleryState {
 		}
 	}
 
-	private void assertMatchingVisitorType(Visitor visitor,
-			VisitorType visitorType) {
-		if (visitor.getVisitorType() != visitorType) {
-			throw new IllegalStateException("Incorrect visitor type");
+	private Map<String, Visitor> buildMap(Collection<? extends Visitor> visitors) {
+		ValidationUtil.assertNotNull(visitors, "Imported data");
+	
+		final float load_factor = 0.75f;
+		final int default_capacity = 16;
+		final int extra_space = 10;
+		final int initial_capacity = Math.max(
+				(int) (visitors.size() / load_factor) + extra_space,
+				default_capacity);
+		Map<String, Visitor> visitorMap = new HashMap<>(initial_capacity,
+				load_factor);
+	
+		if (!visitors.isEmpty()) {
+			visitors.forEach((visitor) -> {
+				if (visitorMap.put(visitor.getName(), visitor) != null) {
+					throw new IntegrityViolationException("Duplicate visitor: "
+							+ visitor.getName());
+				}
+				List<LocationRecord> history = visitor.getHistory();
+				if (!history.isEmpty()) {
+					int lastVisitTime = history.get(history.size() - 1)
+							.getArrivalTime();
+					if (lastVisitTime > lastTimestamp) {
+						lastTimestamp = lastVisitTime;
+					}
+				}
+			});
 		}
+
+		return visitorMap;
 	}
 	
 	private static final Serializer<GalleryState> serializer = new GalleryStateSerializer();
@@ -176,15 +193,23 @@ public class GalleryState {
 		@Override
 		public GalleryState read(Kryo kryo, Input in, Class<GalleryState> clazz) {
 			@SuppressWarnings("unchecked")
-			Collection<Visitor> visitors = kryo.readObject(in,
+			Collection<Visitor> guests = kryo.readObject(in,
 					ArrayList.class, visitorsSerializer);
-			return new GalleryState(visitors);
+			
+			@SuppressWarnings("unchecked")
+			Collection<Visitor> employees = kryo.readObject(in,
+					ArrayList.class, visitorsSerializer);
+			
+			return new GalleryState(guests, employees);
 		}
 
 		@Override
 		public void write(Kryo kryo, Output out, GalleryState object) {
-			Collection<Visitor> visitors = object.visitorMap.values();
-			kryo.writeObject(out, visitors, visitorsSerializer);
+			Collection<Visitor> guests = object.guestMap.values();
+			kryo.writeObject(out, guests, visitorsSerializer);
+			
+			Collection<Visitor> employees = object.employeeMap.values();
+			kryo.writeObject(out, employees, visitorsSerializer);
 		}
 	}
 }

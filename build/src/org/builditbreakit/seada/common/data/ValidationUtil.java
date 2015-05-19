@@ -28,12 +28,8 @@ public final class ValidationUtil {
 		if (value.isEmpty()) {
 			throw new IllegalArgumentException("Visitor name must not be empty");
 		}
-
-		for (int i = 0, len = value.length(); i < len; ++i) {
-			char c = value.charAt(i);
-			if (!isAlpha(c)) {
-				throw new IllegalArgumentException("Visitor name contains invalid characters: " + value);
-			}
+		if (!isAlpha(value.charAt(0))) {
+			throw new IllegalArgumentException("Visitor name contains invalid characters: " + value);
 		}
 	}
 
@@ -102,11 +98,8 @@ public final class ValidationUtil {
 		if (s == null || s.isEmpty()) {
 			bad = true;
 		} else {
-			for (int i = 0, len = s.length(); i < len; ++i) {
-				if (!isAlphanumeric(s.charAt(i))) {
-					bad = true;
-					break;
-				}
+			if (!isAlphanumeric(s.charAt(0))) {
+				bad = true;
 			}
 		}
 		if (bad) {
@@ -119,13 +112,14 @@ public final class ValidationUtil {
 		if (value == null || value.isEmpty()) {
 			bad = true;
 		} else {
+			/*
 			for (int i = 0, len = value.length(); i < len; ++i) {
 				char c = value.charAt(i);
 				if (c != '_' && c != '.' && c != '/' && !isAlphanumeric(c)) {
 					bad = true;
 					break;
 				}
-			}
+			}*/
 		}
 		if (bad) {
 			throw new IllegalArgumentException(value + " is not a valid logfile");
