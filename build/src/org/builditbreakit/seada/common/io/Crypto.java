@@ -45,6 +45,8 @@ public final class Crypto {
 						+ KEY_SIZE + " with " + digest.getAlgorithmName());
 			}
 			byte[] hash = new byte[digest.getDigestSize()];
+			byte[] passwordBytes = password.getBytes();
+			digest.update(passwordBytes, 0, passwordBytes.length);
 			digest.doFinal(hash, 0);
 			return Arrays.copyOf(hash, KEY_SIZE);
 		} catch (Exception e) {

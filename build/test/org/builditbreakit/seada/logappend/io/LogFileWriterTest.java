@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.builditbreakit.seada.common.data.EquivalenceUtil;
 import org.builditbreakit.seada.common.data.GalleryState;
 import org.builditbreakit.seada.common.data.VisitorType;
+import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
 import org.builditbreakit.seada.common.io.LogFileReader;
 import org.junit.Test;
 
@@ -35,14 +36,32 @@ public class LogFileWriterTest {
 		testSerialization(state);
 	}
 
+	@Test(expected = IntegrityViolationException.class)
+	public void testGalleryBadPassword() throws IOException,
+			ClassNotFoundException {
+		GalleryState state = new GalleryState();
+		int time = 1;
+		state.arriveAtBuilding(time++, "Bob", VisitorType.EMPLOYEE);
+		state.arriveAtRoom(time++, "Bob", VisitorType.EMPLOYEE, 101);
+		state.arriveAtBuilding(time++, "Jill", VisitorType.EMPLOYEE);
+		state.arriveAtBuilding(time++, "Alice", VisitorType.EMPLOYEE);
+		state.arriveAtRoom(time++, "Jill", VisitorType.EMPLOYEE, 101);
+		state.departRoom(time++, "Bob", VisitorType.EMPLOYEE, 101);
+		state.arriveAtBuilding(time++, "John", VisitorType.GUEST);
+		state.departBuilding(time++, "John", VisitorType.GUEST);
+		state.arriveAtBuilding(time++, "John", VisitorType.GUEST);
+		state.departBuilding(time++, "John", VisitorType.GUEST);
+
+		testBadPassword(state);
+	}
+
 	private void testSerialization(GalleryState galleryState) throws IOException {
-		//printEntropySource();
 		final double millisToNanos = 1000000.0;
 		
 		String password = "secret";
 		
 		long start = System.nanoTime();
-		File logFile = File.createTempFile("bibifi-test", "tmp");
+		File logFile = File.createTempFile("bibifi-test", ".tmp");
 		logFile.deleteOnExit();
 		
 		LogFileWriter writer = new LogFileWriter(logFile);
@@ -60,8 +79,16 @@ public class LogFileWriterTest {
 		System.out.println();
 	}
 
-	@SuppressWarnings("unused")
-	private static void printEntropySource() {
-		System.out.println(System.getProperty("java.security.egd"));
+	private void testBadPassword(GalleryState galleryState) throws IOException {
+		String password = "secret";
+		
+		File logFile = File.createTempFile("bibifi-test", ".tmp");
+		logFile.deleteOnExit();
+		
+		LogFileWriter writer = new LogFileWriter(logFile);
+		writer.write(galleryState, password);
+		
+		LogFileReader reader = new LogFileReader(logFile);
+		reader.read(password + "1");
 	}
 }
