@@ -337,11 +337,7 @@ public class GalleryStateTest {
 		galleryState.arriveAtRoom(arrivalTime++, "", visitorType, roomNumber);
 	}
 
-	// This test used to throw an IllegalArgumentException because "&" wasn't a valid
-	// guest name. Now it throws an IllegalStateException because "&" isn't a recognized
-	// guest. We disabled the checks on guest names because we learned that the oracle
-	// wasn't enforcing the alphanumerics restriction described by the spec.
-	@Test(expected = IllegalStateException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testArriveAtRoomInvalidName() {
 		GalleryState galleryState = new GalleryState();
 
@@ -539,11 +535,7 @@ public class GalleryStateTest {
 		galleryState.departBuilding(arrivalTime++, "", visitorType);
 	}
 
-	// This test used to throw an IllegalArgumentException because "&" wasn't a valid
-	// guest name. Now it throws an IllegalStateException because "&" isn't a recognized
-	// guest. We disabled the checks on guest names because we learned that the oracle
-	// wasn't enforcing the alphanumerics restriction described by the spec.
-	@Test(expected = IllegalStateException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testDepartBuildingInvalidName() {
 		GalleryState galleryState = new GalleryState();
 	
@@ -789,11 +781,7 @@ public class GalleryStateTest {
 		galleryState.departRoom(arrivalTime++, "", visitorType, roomNumber);
 	}
 
-	// This test used to throw an IllegalArgumentException because "&" wasn't a valid
-	// guest name. Now it throws an IllegalStateException because "&" isn't a recognized
-	// guest. We disabled the checks on guest names because we learned that the oracle
-	// wasn't enforcing the alphanumerics restriction described by the spec.
-	@Test(expected = IllegalStateException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testDepartRoomInvalidName() {
 		GalleryState galleryState = new GalleryState();
 
