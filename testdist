@@ -1,0 +1,107 @@
+#! /usr/bin/python
+
+import os, sys, re, time
+
+help_pat = re.compile(r'--?h(elp)?')
+my_folder = os.path.dirname(os.path.abspath(__file__))
+home_folder = os.path.expanduser('~')
+
+def find_all_tests():
+    tests = []
+    for path, dirs, files in os.walk(my_folder):
+        for f in files:
+            if f.endswith('.json'):
+                tests.append(os.path.join(path, f))
+    print('all tests = %s' % tests)
+    return tests
+
+def find_all_tarballs():
+    all = [x[:-4] for x in os.listdir(home_folder) if x.endswith('.tar')]
+    print ('all tarballs = %s' % all)
+    return all
+
+def untar(tarball):
+    os.chdir(home_folder)
+    untarred = os.path.join(home_folder, tarball)
+    if not os.path.isdir(untarred):
+        os.makedirs(untarred)
+        os.system('tar -xf %s.tar' % tarball)
+    return untarred
+        
+def find_test(name, all_tests):
+    name = '/%s.json' % name
+    for x in all_tests:
+        if x.endswith(name):
+            return x
+    print('Cannot find test named %s.' % name[1:])
+    sys.exit(1)
+
+def say_twice(out1, out2, msg):
+    out1.write(msg)
+    out2.write(msg)
+    
+def test_one(dist, tests):
+    folder = untar(dist)
+    os.chdir(folder)
+    old_stdout = sys.stdout
+    old_stderr = sys.stderr
+    fail_count = 0
+    pass_count = 0
+    with open('testdist-results.txt', 'w') as f:
+        if os.path.isdir('testdist-data'):
+            os.system('rm -rf testdist-data')
+        else:
+            os.makedirs('testdist-data')
+        os.chdir('testdist-data')
+        sys.stdout = f
+        sys.stderr = f
+        for test in tests:
+            start_time = time.time()
+            result = os.system('python %s/check_test.py --prefix ../build/ --test %s' % (my_folder, test))
+            end_time = time.time()
+            say_twice(f, old_stdout, '%s: ' % os.path.split(test)[1][:-4])
+            if result:
+                fail_count += 1
+                say_twice(f, old_stdout, 'FAILED')
+            else:
+                pass_count += 1
+                say_twice(f, old_stdout, 'passed')
+            if '/speed/' in test:
+                say_twice(f, old_stdout, ' (%f secs)' % end_time - start_time)
+            say_twice(f, old_stdout, '\n')
+        say_twice('\nOverall, %d tests passed and %d tests failed.' % (pass_count, fail_count))
+
+def test_dists(tarballs, tests=None):
+    all_tests = find_all_tests()
+    if tests:
+        tests = [find_test(x) for x in tests]
+    for dist in tarballs:
+        if dist not in tarballs:
+            print('Cannot find dist %s.' % dist)
+            sys.exit(1)
+        test_one(dist, tests)    
+
+if __name__ == '__main__':
+    args = sys.argv[1:]
+    if len(args) == 1 and help_pat.match(args[0]):
+        print('''
+testdist [dist] [test1.json [test2.json ...]]
+
+  dist is the name of a tarball in ~/. No extension or path allowed.
+    If no dist is specified, all dist tarballs are tested.
+    
+  tests are .json files located anywhere beneath %s.
+    No extension or path allowed. If none specified, all are tested.
+    
+  Results for each tarball are stored in the exploded tarball's folder
+  off of ~/ (e.g., ~/distX/testdist-results.txt)
+''' %  my_folder)
+        sys.exit(0)
+    all_tarballs = find_all_tarballs()
+    if args and args[0] in all_tarballs:
+        tarballs = [args[0]]
+        tests = args[1:]
+    else:
+        tests = args
+        tarballs = all_tarballs
+    test_dists(tarballs, args)
