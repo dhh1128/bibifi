@@ -12,12 +12,12 @@ import java.util.zip.InflaterInputStream;
 
 import org.bouncycastle.crypto.BufferedBlockCipher;
 import org.bouncycastle.crypto.Mac;
+import org.bouncycastle.crypto.io.CipherInputStream;
 import org.builditbreakit.seada.common.data.GalleryState;
 import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
 
 public class LogFileReader {
 	private File file;
-	private int macSize;
 
 	public LogFileReader(File file) {
 		this.file = file;
@@ -25,69 +25,63 @@ public class LogFileReader {
 
 	public GalleryState read(String password) throws IOException {
 		byte[] key = Crypto.generateKey(password);
-		assertAuthenticLogFile(key);
 		return decryptGalleryState(key);
-	}
-
-	private void assertAuthenticLogFile(byte[] key) throws IOException,
-			FileNotFoundException {
-		// Configure crypto
-		Mac mac = Crypto.getMac(key);
-
-		try (InputStream in = new BufferedInputStream(new FileInputStream(file))) {
-			// Read in the file's claimed mac
-			macSize = mac.getMacSize();
-			byte[] expectedMac = new byte[macSize];
-			if (in.read(expectedMac) != expectedMac.length) {
-				throw new IntegrityViolationException("Unexpected EOF");
-			}
-
-			// Mac the remaining bytes in the file
-			int readBytes = 0;
-			byte[] buf = new byte[512];
-			while ((readBytes = in.read(buf)) != -1) {
-				mac.update(buf, 0, readBytes);
-			}
-			byte[] actualMac = new byte[macSize];
-			mac.doFinal(actualMac, 0);
-
-			// Check if the mac is authentic
-			if (!Arrays.equals(expectedMac, actualMac)) {
-				throw new IntegrityViolationException("Unable to authenticate");
-			}
-		}
 	}
 
 	private GalleryState decryptGalleryState(byte[] key) throws IOException,
 			FileNotFoundException {
+		// Configure MAC
+		Mac mac = Crypto.getMac(key);
+		final int macSize = mac.getMacSize();
+		
 		// Open the file
 		try (InputStream ciphertextIn = new BufferedInputStream(
-				new FileInputStream(file))) {
-			// Skip the mac
-			ciphertextIn.skip(macSize);
-
-			// Read the initialization vector
-			byte[] iv = new byte[Crypto.IV_SIZE];
-			if(ciphertextIn.read(iv) != iv.length) {
+				new FileInputStream(file));
+				InputStream macStream = new MacBuildingInputStream(
+						ciphertextIn, mac)) {
+			// Read the MAC
+			byte[] expectedMac = new byte[macSize];
+			if (ciphertextIn.read(expectedMac) != expectedMac.length) {
 				throw new IntegrityViolationException("Unexpected EOF");
 			}
 
-			// Configure crypto
+			// Read the initialization vector, and MAC it
+			byte[] iv = new byte[Crypto.IV_SIZE];
+			if(macStream.read(iv) != iv.length) {
+				throw new IntegrityViolationException("Unexpected EOF");
+			}
+
+			// Configure decryption
 			BufferedBlockCipher decryptor = Crypto.getDecryptingCipher(key, iv);
 
 			// Chain input streams. Final result is:
-			// Disk -> Buffer -> Decryption -> Decompression -> Deserialization
-			try (ObjectInputStream objectIn = new ObjectInputStream(
-					new InflaterInputStream(
-							new org.bouncycastle.crypto.io.CipherInputStream(
-									ciphertextIn, decryptor)))) {
+			// Disk -> Buffer |-> Decryption -> Decompression -> Deserialization
+			//                |-> MAC  
+			GalleryState result;
+			try (ObjectInputStream objectIn = buildStreams(macStream,
+					decryptor)) {
 				// Read the data and return the gallery state
-				return (GalleryState) objectIn.readObject();
+				result = (GalleryState) objectIn.readObject();
 			} catch (FileNotFoundException e) {
 				throw e;
 			} catch (ClassNotFoundException | IOException e) {
 				throw new IntegrityViolationException(e);
 			}
+			
+			byte[] actualMac = new byte[macSize];
+			mac.doFinal(actualMac, 0);
+			
+			if(!Arrays.equals(expectedMac, actualMac)) {
+				throw new IntegrityViolationException("Unable to authenticate");
+			}
+			
+			return result;
 		}
+	}
+
+	private ObjectInputStream buildStreams(InputStream in,
+			BufferedBlockCipher decryptor) throws IOException {
+		return new ObjectInputStream(new InflaterInputStream(
+				new CipherInputStream(in, decryptor)));
 	}
 }
