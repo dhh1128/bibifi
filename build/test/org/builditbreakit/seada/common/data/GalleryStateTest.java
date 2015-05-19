@@ -108,8 +108,7 @@ public class GalleryStateTest {
 				visitor.getHistory());
 	}
 
-	@Test(expected = IllegalStateException.class)
-	public void testArriveAtBuildingWrongType() {
+	public void testArriveAtBuildingDifferentType() {
 		GalleryState galleryState = new GalleryState();
 
 		int arrivalTime = 5;
@@ -168,16 +167,16 @@ public class GalleryStateTest {
 		galleryState.arriveAtBuilding(5, "&", VisitorType.GUEST);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = Exception.class)
 	public void testArriveAtBuildingInvalidTime() {
 		GalleryState galleryState = new GalleryState();
-		galleryState.arriveAtBuilding(-1, "Bob", VisitorType.GUEST);
+		galleryState.arriveAtBuilding(0, "Bob", VisitorType.GUEST);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testArriveAtBuildingNullVisitorType() {
 		GalleryState galleryState = new GalleryState();
-		galleryState.arriveAtBuilding(-1, "Bob", null);
+		galleryState.arriveAtBuilding(5, "Bob", null);
 	}
 
 	/* arriveAtBuilding Tests */
