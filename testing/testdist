@@ -1,0 +1,179 @@
+#! /usr/bin/python
+
+import os, sys, re, time, subprocess, shlex, stat
+
+help_pat = re.compile(r'--?h(elp)?')
+my_folder = os.path.dirname(os.path.abspath(__file__))
+home_folder = os.path.expanduser('~')
+run_id_pat = re.compile(r'(\d+)\.txt$')
+
+def find_all_tests():
+    tests = []
+    for path, dirs, files in os.walk(my_folder):
+        for f in files:
+            if f.endswith('.json'):
+                tests.append(os.path.join(path, f))
+    #print('all tests = %s' % tests)
+    return tests
+
+def find_all_tarballs():
+    all = [x[:-4] for x in os.listdir(home_folder) if x.endswith('.tar')]
+    print ('dist tarballs = %s' % ', '.join(all))
+    return all
+
+def is_binary(fpath):
+    if os.path.isfile(fpath):
+        x = os.stat(fpath)
+        if x.st_mode & stat.S_IXUSR:
+            return True
+    return False
+
+def dist_has_binaries(tarball):
+    build_dir = os.path.join(home_folder, tarball, 'build')
+    return is_binary('%s/logappend' % build_dir) and is_binary('%s/logread' % build_dir)
+
+def untar(tarball):
+    os.chdir(home_folder)
+    untarred = os.path.join(home_folder, tarball)
+    if not os.path.isdir(untarred):
+        print('Untarring %s' % tarball)
+        os.makedirs(untarred)
+        os.chdir(untarred)
+        os.system('tar -xf ../%s.tar' % tarball)
+    if not dist_has_binaries(tarball):
+        os.system('make -C %s/build' % untarred)
+        if not dist_has_binaries(tarball):
+            print("ERROR: %s build is broken." % tarball)
+            return ''
+    return untarred
+        
+def find_test(name, all_tests):
+    name = '/%s.json' % name
+    for x in all_tests:
+        if x.endswith(name):
+            return x
+    print('Cannot find test named %s.' % name[1:])
+    sys.exit(1)
+
+def say_twice(out1, out2, msg):
+    out1.write(msg)
+    out2.write(msg)
+    out1.flush()
+    out2.flush()
+
+def write_std(test_id, txt, which, result):
+    if which == 'err' and not txt:
+        return
+    with open('%s.std%s.%s' % (test_id, which, result), 'w') as f:
+         if txt:
+             f.write(txt)
+
+def cleanup(data_folder):
+    for item in os.listdir(data_folder):
+        if not '.std' in item:
+            os.remove(os.path.join(data_folder, item))
+
+def get_run_id():
+    files = os.listdir('.')
+    last_id = 0
+    for item in files:
+        m = run_id_pat.search(item)
+        if m:
+            this_id = int(m.group(1))
+            if this_id > last_id:
+                last_id = this_id
+    return last_id + 1
+    
+def test_one(dist, tests):
+    print('\n---- %s %s' % (dist, '-'*(72 - len(dist))))
+    folder = untar(dist)
+    if not folder:
+        return
+    os.chdir(folder)
+    old_stdout = sys.stdout
+    old_stderr = sys.stderr
+    fail_count = 0
+    pass_count = 0
+    try:
+        run_id = get_run_id()
+        with open('testdist-results-%s.txt' % run_id, 'w') as f:
+
+            data_folder = os.path.join(folder, 'testdist-data')
+            # Make sure data folder is empty when we start, so no old
+            # results confuse us.
+            if not os.path.isdir(data_folder):
+                os.makedirs(data_folder)
+            os.chdir(data_folder)
+
+            sys.stdout = f
+            sys.stderr = f
+            for test in tests:
+                cleanup(data_folder)
+                cmd = 'python %s/check_test.py --prefix %s/build/ --test %s' % (my_folder, folder, test)
+                #old_stdout.write(cmd + '\n')
+                test_name = test[len(my_folder) + 1:]
+                test_id = os.path.split(test)[1][:-5]
+                say_twice(f, old_stdout, '%s: ' % test_name)
+                start_time = time.time()
+                child = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                stdout, stderr = child.communicate()
+                end_time = time.time()
+                result = child.returncode
+                failed = result or 'Test passed' not in stdout
+                elapsed = end_time - start_time
+                result_txt = 'passed'
+                if failed:
+                    result_txt = 'failed'
+                write_std(test_id, stdout, 'out', result_txt)
+                write_std(test_id, stderr, 'err', result_txt)
+                if failed:
+                    fail_count += 1
+                    say_twice(f, old_stdout, 'FAILED')
+                else:
+                    pass_count += 1
+                    say_twice(f, old_stdout, 'passed')
+                if '/speed/' in test:
+                    say_twice(f, old_stdout, ' (%f secs)' % elapsed)
+                say_twice(f, old_stdout, '\n')
+            say_twice(f, old_stdout, '\nOverall, %d tests passed and %d tests failed.\n' % (pass_count, fail_count))
+    finally:
+        sys.stdout = old_stdout
+        sys.stderr = old_stderr
+        os.chdir(home_folder)
+
+def test_dists(tarballs, tests=None):
+    all_tests = find_all_tests()
+    if tests:
+        tests = [find_test(x, all_tests) for x in tests]
+    else:
+        tests = all_tests
+    for dist in tarballs:
+        if dist not in tarballs:
+            print('Cannot find dist %s.' % dist)
+            sys.exit(1)
+        test_one(dist, tests)    
+
+if __name__ == '__main__':
+    args = sys.argv[1:]
+    if len(args) == 1 and help_pat.match(args[0]):
+        print('''
+testdist [dist] [test1.json [test2.json ...]]
+
+  dist is the name of a tarball in ~/. No extension or path allowed.
+    If no dist is specified, all dist tarballs are tested.
+    
+  tests are .json files located anywhere beneath %s.
+    No extension or path allowed. If none specified, all are tested.
+    
+  Results for each tarball are stored in the exploded tarball's folder
+  off of ~/ (e.g., ~/distX/testdist-results.txt)
+''' %  my_folder)
+        sys.exit(0)
+    all_tarballs = find_all_tarballs()
+    if args and (args[0] in all_tarballs):
+        tarballs = [args[0]]
+        tests = args[1:]
+    else:
+        tests = args
+        tarballs = all_tarballs
+    test_dists(tarballs, tests)
