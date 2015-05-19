@@ -12,13 +12,13 @@ public class ReadCommandTest extends TestCase {
 		"-K secret -T -E fred logfile",
 		"-K secret -I -E fred -G barney logfile",
 		"-K secret -E fred -G barney logfile -I", // style at end, logfile inside
+		"-K secret -T -E fr0ed logfile", // bad guestname, but accepted by oracle
 	};
 
 	private static String[] invalidCommands = {
 		"-K secret -S", // no logfile
 		"-K secret -X -E fred logfile", // bad style
 		"-K secret -S -T -E fred logfile", // contradictory styles
-		"-K secret -T -E fr0ed logfile", // bad guestname
 		"-K secret -I logfile", // no visitors
 		"-K secret -I -E fred -G barney logfile1 logfile2", //repeat logfile at end
 		"-K secret -logfile1 -I -E fred logfile2 -G barney", //repeat logfile elsewhere

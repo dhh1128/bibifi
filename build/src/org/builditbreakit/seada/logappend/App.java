@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
+
 public class App {
 	
 	private static void applyCommand(String[] args, GalleryUpdateManager gum) throws IOException, SecurityException {
@@ -58,7 +60,7 @@ public class App {
 		}
 	}
 	
-	private static final boolean DEBUG_ERRORS = true; // disable before final build
+	private static final boolean DEBUG_ERRORS = false; // enable to troubleshoot
 	
 	private static void logError(Throwable e, String[] args) {
 		if (DEBUG_ERRORS) {
@@ -98,9 +100,9 @@ public class App {
 			gum.save();
 			System.exit(0);
 			
-		} catch (SecurityException e) {
+		} catch (IntegrityViolationException | SecurityException e) {
 			logError(e, args);
-			System.out.println("integrity violation");
+			System.out.println("invalid");
 			System.exit(exitCodeForErrors);
 		} catch (Throwable e) {
 			logError(e, args);

@@ -65,12 +65,17 @@ public class GalleryStateTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testGetVisitorInvalidName() {
 		GalleryState galleryState = new GalleryState();
+		galleryState.getVisitor("&", VisitorType.GUEST);
+	}
 
-		String visitorName = "Bob";
+	public void testGetVisitorValidName() {
+		GalleryState galleryState = new GalleryState();
+
+		String visitorName = "A&";
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(5, visitorName, visitorType);
-		galleryState.getVisitor("&", visitorType);
+		galleryState.getVisitor(visitorName, visitorType);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -167,7 +172,12 @@ public class GalleryStateTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testArriveAtBuildingInvalidName() {
 		GalleryState galleryState = new GalleryState();
-		galleryState.arriveAtBuilding(5, "&", VisitorType.GUEST);
+		galleryState.arriveAtBuilding(5, "&A", VisitorType.GUEST);
+	}
+	
+	public void testArriveAtBuildingValidName() {
+		GalleryState galleryState = new GalleryState();
+		galleryState.arriveAtBuilding(5, "A&", VisitorType.GUEST);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -342,14 +352,19 @@ public class GalleryStateTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testArriveAtRoomInvalidName() {
 		GalleryState galleryState = new GalleryState();
+		galleryState.arriveAtRoom(5, "&A", VisitorType.GUEST, 101);
+	}
+
+	public void testArriveAtRoomValidName() {
+		GalleryState galleryState = new GalleryState();
 
 		int arrivalTime = 5;
 		int roomNumber = 101;
-		String visitorName = "Bob";
+		String visitorName = "A&";
 		VisitorType visitorType = VisitorType.GUEST;
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.arriveAtRoom(arrivalTime++, "&", visitorType, roomNumber);
+		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType, roomNumber);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -540,13 +555,18 @@ public class GalleryStateTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testDepartBuildingInvalidName() {
 		GalleryState galleryState = new GalleryState();
+		galleryState.departBuilding(5, "&A", VisitorType.GUEST);
+	}
+
+	public void testDepartBuildingValidName() {
+		GalleryState galleryState = new GalleryState();
 	
 		int arrivalTime = 5;
-		String visitorName = "Bob";
+		String visitorName = "A&";
 		VisitorType visitorType = VisitorType.GUEST;
 	
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
-		galleryState.departBuilding(arrivalTime++, "&", visitorType);
+		galleryState.departBuilding(arrivalTime++, visitorName, visitorType);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -786,16 +806,22 @@ public class GalleryStateTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testDepartRoomInvalidName() {
 		GalleryState galleryState = new GalleryState();
+		galleryState.departRoom(5, "&A", VisitorType.GUEST, 101);
+	}
+
+	public void testDepartRoomValidName() {
+		GalleryState galleryState = new GalleryState();
 
 		int arrivalTime = 5;
-		String visitorName = "Bob";
+		String visitorName = "A&";
 		VisitorType visitorType = VisitorType.GUEST;
 		int roomNumber = 101;
 
 		galleryState.arriveAtBuilding(arrivalTime++, visitorName, visitorType);
 		galleryState.arriveAtRoom(arrivalTime++, visitorName, visitorType,
 				roomNumber);
-		galleryState.departRoom(arrivalTime++, "&", visitorType, roomNumber);
+		galleryState.departRoom(arrivalTime++, visitorName, visitorType,
+				roomNumber);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
