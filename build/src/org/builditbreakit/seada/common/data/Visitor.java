@@ -3,8 +3,8 @@ package org.builditbreakit.seada.common.data;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 public final class Visitor implements Serializable {
@@ -17,7 +17,7 @@ public final class Visitor implements Serializable {
 		ValidationUtil.assertValidVisitorName(name);
 		
 		this.name = name;
-		this.history = new LinkedList<>();
+		this.history = new ArrayList<>();
 	}
 	
 	private Visitor(String name, List<LocationRecord> history) {
@@ -25,7 +25,7 @@ public final class Visitor implements Serializable {
 		ValidationUtil.assertNotNull(history, "History");
 		
 		this.name = name;
-		this.history = new LinkedList<>(history);
+		this.history = new ArrayList<>(history);
 	}
 
 	public Location getCurrentLocation() {
