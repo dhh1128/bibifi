@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 public class BatchProcessor {
 	
@@ -21,7 +20,7 @@ public class BatchProcessor {
 		}
 		return splitLine(line);
 	}
-	
+
 	/**
 	 * This logic is super simple and would not be adequate for a robust
 	 * cmdline parser that has to handle quoted args, escape sequences,
@@ -30,13 +29,21 @@ public class BatchProcessor {
 	 */
 	public static String[] splitLine(String line) {
 		ArrayList<String> tokens = new ArrayList<>(16);
-		StringTokenizer tokenizer = new StringTokenizer(line, " \t\n\13\f\r");
-		while(tokenizer.hasMoreTokens()) {
-			tokens.add(tokenizer.nextToken());
+		int length = line.length();
+		int offset = 0;
+		for (int i = offset; i < length; i++) {
+			char c = line.charAt(i);
+			// Check whitespace characters in regex set: [\s]
+			if ((c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '\f' || c == '\13')
+					&& (offset != i)) {
+				tokens.add(line.substring(offset, i));
+				offset = i + 1;
+			}
 		}
+		if (offset != length) {
+			tokens.add(line.substring(offset, length));
+		}
+
 		return tokens.toArray(new String[tokens.size()]);
 	}
-	
-	
-
 }
