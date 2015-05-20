@@ -28,10 +28,9 @@ public class BatchProcessor {
 	 * and so forth. However, it is adequate for the bibifi spec. I tested
 	 * this regex split against a scanner; it is faster.
 	 */
-	//private static final Pattern whitespace = Pattern.compile("\\s+");
 	public static String[] splitLine(String line) {
 		ArrayList<String> tokens = new ArrayList<>(16);
-		StringTokenizer tokenizer = new StringTokenizer(line, " \t");
+		StringTokenizer tokenizer = new StringTokenizer(line, " \t\n\13\f\r");
 		while(tokenizer.hasMoreTokens()) {
 			tokens.add(tokenizer.nextToken());
 		}
