@@ -1,0 +1,15 @@
+#! /usr/bin/python
+import os, sys
+
+my_folder = os.path.dirname(os.path.abspath(__file__))
+
+def makedist():
+    repo_root = os.path.abspath(os.path.join(my_folder, '..'))
+    os.chdir(repo_root)
+    cmd = 'git archive -o ~/seada.tar master %s && ls -l ~/seada.tar' % repo_root
+    print('Make sure you\'ve pulled the latest changes on the master branch...')
+    print(cmd)
+    sys.exit(os.system(cmd))
+
+if __name__ == '__main__':
+    makedist()
