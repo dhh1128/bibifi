@@ -1,11 +1,10 @@
 #! /usr/bin/python
 
-import os, sys, re, time, subprocess, shlex, stat
+import os, sys, re, time, subprocess, shlex, stat, glob
 
 help_pat = re.compile(r'--?h(elp)?')
 my_folder = os.path.dirname(os.path.abspath(__file__))
 home_folder = os.path.expanduser('~')
-run_id_pat = re.compile(r'(\d+)\.txt$')
 
 def find_all_tests():
     tests = []
@@ -47,13 +46,23 @@ def untar(tarball):
             return ''
     return untarred
         
-def find_test(name, all_tests):
-    name = '/%s.json' % name
+def find_matching_tests(name, all_tests):
+    matches = []
+    if '*' or '?' in name:
+        name = name.replace('.', '\\.').replace('*', '.*').replace('?', '.')
+    if (name.endswith('.json')):
+        name = os.path.abspath(name)
+    else:
+        name = '/%s.json' % name
+    name_pat = re.compile(name, re.IGNORECASE)
     for x in all_tests:
-        if x.endswith(name):
-            return x
-    print('Cannot find test named %s.' % name[1:])
-    sys.exit(1)
+        if name_pat.search(x):
+            print('matched test %s' % x)
+            matches.append(x)
+    if not matches:
+        print('Cannot find test named %s.' % name[1:])
+        sys.exit(1)
+    return matches
 
 def say_twice(out1, out2, msg):
     out1.write(msg)
@@ -68,22 +77,11 @@ def write_std(test_id, txt, which, result):
          if txt:
              f.write(txt)
 
-def cleanup(data_folder):
+def cleanup(data_folder, test_id):
     for item in os.listdir(data_folder):
-        if not '.std' in item:
+        if ('.std' not in item) or item.startswith('%s.std' % test_id):
             os.remove(os.path.join(data_folder, item))
 
-def get_run_id():
-    files = os.listdir('.')
-    last_id = 0
-    for item in files:
-        m = run_id_pat.search(item)
-        if m:
-            this_id = int(m.group(1))
-            if this_id > last_id:
-                last_id = this_id
-    return last_id + 1
-    
 def test_one(dist, tests):
     print('\n---- %s %s' % (dist, '-'*(72 - len(dist))))
     folder = untar(dist)
@@ -95,8 +93,7 @@ def test_one(dist, tests):
     fail_count = 0
     pass_count = 0
     try:
-        run_id = get_run_id()
-        with open('testdist-results-%s.txt' % run_id, 'w') as f:
+        with open('testdist-results.txt', 'w') as f:
 
             data_folder = os.path.join(folder, 'testdist-data')
             # Make sure data folder is empty when we start, so no old
@@ -108,11 +105,11 @@ def test_one(dist, tests):
             sys.stdout = f
             sys.stderr = f
             for test in tests:
-                cleanup(data_folder)
+                test_id = os.path.split(test)[1][:-5]
+                cleanup(data_folder, test_id)
                 cmd = 'python %s/check_test.py --prefix %s/build/ --test %s' % (my_folder, folder, test)
                 #old_stdout.write(cmd + '\n')
                 test_name = test[len(my_folder) + 1:]
-                test_id = os.path.split(test)[1][:-5]
                 say_twice(f, old_stdout, '%s: ' % test_name)
                 start_time = time.time()
                 child = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -144,7 +141,13 @@ def test_one(dist, tests):
 def test_dists(tarballs, tests=None):
     all_tests = find_all_tests()
     if tests:
-        tests = [find_test(x, all_tests) for x in tests]
+        matches = []
+        for pattern in tests:
+            these_matches = find_matching_tests(pattern, all_tests)
+            for m in these_matches:
+                if m not in matches:
+                    matches.append(m)
+        tests = matches
     else:
         tests = all_tests
     for dist in tarballs:

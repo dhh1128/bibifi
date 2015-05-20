@@ -1,0 +1,18 @@
+{"tests": 
+ [
+  {
+    "input": "logappend -T 1 -K secret -G fred -A logfile",
+    "output": "",
+    "exit": 0
+  },
+  {
+    "input": "logappend -T 2 -K secret -G barney -A ../build/logread",
+    "output": "invalid",
+    "exit": 255
+  },
+  {
+    "input": "logread -K secret -S logfile",
+    "output": "fred\n"
+  }
+ ]
+}
