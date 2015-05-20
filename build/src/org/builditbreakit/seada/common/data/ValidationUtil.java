@@ -28,8 +28,11 @@ public final class ValidationUtil {
 		if (value.isEmpty()) {
 			throw new IllegalArgumentException("Visitor name must not be empty");
 		}
-		if (!isAlpha(value.charAt(0))) {
-			throw new IllegalArgumentException("Visitor name contains invalid characters: " + value);
+		for (int i = 0, len = value.length(); i < len; ++i) {
+			char c = value.charAt(i);
+			if (!isAlpha(c)) {
+				throw new IllegalArgumentException("Visitor name contains invalid characters: " + value);
+			}
 		}
 	}
 
@@ -93,17 +96,16 @@ public final class ValidationUtil {
 		return c >= 'A' && c <= 'Z';
 	}
 	
-	public static void assertValidToken(String s) {
-		boolean bad = false;
-		if (s == null || s.isEmpty()) {
-			bad = true;
+	public static void assertValidToken(String value) {
+		if (value == null || value.isEmpty()) {
+			throw new IllegalArgumentException("Token can't be empty.");
 		} else {
-			if (!isAlphanumeric(s.charAt(0))) {
-				bad = true;
+			for (int i = 0, len = value.length(); i < len; ++i) {
+				char c = value.charAt(i);
+				if (!isAlphanumeric(c)) {
+					throw new IllegalArgumentException("Token contains invalid characters: " + value);
+				}
 			}
-		}
-		if (bad) {
-			throw new IllegalArgumentException("Bad token");
 		}
 	}
 	
