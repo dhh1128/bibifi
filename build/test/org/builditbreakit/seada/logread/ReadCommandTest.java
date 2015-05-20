@@ -12,7 +12,7 @@ public class ReadCommandTest extends TestCase {
 		"-K secret -T -E fred logfile",
 		"-K secret -I -E fred -G barney logfile",
 		"-K secret -E fred -G barney logfile -I", // style at end, logfile inside
-		"-K secret -T -E fr0ed logfile", // weird guestname
+		"-K secret -T -E fr0ed logfile", // bad guestname, but accepted by oracle
 	};
 
 	private static String[] invalidCommands = {
