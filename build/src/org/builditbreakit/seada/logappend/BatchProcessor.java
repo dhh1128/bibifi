@@ -1,38 +1,49 @@
 package org.builditbreakit.seada.logappend;
 
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.util.Scanner;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
 
 public class BatchProcessor {
 	
-	Scanner scanner;
+	BufferedReader reader;
 	
 	public BatchProcessor(String path) throws IOException {
-		scanner = new Scanner(new File(path), "ASCII");
+		reader = new BufferedReader(new FileReader(path));
 	}
 	
-	public boolean hasNextLine() {
-		return scanner.hasNextLine();
-	}
-	
-	public String[] nextLine() {
-		String line = scanner.nextLine();
+	public String[] nextLine() throws IOException {
+		String line = reader.readLine();
+		if(line == null) {
+			return null;
+		}
 		return splitLine(line);
 	}
-	
+
 	/**
 	 * This logic is super simple and would not be adequate for a robust
 	 * cmdline parser that has to handle quoted args, escape sequences,
 	 * and so forth. However, it is adequate for the bibifi spec. I tested
 	 * this regex split against a scanner; it is faster.
 	 */
-	private static final Pattern whitespace = Pattern.compile("\\s+");
 	public static String[] splitLine(String line) {
-		return whitespace.split(line);
-	}
-	
-	
+		ArrayList<String> tokens = new ArrayList<>(16);
+		int length = line.length();
+		int offset = 0;
+		for (int i = offset; i < length; i++) {
+			char c = line.charAt(i);
+			// Check whitespace characters in regex set: [\s]
+			if ((c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '\f' || c == '\13')
+					&& (offset != i)) {
+				tokens.add(line.substring(offset, i));
+				offset = i + 1;
+			}
+		}
+		if (offset != length) {
+			tokens.add(line.substring(offset, length));
+		}
 
+		return tokens.toArray(new String[tokens.size()]);
+	}
 }

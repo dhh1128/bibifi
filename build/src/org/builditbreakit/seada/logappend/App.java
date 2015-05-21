@@ -1,6 +1,7 @@
 package org.builditbreakit.seada.logappend;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -46,8 +47,8 @@ public class App {
 	private static void processBatch(GalleryUpdateManager gum, String batchFilePath) throws IOException {
 		
 		BatchProcessor b = new BatchProcessor(batchFilePath);
-		while (b.hasNextLine()) {
-			String[] args = b.nextLine();
+		String[] args;
+		while ((args = b.nextLine()) != null) {
 			try {
 				applyCommand(args, gum);
 			} catch (SecurityException e) {
@@ -91,7 +92,15 @@ public class App {
 			
 			if (args.length == 2 && args[0].equals("-B")) {
 				exitCodeForErrors = 0;
-				processBatch(gum, args[1]);
+				try {
+					processBatch(gum, args[1]);
+					
+				// Per spec/oracle update on May 19, missing batch file should
+				// yield 255/invalid.
+				} catch (FileNotFoundException e) {
+					exitCodeForErrors = 255;
+					throw e;
+				}
 				
 			} else {
 				applyCommand(args, gum);

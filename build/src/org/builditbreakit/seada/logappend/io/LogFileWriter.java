@@ -40,28 +40,25 @@ public final class LogFileWriter {
 		File tempFile = File.createTempFile("bibifi-seada-", ".tmp");
 		tempFile.deleteOnExit();
 
-		// Chain output streams. Final result is:
-		// Serialization -> Compression -> Encryption|-> Buffer -> Disk
-		//                                           |-> Mac
 		try (FileOutputStream fos = new FileOutputStream(tempFile);
 				FileChannel fileChannel = fos.getChannel();
-				OutputStream plaintextOut = new BufferedOutputStream(fos)) {
+				OutputStream macOut = new MacBuildingOutputStream(
+						new BufferedOutputStream(fos), mac)) {
 			// Make room for the mac in the header
 			fileChannel.position(mac.getMacSize());
 
 			// Write the initialization vector
-			plaintextOut.write(iv);
+			macOut.write(iv);
 
-			// IV is not encrypted, so we add it to the mac manually
-			mac.update(iv, 0, iv.length);
-
-			try (Output objectOut = buildOutputStreams(
-					plaintextOut, encryptor, mac)) {
+			// Chain output streams. Final result is:
+			// Serialization -> Compression -> Encryption |-> Buffer -> Disk
+			//                                            |-> MAC
+			try (Output objectOut = buildOutputStreams(macOut, encryptor)) {
 				// Write the data
 				KryoInstance.getInstance().writeObject(objectOut, galleryState);
 			}
 		}
-		
+
 		// Go back and add the mac
 		byte[] cipherMac = new byte[mac.getMacSize()];
 		mac.doFinal(cipherMac, 0);
@@ -75,8 +72,8 @@ public final class LogFileWriter {
 	}
 
 	private static Output buildOutputStreams(OutputStream plaintextOut,
-			BufferedBlockCipher encryptor, Mac mac) throws IOException {
+			BufferedBlockCipher encryptor) throws IOException {
 		return new Output(new DeflaterOutputStream(new CipherOutputStream(
-				new MacBuildingOutputStream(plaintextOut, mac), encryptor)));
+				plaintextOut, encryptor)));
 	}
 }

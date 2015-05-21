@@ -36,7 +36,7 @@ public class FormatterTest {
 
 	@Test
 	public void testStateOutput() {
-		String expected = "Alice,Bob,Jill\nJake,John\n\n101:Jill\n102:Bob,Jake";
+		String expected = "Alice,Bob,Jill\nJake,John\n101:Jill\n102:Bob,Jake";
 		
 		Formatter formatter = new StateFormatter(state);
 		String actual = formatter.format();

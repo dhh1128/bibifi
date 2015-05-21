@@ -202,7 +202,7 @@ public class GalleryState {
 			
 			return new GalleryState(guests, employees);
 		}
-
+		
 		@Override
 		public void write(Kryo kryo, Output out, GalleryState object) {
 			Collection<Visitor> guests = object.guestMap.values();

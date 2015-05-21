@@ -2,7 +2,6 @@ package org.builditbreakit.seada.common.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
@@ -20,17 +19,17 @@ public final class Visitor {
 
 	public Visitor(String name) {
 		ValidationUtil.assertValidVisitorName(name);
-
+		
 		this.name = name;
-		this.history = new LinkedList<>();
+		this.history = new ArrayList<>();
 	}
-
+	
 	private Visitor(String name, List<LocationRecord> history) {
 		ValidationUtil.assertValidVisitorName(name);
 		ValidationUtil.assertNotNull(history, "History");
 
 		this.name = name;
-		this.history = new LinkedList<>(history);
+		this.history = new ArrayList<>(history);
 	}
 
 	public Location getCurrentLocation() {
@@ -43,7 +42,7 @@ public final class Visitor {
 	public String getName() {
 		return name;
 	}
-
+	
 	public List<LocationRecord> getHistory() {
 		return Collections.unmodifiableList(history);
 	}
