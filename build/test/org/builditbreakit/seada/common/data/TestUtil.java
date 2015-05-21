@@ -7,11 +7,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
+
+import org.builditbreakit.seada.common.io.KryoInstance;
+
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 
 public final class TestUtil {
 	/**
@@ -81,15 +85,16 @@ public final class TestUtil {
 		byte[] serializedObject;
 
 		try (ByteArrayOutputStream os = new ByteArrayOutputStream();
-				ObjectOutputStream out = new ObjectOutputStream(os)) {
-			out.writeObject(object);
+				Output out = new Output(os)) {
+			KryoInstance.getInstance().writeObject(out, object);
+			out.flush();
 			serializedObject = os.toByteArray();
 		}
 
-		try (ObjectInputStream in = new ObjectInputStream(
-				new ByteArrayInputStream(serializedObject))) {
+		try (Input in = new Input(new ByteArrayInputStream(serializedObject))) {
 			@SuppressWarnings("unchecked")
-			T result = (T) in.readObject();
+			T result = (T) KryoInstance.getInstance().readObject(in,
+					object.getClass());
 			verifier.accept(result);
 		}
 	}

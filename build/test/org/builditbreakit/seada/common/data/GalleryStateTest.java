@@ -923,12 +923,6 @@ public class GalleryStateTest {
 				1, "Mary", VisitorType.GUEST));
 	}
 
-	@Test
-	public void testReadObjectFails() {
-		GalleryState galleryState = new GalleryState();
-		TestUtil.assertReadObjectFails(galleryState);
-	}
-
 	/* Serialization White-box Tests */
 	@Test(expected = IntegrityViolationException.class)
 	public void testMaliciousSerialization() throws Exception {
