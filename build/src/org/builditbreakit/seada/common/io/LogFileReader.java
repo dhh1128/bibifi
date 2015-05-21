@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.util.Arrays;
 import java.util.zip.InflaterInputStream;
 
@@ -15,6 +14,8 @@ import org.bouncycastle.crypto.Mac;
 import org.bouncycastle.crypto.io.CipherInputStream;
 import org.builditbreakit.seada.common.data.GalleryState;
 import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
+
+import com.esotericsoftware.kryo.io.Input;
 
 public class LogFileReader {
 	private File file;
@@ -58,13 +59,13 @@ public class LogFileReader {
 			// Disk -> Buffer |-> Decryption -> Decompression -> Deserialization
 			//                |-> MAC  
 			GalleryState result;
-			try (ObjectInputStream objectIn = buildStreams(macStream,
-					decryptor)) {
+			try (Input objectIn = buildStreams(macStream, decryptor)) {
 				// Read the data and return the gallery state
-				result = (GalleryState) objectIn.readObject();
+				result = KryoInstance.getInstance().readObject(objectIn,
+						GalleryState.class);
 			} catch (FileNotFoundException e) {
 				throw e;
-			} catch (ClassNotFoundException | IOException e) {
+			} catch (Exception e) {
 				throw new IntegrityViolationException(e);
 			}
 			
@@ -79,9 +80,9 @@ public class LogFileReader {
 		}
 	}
 
-	private ObjectInputStream buildStreams(InputStream in,
-			BufferedBlockCipher decryptor) throws IOException {
-		return new ObjectInputStream(new InflaterInputStream(
-				new CipherInputStream(in, decryptor)));
+	private Input buildStreams(InputStream in, BufferedBlockCipher decryptor)
+			throws IOException {
+		return new Input(new InflaterInputStream(new CipherInputStream(in,
+				decryptor)));
 	}
 }

@@ -1,8 +1,5 @@
 package org.builditbreakit.seada.common.data;
 
-import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,9 +9,13 @@ import java.util.Map;
 
 import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
 
-public class GalleryState implements Serializable {
-	private static final long serialVersionUID = 6928424752159836102L;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.Serializer;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.CollectionSerializer;
 
+public class GalleryState {
 	private transient int lastTimestamp = 0;
 	private transient final Map<String, Visitor> guestMap;
 	private transient final Map<String, Visitor> employeeMap;
@@ -175,33 +176,40 @@ public class GalleryState implements Serializable {
 				}
 			});
 		}
-	
+
 		return visitorMap;
 	}
+	
+	private static final Serializer<GalleryState> serializer = new GalleryStateSerializer();
+	public static Serializer<GalleryState> getSerializer() {
+		return serializer;
+	}
 
-	private static class SerializationProxy implements Serializable {
-		private static final long serialVersionUID = 8768461134732556971L;
+	private static class GalleryStateSerializer extends
+			Serializer<GalleryState> {
+		private static CollectionSerializer visitorsSerializer = new CollectionSerializer(
+				Visitor.class, Visitor.getSerializer(), false);
 
-		private final Collection<Visitor> guests;
-		private final Collection<Visitor> employees;
-
-		SerializationProxy(GalleryState galleryState) {
-			// Need to make a copy. Map values are not serializable
-			this.employees = new ArrayList<>(galleryState.employeeMap.values());
-			this.guests = new ArrayList<>(galleryState.guestMap.values());
-		}
-
-		private Object readResolve() {
+		@Override
+		public GalleryState read(Kryo kryo, Input in, Class<GalleryState> clazz) {
+			@SuppressWarnings("unchecked")
+			Collection<Visitor> guests = kryo.readObject(in,
+					ArrayList.class, visitorsSerializer);
+			
+			@SuppressWarnings("unchecked")
+			Collection<Visitor> employees = kryo.readObject(in,
+					ArrayList.class, visitorsSerializer);
+			
 			return new GalleryState(guests, employees);
 		}
-	}
-
-	private Object writeReplace() {
-		return new SerializationProxy(this);
-	}
-
-	private void readObject(ObjectInputStream ois)
-			throws InvalidObjectException {
-		throw new InvalidObjectException("Proxy required");
+		
+		@Override
+		public void write(Kryo kryo, Output out, GalleryState object) {
+			Collection<Visitor> guests = object.guestMap.values();
+			kryo.writeObject(out, guests, visitorsSerializer);
+			
+			Collection<Visitor> employees = object.employeeMap.values();
+			kryo.writeObject(out, employees, visitorsSerializer);
+		}
 	}
 }

@@ -1,115 +1,139 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project basedir="." default="build" name="bibifi">
-    <property environment="env"/>
-    <property name="junit.output.dir" value="junit"/>
-    <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.8"/>
-    <property name="source" value="1.8"/>
-    <path id="bibifi.classpath">
-        <pathelement location="bin"/>
-	    <pathelement location="libs/bcprov-jdk15on-152.jar"/>
-    </path>
-    <target name="init">
-        <mkdir dir="bin/classes/src"/>
-        <mkdir dir="bin/classes/test"/>
-        <copy includeemptydirs="false" todir=".">
-            <fileset dir="src">
-                <include name="logappend"/>
-                <include name="logread"/>
-            </fileset>
-        </copy>
-    	<chmod file="logappend" perm="+x"/>
-    	<chmod file="logread" perm="+x"/>
-    </target>
-    <target name="clean">
-        <delete dir="bin"/>
-    </target>
-    <target name="cleanall" depends="clean"/>
-    <target name="build" depends="build-subprojects,build-project"/>
-    <target name="build-subprojects"/>
-    <target name="build-project" depends="init">
-        <echo message="${ant.project.name}: ${ant.file}"/>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="bin/classes/src" includeantruntime="false" source="${source}" target="${target}">
-            <src path="src"/>
-            <classpath refid="bibifi.classpath"/>
-        </javac>
-    </target>
+	<property environment="env"/>
+	<property name="junit.output.dir" value="junit"/>
+	<property name="debuglevel" value="source,lines,vars"/>
+	<property name="target" value="1.8"/>
+	<property name="source" value="1.8"/>
+	<path id="bibifi.classpath">
+		<pathelement location="bin"/>
+		<pathelement location="libs/kryo-3.0.1.jar"/>
+		<pathelement location="libs/asm-5.0.3.jar"/>
+		<pathelement location="libs/minlog-1.3.0.jar"/>
+		<pathelement location="libs/objenesis-2.1.jar"/>
+		<pathelement location="libs/reflectasm-1.10.1.jar"/>
+		<pathelement location="libs/bcprov-jdk15on-152.jar"/>
+	</path>
+	<target name="init">
+		<mkdir dir="bin/classes/src"/>
+		<mkdir dir="bin/classes/test"/>
+		<copy includeemptydirs="false" todir=".">
+			<fileset dir="src">
+				<include name="logappend"/>
+				<include name="logread"/>
+			</fileset>
+		</copy>
+		<chmod file="logappend" perm="+x"/>
+		<chmod file="logread" perm="+x"/>
+	</target>
+	<target name="clean">
+		<delete dir="bin"/>
+	</target>
+	<target name="cleanall" depends="clean"/>
+	<target name="build" depends="build-subprojects,build-project"/>
+	<target name="build-subprojects"/>
+	<target name="build-project" depends="init">
+		<echo message="${ant.project.name}: ${ant.file}"/>
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin/classes/src" includeantruntime="false" source="${source}" target="${target}">
+			<src path="src"/>
+			<classpath refid="bibifi.classpath"/>
+		</javac>
+	</target>
 	<target name="jars" depends="bc-jar,common-jar,logappend-jar,logread-jar"/>
 	<target name="bc-jar" depends="build-project">
 		<copy file="libs/bcprov-jdk15on-152.jar" toDir="bin" />
+		<copy file="libs/kryo-3.0.1.jar" toDir="bin" />
+		<copy file="libs/asm-5.0.3.jar" toDir="bin" />
+		<copy file="libs/minlog-1.3.0.jar" toDir="bin" />
+		<copy file="libs/objenesis-2.1.jar" toDir="bin" />
+		<copy file="libs/reflectasm-1.10.1.jar" toDir="bin" />
 	</target>
 	<target name="common-jar" depends="build-project">
 		<jar destfile="bin/common.jar" duplicate="fail">
-  	    	<!-- <zipfileset src="libs/bcprov-jdk15on-152.jar"/> -->
+			<!--<zipfileset excludes="META-INF/*.SF" src="libs/kryo-3.0.1.jar" />
+			<zipfileset excludes="META-INF/*.SF" src="libs/asm-5.0.3.jar" />
+			<zipfileset excludes="META-INF/*.SF" src="libs/minlog-1.3.0.jar"/>
+			<zipfileset excludes="META-INF/*.SF" src="libs/objenesis-2.1.jar"/>
+			<zipfileset excludes="META-INF/*.SF" src="libs/reflectasm-1.10.1.jar"/>-->
 			<fileset dir="bin/classes/src">
 				<include name="**/common/**/*.class"/>
 			</fileset>
 			<manifest>
-				<attribute name="Class-Path" value="bcprov-jdk15on-152.jar"/>
-	    	</manifest>
+				<attribute name="Class-Path" value="bcprov-jdk15on-152.jar kryo-3.0.1.jar asm-5.0.3.jar asm-5.0.3.jar minlog-1.3.0.jar objenesis-2.1.jar reflectasm-1.10.1.jar" />
+			</manifest>
 		</jar>
 	</target>
 	<target name="logappend-jar" depends="build-project">
 		<jar destfile="bin/logappend.jar" duplicate="fail">
 			<fileset dir="bin/classes/src" includes="**/logappend/**/*.class" />
 			<manifest>
-	        	<attribute name="Main-Class" value="org.builditbreakit.seada.logappend.App" />
+				<attribute name="Main-Class" value="org.builditbreakit.seada.logappend.App" />
 				<attribute name="Class-Path" value="common.jar"/>
-	    	</manifest>
+			</manifest>
 		</jar>
 	</target>
 	<target name="logread-jar" depends="build-project">
 		<jar destfile="bin/logread.jar" duplicate="fail">
 			<fileset dir="bin/classes/src" includes="**/logread/**/*.class" />
 			<manifest>
-	        	<attribute name="Main-Class" value="org.builditbreakit.seada.logread.App" />
+				<attribute name="Main-Class" value="org.builditbreakit.seada.logread.App" />
 				<attribute name="Class-Path" value="common.jar"/>
-	    	</manifest>
+			</manifest>
 		</jar>
 	</target>
-    <target name="build-tests" depends="build-project">
-        <echo message="${ant.project.name}: ${ant.file}"/>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="bin/classes/test" includeantruntime="false" source="${source}" target="${target}">
-            <src path="test"/>
-            <classpath>
-                <pathelement location="libs/junit.jar"/>
-      	    	<pathelement location="libs/equalsverifier-1.7.2.jar"/>
-      	    	<pathelement location="libs/bcprov-jdk15on-152.jar"/>
-        		<pathelement location="bin/classes/src"/>
-        	</classpath>
-        </javac>
-    </target>
-    <target name="LogRead">
-        <java classname="bibifi.logread.App" failonerror="true" fork="yes">
-            <classpath refid="bibifi.classpath"/>
-        </java>
-    </target>
-    <target name="LogAppend">
-        <java classname="bibifi.logappend.App" failonerror="true" fork="yes">
-            <classpath refid="bibifi.classpath"/>
-        </java>
-    </target>
-    <target name="test" depends="build,build-tests">
-    	<delete dir="${junit.output.dir}"/>
-        <mkdir dir="${junit.output.dir}"/>
-        <junit fork="yes" printsummary="withOutAndErr" haltonfailure="true">
-            <formatter type="xml"/>
+	<target name="build-tests" depends="build-project">
+		<echo message="${ant.project.name}: ${ant.file}"/>
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin/classes/test" includeantruntime="false" source="${source}" target="${target}">
+			<src path="test"/>
+			<classpath>
+				<pathelement location="libs/junit.jar"/>
+				<pathelement location="libs/equalsverifier-1.7.2.jar"/>
+				<pathelement location="libs/kryo-3.0.1.jar"/>
+				<pathelement location="libs/asm-5.0.3.jar"/>
+				<pathelement location="libs/minlog-1.3.0.jar"/>
+				<pathelement location="libs/objenesis-2.1.jar"/>
+				<pathelement location="libs/reflectasm-1.10.1.jar"/>
+				<pathelement location="libs/bcprov-jdk15on-152.jar"/>
+				<pathelement location="bin/classes/src"/>
+			</classpath>
+		</javac>
+	</target>
+	<target name="LogRead">
+		<java classname="bibifi.logread.App" failonerror="true" fork="yes">
+			<classpath refid="bibifi.classpath"/>
+		</java>
+	</target>
+	<target name="LogAppend">
+		<java classname="bibifi.logappend.App" failonerror="true" fork="yes">
+			<classpath refid="bibifi.classpath"/>
+		</java>
+	</target>
+	<target name="test" depends="build,build-tests">
+		<delete dir="${junit.output.dir}"/>
+		<mkdir dir="${junit.output.dir}"/>
+		<junit fork="yes" printsummary="withOutAndErr" haltonfailure="true">
+			<formatter type="xml"/>
 			<batchtest todir="${junit.output.dir}">
 				<fileset dir="bin/classes/test">
-					<include name="**/*Test.class"/>	
+					<include name="**/*Test.class"/>
 				</fileset>
-        	</batchtest>
-        	<classpath>
-      	    	<pathelement location="libs/junit.jar"/>
-      	    	<pathelement location="libs/hamcrest-core-1.3.jar"/>
-      	    	<pathelement location="libs/equalsverifier-1.7.2.jar"/>
-      	    	<pathelement location="libs/bcprov-jdk15on-152.jar"/>
-        		<pathelement location="bin/logappend.jar"/>
-        		<pathelement location="bin/logread.jar"/>
-        		<pathelement location="bin/classes/test"/>
-        		<pathelement location="bin/classes/src"/>
-        	</classpath>
-        </junit>
-    </target>
-    <target depends="cleanall,jars" name="integrate"/>
+			</batchtest>
+			<classpath>
+				<pathelement location="libs/junit.jar"/>
+				<pathelement location="libs/hamcrest-core-1.3.jar"/>
+				<pathelement location="libs/equalsverifier-1.7.2.jar"/>
+				<pathelement location="libs/kryo-3.0.1.jar"/>
+				<pathelement location="libs/asm-5.0.3.jar"/>
+				<pathelement location="libs/minlog-1.3.0.jar"/>
+				<pathelement location="libs/objenesis-2.1.jar"/>
+				<pathelement location="libs/reflectasm-1.10.1.jar"/>
+				<pathelement location="libs/bcprov-jdk15on-152.jar"/>
+				<pathelement location="bin/logappend.jar"/>
+				<pathelement location="bin/logread.jar"/>
+				<pathelement location="bin/classes/test"/>
+				<pathelement location="bin/classes/src"/>
+			</classpath>
+		</junit>
+	</target>
+	<target depends="cleanall,jars" name="integrate"/>
 </project>
