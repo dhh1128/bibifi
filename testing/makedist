@@ -3,13 +3,16 @@ import os, sys
 
 my_folder = os.path.dirname(os.path.abspath(__file__))
 
-def makedist():
+def makedist(branch):
     repo_root = os.path.abspath(os.path.join(my_folder, '..'))
     os.chdir(repo_root)
-    cmd = 'git archive -o ~/seada.tar master %s && ls -l ~/seada.tar' % repo_root
-    print('Make sure you\'ve checked out the master branch at least once,\nand have pulled the latest changes on it...')
+    cmd = 'git archive -o ~/seada.tar %s %s && ls -l ~/seada.tar' % (branch, repo_root)
+    print('Make sure you\'ve checked out the %s branch at least once,\nand have pulled the latest changes on it...' % branch)
     print(cmd)
     sys.exit(os.system(cmd))
 
 if __name__ == '__main__':
-    makedist()
+    branch = 'master'
+    if len(sys.argv) == 2 and sys.argv[1] == 'breakit':
+        branch = 'breakit'
+    makedist(branch)

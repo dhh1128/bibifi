@@ -3,7 +3,7 @@
 import os, sys, re, time, subprocess, shlex, stat, glob
 
 help_pat = re.compile(r'--?h(elp)?')
-my_folder = os.path.dirname(os.path.abspath(__file__))
+my_folder = os.path.dirname(os.path.normpath(os.path.realpath(__file__)))
 home_folder = os.path.expanduser('~')
 
 def find_all_tests():
@@ -31,36 +31,59 @@ def dist_has_binaries(tarball):
     build_dir = os.path.join(home_folder, tarball, 'build')
     return is_binary('%s/logappend' % build_dir) and is_binary('%s/logread' % build_dir)
 
+def get_untar_date(tarball):
+    tracking_file = os.path.join(home_folder, tarball, 'untarred')
+    if os.path.isfile(tracking_file):
+        return os.stat(tracking_file).st_mtime
+    return 0
+
+def get_tarball_date(tarball):
+    tarball_path = os.path.join(home_folder, tarball + '.tar')
+    if (os.path.isfile(tarball_path)):
+        return os.stat(tarball_path).st_mtime
+    return 0
+
+def get_binaries_date(tarball):
+    binary = '%s/%s/build/bin/logappend.jar' % (home_folder, tarball)
+    if os.path.isfile(binary):
+        lastmod = os.stat(binary).st_mtime
+        return lastmod
+    return 0
+
 def untar(tarball):
     os.chdir(home_folder)
-    untarred = os.path.join(home_folder, tarball)
-    if not os.path.isdir(untarred):
+    untar_date = get_untar_date(tarball)
+    tarball_date = get_tarball_date(tarball)
+    print('tarball_date = %s' % tarball_date)
+    untarred_folder = os.path.join(home_folder, tarball)
+    if tarball_date > untar_date:
         print('Untarring %s' % tarball)
-        os.makedirs(untarred)
-        os.chdir(untarred)
+        if not os.path.isdir(untarred_folder):
+            os.makedirs(untarred_folder)
+        os.chdir(untarred_folder)
         os.system('tar -xf ../%s.tar' % tarball)
-    if not dist_has_binaries(tarball):
-        os.system('make -C %s/build' % untarred)
+        # Touch a file so we can compare lastmod of tarball and folder
+        open('untarred', 'w').close()
+    if (not dist_has_binaries(tarball)) or get_binaries_date(tarball) < tarball_date:
+        os.system('make -C %s/build' % untarred_folder)
         if not dist_has_binaries(tarball):
             print("ERROR: %s build is broken." % tarball)
             return ''
-    return untarred
+    return untarred_folder
         
 def find_matching_tests(name, all_tests):
     matches = []
     if '*' or '?' in name:
         name = name.replace('.', '\\.').replace('*', '.*').replace('?', '.')
-    if (name.endswith('.json')):
-        name = os.path.abspath(name)
-    else:
-        name = '/%s.json' % name
     name_pat = re.compile(name, re.IGNORECASE)
     for x in all_tests:
         if name_pat.search(x):
-            print('matched test %s' % x)
+            #print('matched test %s' % x)
             matches.append(x)
+        else:
+            pass #print('%s doesnt match %s' % (x, name_pat.pattern))
     if not matches:
-        print('Cannot find test named %s.' % name[1:])
+        print('Cannot find test matching /%s/' % name_pat.pattern)
         sys.exit(1)
     return matches
 
