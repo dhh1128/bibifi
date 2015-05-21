@@ -1,5 +1,7 @@
 package org.builditbreakit.seada.logappend;
 
+import java.io.File;
+
 import org.builditbreakit.seada.common.data.GalleryState;
 
 
@@ -13,11 +15,11 @@ import org.builditbreakit.seada.common.data.GalleryState;
 public class GalleryUpdate {
 	
 	public final GalleryState state;
-	public final String path;
+	public final File path;
 	public final String password;
 	public boolean modified;
 	
-	public GalleryUpdate(GalleryState _state, String _path, String _password) {
+	public GalleryUpdate(GalleryState _state, File _path, String _password) {
 		state = _state;
 		path = _path;
 		password = _password;

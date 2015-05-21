@@ -47,8 +47,8 @@ public class App {
 	private static void processBatch(GalleryUpdateManager gum, String batchFilePath) throws IOException {
 		
 		BatchProcessor b = new BatchProcessor(batchFilePath);
-		while (b.hasNextLine()) {
-			String[] args = b.nextLine();
+		String[] args;
+		while ((args = b.nextLine()) != null) {
 			try {
 				applyCommand(args, gum);
 			} catch (SecurityException e) {
