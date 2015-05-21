@@ -1,0 +1,83 @@
+#! /usr/bin/python
+
+import os, argparse, string, random, sys
+
+rooms = [101, 102, 103, 201, 301, 302, 303, 304, 400]
+people = ['fred', 'barney', 'wilma', 'betty', 'sally', 'tom', 'susan', 'harry', 'alice', 'bob', 'john', 'ivan', 'sasha', 'pablo', 'maria', 'harriet']
+
+
+def make_name(size=8, chars=string.ascii_letters):
+    return ''.join(random.choice(chars) for _ in xrange(size - 1))
+
+
+def make_visitors(count):
+    v = [random.choice(['G', 'E']) + p for p in people]
+    return v[:count]
+
+
+def random_event(i, gallery, visitors, logfile, secret):
+    v = random.choice(visitors)
+    event_type = 'A'
+    #print('generating event for %s' % v)
+    if v in gallery:
+        current_room = gallery[v]
+        if current_room:
+            new_room = ''
+            event_type = 'L'
+        else:
+            current_room = new_room = ' -R ' + str(random.choice(rooms))
+    else:
+        current_room = ''
+        new_room = ''
+    event = '-K %s -T %d -%s %s -%s%s %s' % (secret, i, v[0], v[1:], event_type, current_room, logfile)
+    gallery[v] = new_room
+    #print('gallery now = %s' % gallery)
+    return event
+
+def dump_state(f, gallery):
+    employees = []
+    guests = []
+    rooms = {}
+    for k in gallery.keys():
+        if k[0] == 'E':
+            employees.append(k[1:])
+        else:
+            guests.append(k[1:])
+        room = gallery[k]
+        if room:
+            room = room[4:]
+            if room not in rooms:
+                rooms[room] = []
+            rooms[room].append(k[1:])
+    f.write('%s\n' % ','.join(employees))
+    f.write('%s\n' % ','.join(guests))
+    rkeys = sorted(rooms.keys())
+    for r in rkeys:
+        f.write('%s:%s\n' % (r, ','.join(rooms[r])))
+
+def make_batch(line_count, dest):
+    logfile = random.choice(string.ascii_letters) + make_name(15, string.ascii_letters + string.digits) + '.log'
+    secret = random.choice(string.ascii_uppercase) + make_name(10, string.ascii_uppercase)
+    if line_count < 10:
+        visitor_count = 2
+    elif line_count < 100:
+        visitor_count = 5
+    elif line_count < 1000:
+        visitor_count = 10
+    else:
+        visitor_count = 25
+    visitors = make_visitors(visitor_count)
+    gallery = {}
+    with open(dest, 'w') as f:
+        for i in xrange(line_count):
+            f.write(random_event(i, gallery, visitors, logfile, secret))
+            f.write('\n')
+    with open(dest + '-S', 'w') as f:
+        dump_state(f, gallery)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Make a batch.')
+    parser.add_argument('--linecount', dest='line_count', type=int, metavar='N', help='line count')
+    parser.add_argument('--dest', dest='dest', metavar='PATH', help='output file')
+    args = parser.parse_args(sys.argv[1:])
+    make_batch(args.line_count, args.dest)

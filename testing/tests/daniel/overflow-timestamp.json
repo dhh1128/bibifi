@@ -1,5 +1,6 @@
 {"tests": 
 [{
+    "comment": "this timestamp is 1 greater than the max",
     "input": "logappend -T 1073741824 -K secret -G fred -A TCBZXYQX",
     "output": "invalid",
     "exit": 255

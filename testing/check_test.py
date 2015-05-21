@@ -31,7 +31,13 @@ def main(testin, prefix, keeplog):
     cmd = args[0]
     cmd = prefix + cmd
     args[0] = cmd
-    print "running command %s" % inpt
+    try:
+      print "running command %s" % inpt
+    except:
+      try:
+        print "running command %s" % inpt.encode('utf8')
+      except:
+        print "running command (unprintable)"
     p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out,err = p.communicate()
     ret = p.returncode

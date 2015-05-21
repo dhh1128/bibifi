@@ -1,6 +1,7 @@
 {"tests": 
  [
   {
+    "comment": "some string-to-number conversions may incorrectly tolerate hex",
     "input": "logappend -T A00 -K secret -G fred -A TCBZXYQX",
     "output": "invalid",
     "exit": 255

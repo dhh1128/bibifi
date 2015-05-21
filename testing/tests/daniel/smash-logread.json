@@ -6,6 +6,7 @@
     "exit": 0
   },
   {
+    "comment": "app shouldn't write to existing file unless it's encrypted correctly",
     "input": "logappend -T 2 -K secret -G barney -A ../build/logread",
     "output": "invalid",
     "exit": 255

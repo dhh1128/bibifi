@@ -1,0 +1,10 @@
+{"tests": 
+ [
+  {
+    "comment": "Some code may incorrectly use a unicode isalpha() instead of testing name chars for a-z",
+    "input": "logappend -T 1 -G François -K secret logfile",
+    "output": "invalid",
+    "exit": 255
+  }
+ ]
+}

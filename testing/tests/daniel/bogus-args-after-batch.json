@@ -1,0 +1,10 @@
+{"tests": 
+ [
+  {
+    "comment": "any args besides -B <batchfile> are wrong",
+    "input": "logappend -B testing/tests/daniel/batch75 -T 1",
+    "output": "invalid",
+    "exit": 255
+  }
+ ]
+}

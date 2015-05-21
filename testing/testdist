@@ -79,7 +79,7 @@ def write_std(test_id, txt, which, result):
 
 def cleanup(data_folder, test_id):
     for item in os.listdir(data_folder):
-        if ('.std' not in item) or item.startswith('%s.std' % test_id):
+        if item != 'testing' and (('.std' not in item) or item.startswith('%s.std' % test_id)):
             os.remove(os.path.join(data_folder, item))
 
 def test_one(dist, tests):
@@ -101,6 +101,8 @@ def test_one(dist, tests):
             if not os.path.isdir(data_folder):
                 os.makedirs(data_folder)
             os.chdir(data_folder)
+            if not os.path.exists('testing'):
+                os.symlink(my_folder, 'testing')
 
             sys.stdout = f
             sys.stderr = f
@@ -133,6 +135,8 @@ def test_one(dist, tests):
                     say_twice(f, old_stdout, ' (%f secs)' % elapsed)
                 say_twice(f, old_stdout, '\n')
             say_twice(f, old_stdout, '\nOverall, %d tests passed and %d tests failed.\n' % (pass_count, fail_count))
+            if fail_count:
+                old_stdout.write('Check out *.std*.failed in %s for details.\n' % data_folder)
     finally:
         sys.stdout = old_stdout
         sys.stderr = old_stderr
