@@ -95,7 +95,7 @@ public class App {
 		}
 	}
 	
-	private static final boolean DEBUG_ERRORS = false; // enable to troubleshoot
+	private static final boolean DEBUG_ERRORS = true; // enable to troubleshoot
 	
 	private static void logError(Throwable e, String[] args) {
 		if (DEBUG_ERRORS) {
