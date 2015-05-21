@@ -1,7 +1,7 @@
 #! /usr/bin/python
 import os, sys
 
-my_folder = os.path.dirname(os.path.abspath(__file__))
+my_folder = os.path.dirname(os.path.realpath(os.path.abspath(__file__)))
 
 def makedist(branch):
     repo_root = os.path.abspath(os.path.join(my_folder, '..'))
