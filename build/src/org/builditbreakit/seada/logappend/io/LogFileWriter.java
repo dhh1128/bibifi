@@ -4,7 +4,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
@@ -17,6 +16,9 @@ import org.bouncycastle.crypto.Mac;
 import org.bouncycastle.crypto.io.CipherOutputStream;
 import org.builditbreakit.seada.common.data.GalleryState;
 import org.builditbreakit.seada.common.io.Crypto;
+import org.builditbreakit.seada.common.io.KryoInstance;
+
+import com.esotericsoftware.kryo.io.Output;
 
 public final class LogFileWriter {
 	private File file;
@@ -51,10 +53,9 @@ public final class LogFileWriter {
 			// Chain output streams. Final result is:
 			// Serialization -> Compression -> Encryption |-> Buffer -> Disk
 			//                                            |-> MAC
-			try (ObjectOutputStream objectOut = buildOutputStreams(macOut,
-					encryptor)) {
+			try (Output objectOut = buildOutputStreams(macOut, encryptor)) {
 				// Write the data
-				objectOut.writeObject(galleryState);
+				KryoInstance.getInstance().writeObject(objectOut, galleryState);
 			}
 		}
 
@@ -70,10 +71,9 @@ public final class LogFileWriter {
 				StandardCopyOption.ATOMIC_MOVE);
 	}
 
-	private static ObjectOutputStream buildOutputStreams(
-			OutputStream plaintextOut, BufferedBlockCipher encryptor)
-			throws IOException {
-		return new ObjectOutputStream(new DeflaterOutputStream(
-				new CipherOutputStream(plaintextOut, encryptor)));
+	private static Output buildOutputStreams(OutputStream plaintextOut,
+			BufferedBlockCipher encryptor) throws IOException {
+		return new Output(new DeflaterOutputStream(new CipherOutputStream(
+				plaintextOut, encryptor)));
 	}
 }

@@ -1,12 +1,13 @@
 package org.builditbreakit.seada.common.data;
 
-import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
+import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
 
-public final class LocationRecord implements Serializable {
-	private static final long serialVersionUID = -9012533294897310918L;
-	
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.Serializer;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+
+public final class LocationRecord {
 	private final Location location;
 	private final int arrivalTime;
 	
@@ -37,25 +38,23 @@ public final class LocationRecord implements Serializable {
 		return builder.toString();
 	}
 
-	private static class SerializationProxy implements Serializable {
-		private static final long serialVersionUID = -4050269614086351057L;
-		
-		private final int locationState;
-		private final int arrivalTime;
-		
-		SerializationProxy(LocationRecord record) {
-			Location location = record.location;
-			if(location.isOffPremises()) {
-				this.locationState = Location.OFF_PREMISES_STATE;
-			} else if(location.isInGallery()){
-				this.locationState = Location.IN_GALLERY_STATE;
-			} else {
-				this.locationState = location.getRoomNumber();
-			}
-			this.arrivalTime = record.arrivalTime;
+	private static final Serializer<LocationRecord> serializer = new LocationRecordSerializer();
+	public static Serializer<LocationRecord> getSerializer() {
+		return serializer;
+	}
+
+	private static class LocationRecordSerializer extends
+			Serializer<LocationRecord> {
+
+		public LocationRecordSerializer() {
+			super(true, true);
 		}
-		
-		private Object readResolve() {
+
+		@Override
+		public LocationRecord read(Kryo kryo, Input in, Class<LocationRecord> clazz) {
+			int locationState = kryo.readObject(in, Integer.TYPE);
+			int arrivalTime = kryo.readObject(in, Integer.TYPE);
+			
 			Location location;
 			if (locationState == Location.OFF_PREMISES_STATE) {
 				location = Location.OFF_PREMISES;
@@ -64,16 +63,27 @@ public final class LocationRecord implements Serializable {
 			} else {
 				location = Location.locationOfRoom(locationState);
 			}
+			
 			return new LocationRecord(arrivalTime, location);
 		}
-	}
 
-	private Object writeReplace() {
-		return new SerializationProxy(this);
-	}
-
-	private void readObject(ObjectInputStream ois)
-			throws InvalidObjectException {
-		throw new InvalidObjectException("Proxy required");
+		@Override
+		public void write(Kryo kryo, Output out, LocationRecord object) {
+			if(object == null) {
+				throw new IntegrityViolationException();
+			}
+			int locationState;
+			Location location = object.location;
+			if(location.isOffPremises()) {
+				locationState = Location.OFF_PREMISES_STATE;
+			} else if(location.isInGallery()){
+				locationState = Location.IN_GALLERY_STATE;
+			} else {
+				locationState = location.getRoomNumber();
+			}
+			
+			kryo.writeObject(out, locationState);
+			kryo.writeObject(out, object.arrivalTime);
+		}
 	}
 }

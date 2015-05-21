@@ -48,6 +48,7 @@ public class GalleryUpdateManager {
 					LogFileWriter writer = new LogFileWriter(item.path);
 					writer.write(item.state, item.password);
 				} catch (IOException e) {
+					e.printStackTrace();
 					System.out.println("invalid");
 				}
 			}
