@@ -54,7 +54,7 @@ def untar(tarball):
     os.chdir(home_folder)
     untar_date = get_untar_date(tarball)
     tarball_date = get_tarball_date(tarball)
-    print('tarball_date = %s' % tarball_date)
+    #print('tarball_date = %s' % tarball_date)
     untarred_folder = os.path.join(home_folder, tarball)
     if tarball_date > untar_date:
         print('Untarring %s' % tarball)
