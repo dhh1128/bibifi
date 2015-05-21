@@ -19,37 +19,33 @@ public class GalleryUpdateManager {
 	 * read/written between each use.
 	 */
 	public GalleryUpdate getGalleryFor(AppendCommand cmd) throws IOException, SecurityException {
-		GalleryUpdate item = null;
 		File f = new File(cmd.getLogfile());
 		String password = cmd.getToken();
 		// Convert to canonical version of path so different paths to the same logfile
 		// are resolved to the same thing.
 		String key = f.getCanonicalPath();
-		if (!states.containsKey(key)) {
-			LogFileReader reader = new LogFileReader(new File(key));
+		GalleryUpdate item = states.get(key);
+		if (item == null) {
 			GalleryState state;
 			if (f.exists()) {
+				LogFileReader reader = new LogFileReader(new File(key));
 				state = reader.read(password);
 			} else {
 				state = new GalleryState();
 			}
-			item = new GalleryUpdate(state, key, password);
+			item = new GalleryUpdate(state, f, password);
 			states.put(key, item);
-		} else {
-			item = states.get(key);
-			if (!item.password.equals(password)) {
-				throw new IllegalArgumentException("Can't change password now.");
-			}
+		} else if (!item.password.equals(password)) {
+			throw new IllegalArgumentException("Can't change password now.");
 		}
 		return item;
 	}
 	
 	public void save() {
-		for (GalleryUpdate item: states.values()) {
+		for (GalleryUpdate item : states.values()) {
 			if (item.modified) {
 				try {
-					File f = new File(item.path);
-					LogFileWriter writer = new LogFileWriter(f);
+					LogFileWriter writer = new LogFileWriter(item.path);
 					writer.write(item.state, item.password);
 				} catch (IOException e) {
 					System.out.println("invalid");
