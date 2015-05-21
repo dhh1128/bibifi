@@ -86,7 +86,7 @@ public class AppTest extends TestCase {
 		harness.fillGallery(15);
 		runCommand("-K secret -S " + osIndependentPath(existingLogFile));
 		assertEquals(0, harness.exitCode);
-		assertEquals("Alice\nBob,Fred,Mary\n\n204:Mary\n400:Alice", harness.stdout.toString());
+		assertEquals("Alice\nBob,Fred,Mary\n204:Mary\n400:Alice", harness.stdout.toString());
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class AppTest extends TestCase {
 		harness.fillGallery(30);
 		runCommand("-K secret -S " + osIndependentPath(existingLogFile));
 		assertEquals(0, harness.exitCode);
-		assertEquals("Alice\nFred,Mary\n\n204:Mary\n301:Alice", harness.stdout.toString());
+		assertEquals("Alice\nFred,Mary\n204:Mary\n301:Alice", harness.stdout.toString());
 	}
 
 	@Test
