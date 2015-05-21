@@ -32,7 +32,7 @@ public class StateFormatter implements Formatter {
 		StringBuilder strBuilder = new StringBuilder();
 		join(strBuilder, employees).append(FormatUtil.NEWLINE);
 		join(strBuilder, guests).append(FormatUtil.NEWLINE);
-		strBuilder.append(FormatUtil.NEWLINE);
+		//strBuilder.append(FormatUtil.NEWLINE);
 		appendRooms(strBuilder);
 		
 		// Trim last newline to match oracle output
