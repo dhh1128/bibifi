@@ -11,4 +11,4 @@ cd `dirname ${SCRIPT_PATH}` > /dev/null
 SCRIPT_PATH=`pwd`;
 popd  > /dev/null
 
-java -jar ${SCRIPT_PATH}/bin/logappend.jar $@
+java -jar ${SCRIPT_PATH}/bin/logappend.jar "$@"
