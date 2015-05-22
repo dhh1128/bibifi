@@ -1,10 +1,7 @@
 package org.builditbreakit.seada.logappend;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
 
@@ -52,34 +49,9 @@ public class App {
 			try {
 				applyCommand(args, gum);
 			} catch (SecurityException e) {
-				logError(e, args);
 				System.out.println("integrity violation");
 			} catch (Throwable e) {
-				logError(e, args);
 				System.out.println("invalid");
-			}
-		}
-	}
-	
-	private static final boolean DEBUG_ERRORS = false; // enable to troubleshoot
-	
-	private static void logError(Throwable e, String[] args) {
-		if (DEBUG_ERRORS) {
-			try {
-				File tempFile = File.createTempFile("seada-logappend", ".tmp");
-				FileOutputStream fout = new FileOutputStream(tempFile);
-				PrintWriter out = new PrintWriter(fout);
-				out.print("Error with");
-				for (String arg: args) {
-					out.print(' ');
-					out.print(arg);
-				}
-				out.println("\n");
-				e.printStackTrace(out);
-				out.println("\nclasspath = " + java.lang.System.getProperty("java.class.path"));
-				out.close();
-				fout.close();
-			} catch (IOException e1) {
 			}
 		}
 	}
@@ -110,11 +82,9 @@ public class App {
 			System.exit(0);
 			
 		} catch (IntegrityViolationException | SecurityException e) {
-			logError(e, args);
 			System.out.println("invalid");
 			System.exit(exitCodeForErrors);
 		} catch (Throwable e) {
-			logError(e, args);
 			System.out.println("invalid");
 			System.exit(exitCodeForErrors);
 		}

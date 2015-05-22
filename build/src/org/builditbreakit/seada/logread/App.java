@@ -1,9 +1,7 @@
 package org.builditbreakit.seada.logread;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 
 import org.builditbreakit.seada.common.data.GalleryState;
@@ -81,7 +79,6 @@ public class App {
 			harness.exit(0);
 			
 		} catch (IntegrityViolationException | SecurityException e) {
-			logError(e, args);
 			harness.println("integrity violation");
 			harness.exit(255);
 			
@@ -89,32 +86,8 @@ public class App {
 			// do nothing. This code path only happens in unit tests.
 			
 		} catch (Throwable e) {
-			logError(e, args);
 			harness.println("invalid");
 			harness.exit(255);
-		}
-	}
-	
-	private static final boolean DEBUG_ERRORS = false; // enable to troubleshoot
-	
-	private static void logError(Throwable e, String[] args) {
-		if (DEBUG_ERRORS) {
-			try {
-				File tempFile = File.createTempFile("seada-logread", ".tmp");
-				FileOutputStream fout = new FileOutputStream(tempFile);
-				PrintWriter out = new PrintWriter(fout);
-				out.print("Error with");
-				for (String arg: args) {
-					out.print(' ');
-					out.print(arg);
-				}
-				out.println("\n");
-				e.printStackTrace(out);
-				out.println("\nclasspath = " + java.lang.System.getProperty("java.class.path"));
-				out.close();
-				fout.close();
-			} catch (IOException e1) {
-			}
 		}
 	}
 	
