@@ -6,7 +6,7 @@
     {
       "program": "logread",
       "args": ["-R", "-E", "SHEENA"],
-      "output": "19"
+      "output": "19\n"
     }
   ]
 }
