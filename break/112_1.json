@@ -1,0 +1,12 @@
+{
+  "target_team": 112,
+  "type": "confidentiality",
+  "logfile": "WDGYEQXJ",
+  "commands": [
+    {
+      "program": "logread",
+      "args": ["-R", "-E", "NONA"],
+      "output": "18"
+    }
+  ]
+}
