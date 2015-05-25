@@ -1,0 +1,12 @@
+{
+  "target_team": 189,
+  "type": "confidentiality",
+  "logfile": "OSCEJCUM",
+  "commands": [
+    {
+      "program": "logread",
+      "args": ["-R", "-E", "SHEENA"],
+      "output": "19"
+    }
+  ]
+}
