@@ -1,0 +1,2 @@
+Spec: The log's filename may be specified with a string of alphanumeric characters (including underscores and periods). 
+The log's filename specified with underscore returns invalid. 
