@@ -1,0 +1,6 @@
+Team 122's implementation of logread does not indicate if an employee enters 
+a room, leaves the room, then immediately re-enters the same room by 
+outputting n,n where "n" represents the room number.  For example, if 
+employee Jack enters room 1, leaves room 1, then re-enters room 1, the Oracle
+outputs "1,1".  Team 122's implementation of logread outputs "1" in response to
+"logread -K secret -R -E Jack log2".
