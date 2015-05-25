@@ -4,7 +4,7 @@
   "commands": [
     {
       "program": "logappend",
-      "args": ["-K", "secret", "-T", "1", "-G", "Bob", "-A", "log.test"]
+      "args": ["-K", "secret", "-T", "1", "-G", "Bob", "-A", "log_test"]
     }
   ]
 }
