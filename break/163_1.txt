@@ -1,0 +1,2 @@
+Spec: Slashes and periods may be used to reference log files in other directories.
+Other directory can not be used for logging.
