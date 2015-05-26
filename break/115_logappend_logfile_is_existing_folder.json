@@ -1,0 +1,21 @@
+{
+  "target_team": 115,
+  "type": "correctness",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["logappend", "-T", "1", "-K", "secret", "-G", "fred", "-A", "logfile"],
+      "output": "",
+      "exit": 0
+    },
+    {
+      "input": "logappend -T 2 -K secret -G barney -A /",
+      "output": "invalid",
+      "exit": 255
+    },
+    {
+      "input": "logread -K secret -S logfile",
+      "output": "fred\n"
+    }
+  ]
+}
