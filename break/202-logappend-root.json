@@ -1,0 +1,23 @@
+{
+  "target_team": 202,
+  "type": "correctness",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["-T", "1", "-K", "secret", "-G", "fred", "-A", "logfile"],
+      "output": "",
+      "exit": 0
+    },
+    {
+      "program": "logappend",
+      "input": "-T 2 -K secret -G barney -A /folderA/folderB/this-folder-doesnt-exist/logfile",
+      "output": "invalid",
+      "exit": 255
+    },
+    {
+      "program": "logread",
+      "input": "logread -K secret -S logfile",
+      "output": "fred\n"
+    }
+  ]
+}
