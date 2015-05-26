@@ -1,1 +1,0 @@
-Got stacktrace. spec says: "If the log file cannot be created due to an invalid path, or any other error, logappend should print invalid and return 255."
