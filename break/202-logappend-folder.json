@@ -10,13 +10,13 @@
     },
     {
       "program": "logappend",
-      "input": "-T 2 -K secret -G barney -A /",
+      "args": ["-T", "2", "-K", "secret", "-G", "barney", "-A", "/"],
       "output": "invalid",
       "exit": 255
     },
     {
       "program": "logread",
-      "input": "logread -K secret -S logfile",
+      "args": ["-K", "secret", "-S", "logfile"],
       "output": "fred\n"
     }
   ]
