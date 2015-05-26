@@ -1,0 +1,1 @@
+parse_num() func calls strtol(), which stops at first non-digit char instead of consuming entire arg; trailing alphas not noticed
