@@ -1,0 +1,2 @@
+Spec:In particular, modifications made to the log by means other than correct use of logappend should be detected by logread or logappend when the correct token is supplied
+Last line is deleted but no violation is detected.
