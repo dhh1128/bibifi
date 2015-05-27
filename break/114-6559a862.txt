@@ -1,0 +1,1 @@
+logread -I with a single visitor should just show that visitor's history; visitor names are case-sensitive and -G/-E sensitive; simple intersection between BARNEY and wilma should work
