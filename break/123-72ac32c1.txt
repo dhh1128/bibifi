@@ -1,0 +1,1 @@
+referring to the same logfile with different paths should not confuse us; we're only updating one gallery
