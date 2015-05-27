@@ -1,0 +1,12 @@
+{
+  "target_team": 120,
+  "type": "correctness",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["-T", "1", "-G", "François", "-K", "secret", "logfile"],
+      "output": "invalid",
+      "exit": 255
+    }
+  ]
+}
