@@ -1,0 +1,1 @@
+spec: "If the specified employee or guest does not appear in the gallery, then nothing is printed."
