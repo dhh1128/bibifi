@@ -1,0 +1,1 @@
+timestamps left-padded with zero should be parsed correctly
