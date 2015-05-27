@@ -6,8 +6,8 @@
     "exit": 0
   },
   {
-    "comment": "app shouldn't write to existing file unless it's encrypted correctly",
-    "input": "logappend -T 2 -K secret -G barney -A ../code/build/logread",
+    "comment": "app should report invalid when a logfile in nonexistent folder",
+    "input": "logappend -T 2 -K secret -G barney -A dirA/dirB/dirC/dirD/doesnt_exist",
     "output": "invalid",
     "exit": 255
   },

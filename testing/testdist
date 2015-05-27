@@ -5,6 +5,7 @@ import os, sys, re, time, subprocess, shlex, stat, glob
 help_pat = re.compile(r'--?h(elp)?')
 my_folder = os.path.dirname(os.path.normpath(os.path.realpath(__file__)))
 home_folder = os.path.expanduser('~')
+dist_pat = re.compile(r'^\d\d\d\.zip$')
 
 def find_all_tests():
     tests = []
@@ -15,9 +16,9 @@ def find_all_tests():
     #print('all tests = %s' % tests)
     return tests
 
-def find_all_tarballs():
-    all = [x[:-4] for x in os.listdir(home_folder) if x.endswith('.tar')]
-    print ('dist tarballs = %s' % ', '.join(all))
+def find_all_zips():
+    all = [x[:-4] for x in os.listdir(home_folder) if dist_pat.match(x)]
+    print ('dist zips = %s' % ', '.join(all))
     return all
 
 def is_binary(fpath):
@@ -27,51 +28,52 @@ def is_binary(fpath):
             return True
     return False
 
-def dist_has_binaries(tarball):
-    build_dir = os.path.join(home_folder, tarball, 'build')
-    return is_binary('%s/logappend' % build_dir) and is_binary('%s/logread' % build_dir)
+def dist_has_binaries(zip):
+    build_dir = os.path.join(home_folder, zip, 'code', 'build')
+    has_them = is_binary('%s/logappend' % build_dir) and is_binary('%s/logread' % build_dir)
+    #print('has binaries = %s' % has_them)
+    return has_them
 
-def get_untar_date(tarball):
-    tracking_file = os.path.join(home_folder, tarball, 'untarred')
+def get_unzip_date(zip):
+    tracking_file = os.path.join(home_folder, zip, 'unzipped')
     if os.path.isfile(tracking_file):
         return os.stat(tracking_file).st_mtime
     return 0
 
-def get_tarball_date(tarball):
-    tarball_path = os.path.join(home_folder, tarball + '.tar')
-    if (os.path.isfile(tarball_path)):
-        return os.stat(tarball_path).st_mtime
+def get_zip_date(zip):
+    zip_path = os.path.join(home_folder, zip + '.zip')
+    if (os.path.isfile(zip_path)):
+        return os.stat(zip_path).st_mtime
     return 0
 
-def get_binaries_date(tarball):
-    binary = '%s/%s/build/bin/logappend.jar' % (home_folder, tarball)
+def get_binaries_date(zip):
+    binary = '%s/%s/code/build/logappend' % (home_folder, zip)
+    print('checking date of %s' % binary)
     if os.path.isfile(binary):
         lastmod = os.stat(binary).st_mtime
+        #print('lastmod for binaries = %s' % lastmod)
         return lastmod
     return 0
 
-def untar(tarball):
+def unzip(zip):
     os.chdir(home_folder)
-    untar_date = get_untar_date(tarball)
-    tarball_date = get_tarball_date(tarball)
-    #print('tarball_date = %s' % tarball_date)
-    untarred_folder = os.path.join(home_folder, tarball)
-    if tarball_date > untar_date:
-        print('Untarring %s' % tarball)
-        if not os.path.isdir(untarred_folder):
-            os.makedirs(untarred_folder)
-        os.chdir(untarred_folder)
-        cmd = 'tar -xf ../%s.tar' % tarball
+    unzip_date = get_unzip_date(zip)
+    zip_date = get_zip_date(zip)
+    #print('zip_date = %s' % zip_date)
+    unzipped_folder = os.path.join(home_folder, zip)
+    if zip_date > unzip_date:
+        #print('Unzipping %s' % zip)
+        cmd = 'unzip %s.zip' % zip
         print(cmd)
         os.system(cmd)
-        # Touch a file so we can compare lastmod of tarball and folder
-        open('untarred', 'w').close()
-    if (not dist_has_binaries(tarball)) or get_binaries_date(tarball) < tarball_date:
-        os.system('make -C %s/build' % untarred_folder)
-        if not dist_has_binaries(tarball):
-            print("ERROR: %s build is broken." % tarball)
+        # Touch a file so we can compare lastmod of zip and folder
+        open('%s/unzipped' % zip, 'w').close()
+    if (not dist_has_binaries(zip)) or get_binaries_date(zip) < zip_date:
+        os.system('make -C %s/code/build' % unzipped_folder)
+        if not dist_has_binaries(zip):
+            print("ERROR: %s build is broken." % zip)
             return ''
-    return untarred_folder
+    return unzipped_folder
         
 def find_matching_tests(name, all_tests):
     matches = []
@@ -109,7 +111,7 @@ def cleanup(data_folder, test_id):
 
 def test_one(dist, tests):
     print('\n---- %s %s' % (dist, '-'*(72 - len(dist))))
-    folder = untar(dist)
+    folder = unzip(dist)
     if not folder:
         return
     os.chdir(folder)
@@ -134,7 +136,7 @@ def test_one(dist, tests):
             for test in tests:
                 test_id = os.path.split(test)[1][:-5]
                 cleanup(data_folder, test_id)
-                cmd = 'python %s/check_test.py --prefix %s/build/ --test %s' % (my_folder, folder, test)
+                cmd = 'python %s/check_test.py --prefix %s/code/build/ --test %s' % (my_folder, folder, test)
                 #old_stdout.write(cmd + '\n')
                 test_name = test[len(my_folder) + 1:]
                 say_twice(f, old_stdout, '%s: ' % test_name)
@@ -191,17 +193,17 @@ if __name__ == '__main__':
         print('''
 testdist [dist] [test1.json [test2.json ...]]
 
-  dist is the name of a tarball in ~/. No extension or path allowed.
+  dist is the name of a zip in ~/. No extension or path allowed.
     If no dist is specified, all dist tarballs are tested.
     
   tests are .json files located anywhere beneath %s.
     No extension or path allowed. If none specified, all are tested.
     
-  Results for each tarball are stored in the exploded tarball's folder
+  Results for each zip are stored in the exploded zip's folder
   off of ~/ (e.g., ~/distX/testdist-results.txt)
 ''' %  my_folder)
         sys.exit(0)
-    all_tarballs = find_all_tarballs()
+    all_tarballs = find_all_zips()
     if args and (args[0] in all_tarballs):
         tarballs = [args[0]]
         tests = args[1:]

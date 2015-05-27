@@ -6,8 +6,8 @@
     "exit": 0
   },
   {
-    "comment": "app shouldn't write to existing file unless it's encrypted correctly",
-    "input": "logappend -T 2 -K secret -G barney -A ../code/build/logread",
+    "comment": "app should report invalid when given an existing folder as a logfile name",
+    "input": "logappend -T 2 -K secret -G barney -A /",
     "output": "invalid",
     "exit": 255
   },

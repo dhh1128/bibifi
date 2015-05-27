@@ -1,0 +1,15 @@
+{"tests": 
+ [
+  {
+    "input": "logappend -T 1 -K secret -G fred -A logfile",
+    "output": "",
+    "exit": 0
+  },
+  {
+    "comment": "can't just stop at first non-digit char in number",
+    "input": "logappend -T 2 -K secret -G fred -A -R 123abc logfile",
+    "output": "invalid",
+    "exit": 255
+  }
+ ]
+}

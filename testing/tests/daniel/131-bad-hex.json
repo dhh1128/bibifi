@@ -1,0 +1,15 @@
+{"tests": 
+ [
+  {
+    "input": "logappend -T 1 -K secret -G fred -A logfile",
+    "output": "",
+    "exit": 0
+  },
+  {
+    "comment": "when parsing hex, 0x prefix might be valid, but 00000...0x prefix with no suffix should not be (and same for binary 0b prefix); oracle rejects: http://j.mp/1F8X992",
+    "input": "logappend -T 2 -K secret -G fred -A -R 00000000x0x1 logfile",
+    "output": "invalid",
+    "exit": 255
+  }
+ ]
+}

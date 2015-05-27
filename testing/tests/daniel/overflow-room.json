@@ -1,0 +1,14 @@
+{"tests": 
+[
+{
+"input": "logappend -T 1 -K secret -G fred -A TCBZXYQX",
+"output": "",
+"exit": 0
+},
+{
+    "comment": "this room is 1 greater than the max",
+    "input": "logappend -T 2 -K secret -G fred -A -R 1073741824 TCBZXYQX",
+    "output": "invalid",
+    "exit": 255
+ }]
+}

@@ -1,0 +1,43 @@
+#! /usr/bin/python
+
+import os, sys, re
+
+target_team_pat = re.compile(r'"target_team"\s*:\s*(\d+)')
+team_pat = re.compile(r'^\d\d\d$')
+
+def copy_bug(args):
+    bugfiles = [x for x in args if not team_pat.match(x)]
+    to_teams = [x for x in args if team_pat.match(x)]
+    for bugfile in bugfiles:
+        with open(bugfile, 'r') as f:
+            json = f.read()
+        m = target_team_pat.search(json)
+        assert(m)
+        folder, fname = os.path.split(bugfile)
+        txtfile = bugfile[0:-4] + 'txt'
+        if os.path.isfile(txtfile):
+            with open(txtfile, 'r') as f:
+                txt = f.read()
+        else:
+            txt = ''
+        for team in to_teams:
+            old_team_num = m.group(1)
+            new_path = os.path.join(folder, fname.replace(old_team_num, team))
+            with open(new_path, 'w') as f:
+                new_json = json[0:m.start(1)] + team + json[m.end(1):]
+                f.write(new_json)
+            if txt:
+                new_path = new_path[0:-4] + 'txt'
+                with open(new_path, 'w') as f:
+                    f.write(txt)
+            print('Copied %s to team %s.' % (fname[:-5], team))
+
+if __name__ == '__main__':
+    args = sys.argv[1:]
+    if len(args) == 1 and help_pat.match(args[0]):
+        print('''
+copybug bugfile1 [bugfile2 [bugfile3...] team1 [team2 [team3...]]
+
+''' %  my_folder)
+        sys.exit(0)
+    copy_bug(sys.argv[1:])
