@@ -1,0 +1,1 @@
+should print total time correctly for each visitor (exit time minus entry time) or "unimplemented" if optional feature not built
