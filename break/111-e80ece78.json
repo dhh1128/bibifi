@@ -1,0 +1,19 @@
+{
+  "target_team": 111,
+  "type": "correctness",
+  "batch": "LUsgcGFzczEgLVQgMSAtRyBCQVJORVkgLUEgbG9nMQ0KLUsgcGFzczIgLVQgMiAtRyBmcmVkIC1BIGxvZzENCi1LIHBhc3MxIC1UIDMgLUcgQkFSTkVZIC1BIC1SIDEwMSBsb2cxDQotSyBwYXNzMiAtVCA0IC1FIHdpbG1hIC1BIGxvZzENCi1LIHBhc3MxIC1UIDUgLUcgQkFSTkVZIC1MIC1SIDEwMSBsb2cxDQotSyBwYXNzMSAtVCA2IC1HIEJBUk5FWSAtQSAtUiAxMDIgbG9nMQ0KLUsgcGFzczEgLVQgNyAtRSBTQUxMWSAtQSBsb2cxDQo=",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["-B", "batch"],
+      "output": "invalid\ninvalid",
+      "exit": 0
+    },
+    {
+      "program": "logread",
+      "args": ["-K", "pass1", "-S", "log1"],
+      "output": "SALLY\nBARNEY\n102:BARNEY",
+      "exit": 0
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+password has to be revalidated for each line in batch; can't use cached value
