@@ -1,0 +1,1 @@
+logappend doesn't accept same name for employee and guest.
