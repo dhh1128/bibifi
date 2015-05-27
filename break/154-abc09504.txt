@@ -1,0 +1,1 @@
+the max size of a visitor name is not constrained in the spec
