@@ -1,0 +1,1 @@
+room numbers can't be negative
