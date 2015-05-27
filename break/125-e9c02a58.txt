@@ -1,0 +1,1 @@
+spec is ambiguous about empty passwords, but output should either be "" or "invalid"
