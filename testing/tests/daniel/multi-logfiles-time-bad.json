@@ -1,0 +1,19 @@
+{"tests": 
+ [
+  {
+    "input": "logappend -B testing/tests/daniel/multi-batch-time-bad",
+    "output": "invalid\ninvalid\ninvalid\ninvalid\ninvalid\ninvalid\ninvalid\ninvalid",
+    "exit": 0
+  },
+  {
+    "input": "logread -K pass1 -S log1",
+    "output": "\nBARNEY,SALLY\n101:BARNEY\n201:SALLY",
+    "exit": 0
+  },
+  {
+    "input": "logread -K pass2 -S log2",
+    "output": "wilma\nfred\n103:fred\n303:wilma",
+    "exit": 0
+  }
+ ]
+}

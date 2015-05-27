@@ -1,0 +1,13 @@
+{"tests": 
+[{
+    "input": "logappend -B /tests/batch-same-log-diff-names",
+    "output": "",
+    "exit": 0
+ },
+ {
+    "input": "logread -K pass1 -S log1",
+    "output": "SALLY,wilma\nBARNEY,fred\n102:BARNEY",
+    "exit": 0
+ }
+ ]
+}

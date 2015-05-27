@@ -1,0 +1,11 @@
+{"tests": 
+[{
+    "comment": "some apps may incorrectly cast negative numbers to positive numbers",
+    "input": "logappend -T 1 -K secret -G fred -A TCBZXYQX"
+ },
+ {
+    "input": "logappend -T 2 -K secret -G fred -A -R -1000000000 TCBZXYQX",
+    "output": "invalid",
+    "exit": 255
+ }]
+}

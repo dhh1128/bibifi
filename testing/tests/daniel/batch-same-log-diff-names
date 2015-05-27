@@ -1,0 +1,7 @@
+-K pass1 -T 1 -G BARNEY -A log1
+-K pass1 -T 2 -G fred -A ./log1
+-K pass1 -T 3 -G BARNEY -A -R 101 log1
+-K pass1 -T 4 -E wilma -A ./log1
+-K pass1 -T 5 -G BARNEY -L -R 101 log1
+-K pass1 -T 6 -G BARNEY -A -R 102 log1
+-K pass1 -T 7 -E SALLY -A log1

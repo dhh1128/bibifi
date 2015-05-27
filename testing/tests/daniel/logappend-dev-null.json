@@ -1,0 +1,7 @@
+{"tests": 
+[{
+    "input": "logappend -K secret -T 1 -A -G fred /dev/null",
+    "output": "invalid",
+    "exit": 255
+ }]
+}

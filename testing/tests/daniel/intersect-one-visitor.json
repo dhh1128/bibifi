@@ -1,0 +1,29 @@
+{"tests": 
+ [
+   {
+    "input": "logappend -B /tests/intersect-batch",
+    "output": "",
+    "exit": 0
+   },
+   {
+    "input": "logread -K pass1 -I -G BARNEY log1",
+    "output": "101,102",
+    "exit": 0
+   },
+   {
+    "input": "logread -K pass1 -I -G barney log1",
+    "output": "",
+    "exit": 0
+   },
+   {
+    "input": "logread -K pass1 -I -E BARNEY log1",
+    "output": "",
+    "exit": 0
+   },
+   {
+    "input": "logread -K pass1 -I -G BARNEY -E wilma log1",
+    "output": "102",
+    "exit": 0
+   }
+ ]
+}

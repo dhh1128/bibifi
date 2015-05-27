@@ -1,0 +1,19 @@
+{"tests": 
+ [
+   {
+    "input": "logappend -B /tests/time-batch",
+    "output": "",
+    "exit": 0
+   },
+   {
+    "input": "logread -K pass1 -T -G BARNEY log1",
+    "output": "24",
+    "exit": 0
+   },
+   {
+    "input": "logread -K pass1 -T -G barney log1",
+    "output": "",
+    "exit": 0
+   }
+ ]
+}
