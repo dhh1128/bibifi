@@ -10,13 +10,13 @@
     },
     {
       "program": "logappend",
-      "input": "-T 2 -K secret -G barney -A /folderA/folderB/this-folder-doesnt-exist/logfile",
+      "args": ["-T", "2", "-K", "secret", "-G", "barney", "-A", "/folderA/folderB/this-folder-doesnt-exist/logfile"],
       "output": "invalid",
       "exit": 255
     },
     {
       "program": "logread",
-      "input": "logread -K secret -S logfile",
+      "args": ["logread", "-K", "secret", "-S", "logfile"],
       "output": "fred\n"
     }
   ]
