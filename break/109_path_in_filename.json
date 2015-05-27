@@ -1,0 +1,4 @@
+    {
+      "program": "logappend",
+      "args": ["-K", "secret", "-T", "50", "-A", "-E", "Roger", "../log3"]
+    },
