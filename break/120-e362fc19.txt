@@ -1,1 +1,0 @@
-spec defines "alpha" as [a-zA-Z]; unicode characters disallowed
