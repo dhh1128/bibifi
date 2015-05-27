@@ -1,1 +1,0 @@
-the max size of a password is not constrained in the spec
