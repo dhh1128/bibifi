@@ -1,0 +1,22 @@
+{
+  "target_team": 172,
+  "type": "correctness",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["-K", "secret", "-T", "10", "-A", "-E", "Jessie", "log13"]
+    },
+    {
+      "program": "logappend",
+      "args": ["-K", "secret", "-T", "20", "-A", "-R", "5", "-E", "Jessie", "log13"]
+    },
+    {
+      "program": "logappend",
+      "args": ["-K", "secret", "-T", "30", "-L", "-R", "5", "-E", "Jessie", "log13"]
+    },
+    {
+      "program": "logread",
+      "args": ["-K", "secret", "-R", "-S", "log13"]
+    }
+  ]
+}
