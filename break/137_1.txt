@@ -1,0 +1,2 @@
+if a single line in a batch file is invalid, print the appropriate error message for that line and continue processing the rest of the batch file
+it prints one invalid message.
