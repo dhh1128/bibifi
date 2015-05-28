@@ -4,11 +4,11 @@
   "commands": [
     {
       "program": "logappend",
-      "args": ["logappend", "-T", "1", "-K", "secret", "-G", "fred", "-A", "logfile"]
+      "args": ["-T", "1", "-K", "secret", "-G", "fred", "-A", "logfile"]
     },
     {
       "program": "logappend",
-      "args": ["logappend", "-T", "1", "-K", "secret", "-G", "fred", "-A", "-R", "00000x0x1", "logfile"],
+      "args": ["-T", "1", "-K", "secret", "-G", "fred", "-A", "-R", "00000x0x1", "logfile"],
       "output": "invalid",
       "exit": 255
     }
