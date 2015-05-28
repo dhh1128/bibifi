@@ -1,0 +1,1 @@
+if a visitor leaves the gallery and then comes back, the gap can't be counted in total time he/she is in gallery
