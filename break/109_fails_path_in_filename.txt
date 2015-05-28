@@ -1,1 +1,0 @@
-logappend doesn't accept a path in the logfile name.
