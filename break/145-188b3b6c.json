@@ -1,0 +1,16 @@
+{
+  "target_team": 145,
+  "type": "correctness",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["-B", "testing/tests/daniel/5-blank-lines"],
+      "output": "invalid
+invalid
+invalid
+invalid
+invalid",
+      "exit": 0
+    }
+  ]
+}
