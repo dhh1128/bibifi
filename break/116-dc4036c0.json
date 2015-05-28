@@ -1,0 +1,30 @@
+{
+  "target_team": 116,
+  "type": "correctness",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["-B", "/tests/time-batch"],
+      "output": "",
+      "exit": 0
+    },
+    {
+      "program": "logread",
+      "args": ["-K", "pass1", "-T", "-G", "BARNEY", "log1"],
+      "output": "24",
+      "exit": 0
+    },
+    {
+      "program": "logread",
+      "args": ["-K", "pass1", "-T", "-E", "wilma", "log1"],
+      "output": "21",
+      "exit": 0
+    },
+    {
+      "program": "logread",
+      "args": ["-K", "pass1", "-T", "-E", "SALLY", "log1"],
+      "output": "17",
+      "exit": 0
+    }
+  ]
+}
