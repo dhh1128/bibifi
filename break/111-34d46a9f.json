@@ -12,9 +12,7 @@
     {
       "program": "logread",
       "args": ["-K", "pass1", "-S", "log1"],
-      "output": "
-BARNEY,fred
-101:BARNEY",
+      "output": "\nBARNEY,fred\n101:BARNEY",
       "exit": 0
     }
   ]
