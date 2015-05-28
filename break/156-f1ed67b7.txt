@@ -1,0 +1,1 @@
+we shouldn't append to an existing file without proving that we can decrypt it first; spec says "If the supplied token does not match an existing log, "invalid" should be printed to stdout and 255 returned."
