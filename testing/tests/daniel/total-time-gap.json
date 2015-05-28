@@ -1,0 +1,19 @@
+{"tests": 
+ [
+   {
+    "input": "logappend -B /tests/time-batch-with-gap",
+    "output": "",
+    "exit": 0
+   },
+   {
+    "input": "logread -K pass1 -T -G BARNEY log1",
+    "output": "99",
+    "exit": 0
+   },
+   {
+    "input": "logread -K pass1 -T -G fred log1",
+    "output": "68",
+    "exit": 0
+   }
+ ]
+}

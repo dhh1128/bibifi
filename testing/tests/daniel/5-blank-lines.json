@@ -1,0 +1,9 @@
+{"tests": 
+ [
+  {
+    "input": "logappend -B testing/tests/daniel/5-blank-lines",
+    "output": "invalid\ninvalid\ninvalid\ninvalid\ninvalid",
+    "exit": 0
+  }
+ ]
+}

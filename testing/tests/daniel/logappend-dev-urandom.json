@@ -1,0 +1,9 @@
+{"tests": 
+ [
+  {
+    "input": "logappend -K secret -T 1 -G fred /dev/urandom",
+    "output": "invalid",
+    "exit": 255
+  }
+ ]
+}

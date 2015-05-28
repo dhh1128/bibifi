@@ -1,0 +1,14 @@
+{"tests": 
+ [
+  {
+    "input": "logappend -B /tests/recursive-batch",
+    "output": "invalid",
+    "exit": 0
+  },
+  {
+    "input": "logread -K pass1 -S log1",
+    "output": "\nBARNEY,fred\n101:BARNEY",
+    "exit": 0
+  }
+ ]
+}

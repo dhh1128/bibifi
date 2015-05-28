@@ -1,0 +1,9 @@
+{"tests": 
+ [
+  {
+    "input": "logappend -B /dev/urandom",
+    "output": "invalid",
+    "exit": 255
+  }
+ ]
+}

@@ -1,0 +1,4 @@
+-K pass1 -T 1 -G BARNEY -A log1
+-K pass1 -T 2 -G fred -A log1
+-K pass1 -T 3 -G BARNEY -A -R 101 log1
+-B /tests/recursive-batch

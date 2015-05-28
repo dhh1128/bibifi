@@ -1,0 +1,32 @@
+-K pass1 -T 1 -G BARNEY -A log1
+-K pass1 -T 2 -G BARNEY -A -R 101 log1
+-K pass2 -T 1 -G BARNEY -A log2
+-K pass2 -T 2 -G fred -A log2
+-K pass2 -T 4 -E wilma -A log2
+-K pass2 -T 5 -G BARNEY -A -R 201 log2
+-K pass2 -T 7 -E wilma -A -R 303 log2
+-K pass1 -T 5 -G BARNEY -L -R 101 log1
+-K pass1 -T 6 -G BARNEY -A -R 102 log1
+-K pass2 -T 8 -E wilma -L -R 303 log2
+-K pass1 -T 9 -G SALLY -A log1
+-K pass2 -T 9 -G BARNEY -L -R 201 log2
+-K pass2 -T 10 -G fred -A -R 103 log2
+-K pass1 -T 11 -G SALLY -A -R 201 log1
+-K pass1 -T 12 -G SALLY -L -R 201 log1
+-K pass2 -T 13 -E wilma -A -R 103 log2
+-K pass1 -T 14 -G BARNEY -L -R 102 log1
+-K pass1 -T 15 -G SALLY -A -R 201 log1
+-K pass2 -T 16 -E wilma -L -R 103 log2
+-K pass2 -T 17 -G BARNEY -L log2
+-K pass2 -T 25 -G BARNEY -A log2
+-K pass1 -T 17 -G BARNEY -A -R 201 log1
+-K pass1 -T 19 -G BARNEY -L -R 201 log1
+-K pass2 -T 35 -G BARNEY -A -R 201 log2
+-K pass2 -T 45 -G BARNEY -L -R 201 log2
+-K pass2 -T 55 -G BARNEY -A -R 102 log2
+-K pass1 -T 39 -G BARNEY -L log1
+-K pass1 -T 49 -G BARNEY -A log1
+-K pass1 -T 59 -G BARNEY -A -R 102 log1
+-K pass1 -T 69 -G BARNEY -L -R 102 log1
+-K pass1 -T 79 -G BARNEY -A -R 102 log1
+-K pass1 -T 89 -G BARNEY -L -R 102 log1

@@ -1,0 +1,14 @@
+{"tests": 
+ [
+  {
+    "input": "logappend -B testing/tests/daniel/easy-batch",
+    "output": "",
+    "exit": 0
+  },
+  {
+    "input": "logread -K pass1 -R -G BARNEY -G BARNEY log1",
+    "output": "invalid",
+    "exit": 255
+  }
+ ]
+}
