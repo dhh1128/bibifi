@@ -1,0 +1,1 @@
+when reading from an endless source of random bytes, we should fail gracefully with 255/"integrity violation", not abend
