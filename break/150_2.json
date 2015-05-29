@@ -4,7 +4,7 @@
   "commands": [
     {
       "program": "logread",
-      "args": ["-K", "secret", "-S", "missingfile"]
+      "args": ["-K", "secret", "-S", "/dev/null"]
     }
   ]
 }
