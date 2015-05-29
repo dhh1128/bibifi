@@ -1,0 +1,1 @@
+logappend doesn't properly handle room number 1073741823.
