@@ -1,0 +1,1 @@
+a batch with a few binary bytes on one line should generate one invalid msg for that line, but continue to be processed line by line

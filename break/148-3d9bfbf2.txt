@@ -1,0 +1,1 @@
+after complex history with two interleaved logfiles, dump of entered rooms for various visitors was not correct

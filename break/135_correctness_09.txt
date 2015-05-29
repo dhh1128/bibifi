@@ -1,0 +1,1 @@
+Improper output when room number is invalid
