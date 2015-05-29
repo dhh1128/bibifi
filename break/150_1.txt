@@ -1,1 +1,0 @@
-logread should return invalid (255) on a missing file, not simply return (0).   

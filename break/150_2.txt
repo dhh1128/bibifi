@@ -1,0 +1,1 @@
+when reading from an empty file or /dev/null, should fail gracefully with 255/"integrity violation" or "invalid"
