@@ -1,0 +1,12 @@
+{
+  "target_team": 115,
+  "type": "confidentiality",
+  "logfile": "HXPICZHN",
+  "commands": [
+    {
+      "program": "logread",
+      "args": ["-R", "-E", "ADELAIDE"],
+      "output": "4, 14"
+    }
+  ]
+}
