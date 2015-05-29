@@ -1,0 +1,9 @@
+{"tests": 
+ [
+  {
+    "input": "logappend -B /tests/binary-in-batch",
+    "output": "invalid\ninvalid",
+    "exit": 0
+  }
+ ]
+}
