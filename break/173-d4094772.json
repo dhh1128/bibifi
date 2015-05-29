@@ -1,0 +1,19 @@
+{
+  "target_team": 173,
+  "type": "correctness",
+  "batch": "LUsgcGFzczEgLVQgMSAtRyBCQVJORVkgLUEgbG9nMQ0KLUsgcGFzczEgLVQgMiAtRyBmcmVkIC1BIGxvZzENCi1LIHBhc3MxIC1UIDMgLUcgQkFSTkVZIC1BIC1SIDEwMSBsb2cxDQotSyBwYXNzMSAtVCA0IC1FIHdpbG1hIC1BIGxvZzENCi1LIHBhc3MxIC1UIDUgLUcgQkFSTkVZIC1MIC1SIDEwMSBsb2cxDQotSyBwYXNzMSAtVCA2IC1HIEJBUk5FWSAtQSAtUiAxMDIgbG9nMQ0KLUsgcGFzczEgLVQgNyAtRSBTQUxMWSAtQSBsb2cx",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["-B", "batch"],
+      "output": "",
+      "exit": 0
+    },
+    {
+      "program": "logread",
+      "args": ["-K", "pass1", "-R", "-G", "BARNEY", "-G", "BARNEY", "log1"],
+      "output": "invalid",
+      "exit": 255
+    }
+  ]
+}
