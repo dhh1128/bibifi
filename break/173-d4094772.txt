@@ -1,1 +1,0 @@
-logread's spec explicitly says "-G may be specified multiple times when used with -I", but shows only one occurrence being valid with -R. Oracle agrees that -G ... -G is 255/"invalid".
