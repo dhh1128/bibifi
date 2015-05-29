@@ -1,0 +1,1 @@
+logread reports invalid when guest and employee with same name have visited the same room
