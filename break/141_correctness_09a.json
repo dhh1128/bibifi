@@ -8,7 +8,7 @@
     },
     {
       "program": "logappend",
-      "args": ["-K", "secret", "-T", "60", "-A", "-R", "00", "-G", "Roger", "log3"]
+      "args": ["-K", "secret", "-T", "60", "-A", "-R", "00", "-E", "Roger", "log3"]
     }
   ]
 }
