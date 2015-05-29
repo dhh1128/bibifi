@@ -1,0 +1,1 @@
+spec: "these commands should be processed by logappend individually, in order... If a single line is invalid, print the appropriate error message for that line and continue processing the rest of the batch file". 5 blank lines should -> 5 "invalid"

@@ -1,0 +1,13 @@
+{
+  "target_team": 172,
+  "type": "correctness",
+  "batch": "CgoKCgo=",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["-B", "batch"],
+      "output": "invalid\ninvalid\ninvalid\ninvalid\ninvalid",
+      "exit": 0
+    }
+  ]
+}
