@@ -1,0 +1,12 @@
+{
+  "target_team": 124,
+  "type": "correctness",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["-B", "/tests/binary-in-batch"],
+      "output": "invalid\ninvalid",
+      "exit": 0
+    }
+  ]
+}
