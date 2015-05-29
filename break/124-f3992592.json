@@ -1,0 +1,13 @@
+{
+  "target_team": 124,
+  "type": "correctness",
+  "batch": "B/cD2YoM6wT4jgABGx0CCi1LIHNlY3JldCAtVCAxIC1BIC1HIGZyZWQgbG9nMQotSyAtVCAxIC1BIC1HIGxvZzEKLUs=",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["-B", "batch"],
+      "output": "invalid\ninvalid",
+      "exit": 0
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+python3 blows up on line-by-line I/O if first line is invalid because it contains binary; whole batch is disqualified with 255/"invalid", whereas spec requires line-by-line errors.
