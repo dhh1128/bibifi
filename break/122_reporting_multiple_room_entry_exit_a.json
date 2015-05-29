@@ -19,6 +19,10 @@
       "args": ["-K", "secret", "-T", "65", "-A", "-R", "1", "-E", "Jack", "log3"]
     },
     {
+      "program": "logappend",
+      "args": ["-K", "secret", "-T", "70", "-L", "-R", "1", "-E", "Jack", "log3"]
+    },
+    {
       "program": "logread",
       "args": ["-K", "secret", "-R", "-E", "Jack", "log3"]
     }
