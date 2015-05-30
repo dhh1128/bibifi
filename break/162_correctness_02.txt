@@ -1,0 +1,1 @@
+logappend allows employees to leave a room without first entering the room or even the gallery
