@@ -1,0 +1,1 @@
+logappend accepts repeated arrivals of the same employee.
