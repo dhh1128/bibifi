@@ -1,0 +1,1 @@
+logappend allows employees to leave the gallery without first entering

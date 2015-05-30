@@ -1,0 +1,1 @@
+logread does not properly report when employee and guest with same name are in same room.

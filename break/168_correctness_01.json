@@ -1,0 +1,26 @@
+{
+  "target_team": 168,
+  "type": "correctness",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["-K", "secret", "-T", "10", "-A", "-E", "Jack", "log1728"]
+    },
+    {
+      "program": "logappend",
+      "args": ["-K", "secret", "-T", "20", "-A", "-R", "1", "-E", "Jack", "log1728"]
+    },
+    {
+      "program": "logappend",
+      "args": ["-K", "secret", "-T", "30", "-A", "-G", "Jack", "log1728"]
+    },
+    {
+      "program": "logappend",
+      "args": ["-K", "secret", "-T", "40", "-A", "-R", "1", "-G", "Jack", "log1728"]
+    },
+    {
+      "program": "logread",
+      "args": ["-K", "secret", "-S", "log1728"]
+    }
+  ]
+}

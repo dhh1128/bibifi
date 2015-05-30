@@ -1,0 +1,1 @@
+logread returns invalid even for valid commands
