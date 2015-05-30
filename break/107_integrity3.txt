@@ -1,0 +1,1 @@
+Log file uses predictable log entry block sizes

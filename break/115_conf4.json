@@ -5,7 +5,7 @@
   "commands": [
     {
       "program": "logread",
-      "args": ["-R", "-E", "ADELAIDE"],
+      "args": ["-R", "-G", "ADELAIDE"],
       "output": "4, 14"
     }
   ]

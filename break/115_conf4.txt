@@ -1,0 +1,1 @@
+Log file leaks the key and a lot of information about the plaintext. Key for the HXPICZHN log file is: r6ZsNd6zjV5Z2Cljk4xH. Using the key r6ZsNd6zjV5Z2Aljk4xH swaps guests and employees.
