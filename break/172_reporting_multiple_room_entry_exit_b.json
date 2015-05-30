@@ -14,17 +14,9 @@
       "program": "logappend",
       "args": ["-K", "secret", "-T", "30", "-L", "-R", "5", "-E", "Jessie", "log13"]
     },
-    {
-      "program": "logappend",
-      "args": ["-K", "secret", "-T", "40", "-A", "-R", "5", "-E", "Jessie", "log13"]
-    },
-      {
-      "program": "logappend",
-      "args": ["-K", "secret", "-T", "50", "-L", "-R", "5", "-E", "Jessie", "log13"]
-    },
    {
       "program": "logread",
-      "args": ["-K", "secret", "-R", "-S", "log13"]
+      "args": ["-K", "secret", "-S", "log13"]
     }
   ]
 }
