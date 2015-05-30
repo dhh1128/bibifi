@@ -1,2 +1,0 @@
-logread's -S option reports someone in a room even if they have (arrived and then)
- left the room.
