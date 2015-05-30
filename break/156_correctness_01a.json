@@ -12,7 +12,7 @@
     },
     {
       "program": "logappend",
-      "args": ["-K", "secret", "-T", "50", "-A", "-L", "1073741823", "-E", "Jack", "log3"]
+      "args": ["-K", "secret", "-T", "50", "-L", "-R", "1073741823", "-E", "Jack", "log3"]
     }
   ]
 }
