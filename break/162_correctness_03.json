@@ -9,5 +9,6 @@
     {
       "program": "logread",
       "args": ["-K", "secret", "-S", "log5"]
+    }
   ]
 }
