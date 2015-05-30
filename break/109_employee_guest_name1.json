@@ -9,6 +9,6 @@
     {
       "program": "logappend",
       "args": ["-K", "secret", "-T", "60", "-A", "-G", "Roger", "log3"]
-    },
+    }
   ]
 }
