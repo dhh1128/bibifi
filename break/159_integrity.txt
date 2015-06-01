@@ -1,0 +1,1 @@
+Changes to log file data are not detected by logread
