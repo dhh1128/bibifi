@@ -1,2 +1,2 @@
 Spec: Name of guest.Names are alphabetic characters (a-z, A-Z) in upper and lower case
-When you try the name with !, it does not return invalid.
+When you try the name with ', it does not return invalid.
