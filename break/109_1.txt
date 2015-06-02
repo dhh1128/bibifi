@@ -1,0 +1,2 @@
+Name of guest. Names are alphabetic characters (a-z, A-Z) in upper and lower case. Names may not contain spaces. Names are case sensitive. Employees and guests can have the same name.
+-- special characte is accepted as guest name 
