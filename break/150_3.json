@@ -6,4 +6,5 @@
       "program": "logappend",
       "args": ["-K", "secret", "-A", "-G", "G!ERDA", "-T", "1", "log"]
     }
+ ]
 }
