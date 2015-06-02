@@ -1,0 +1,35 @@
+{
+  "target_team": 142,
+  "type": "correctness",
+  "batch": "LUsgcGFzczEgLVQgMSAtRyBCQVJORVkgLUEgbG9nMQ0KLUsgcGFzczEgLVQgMiAtRyBCQVJORVkgLUEgLVIgMTAxIGxvZzENCi1LIHBhc3MyIC1UIDEgLUcgQkFSTkVZIC1BIGxvZzINCi1LIHBhc3MyIC1UIDIgLUcgZnJlZCAtQSBsb2cyDQotSyBwYXNzMiAtVCA0IC1FIHdpbG1hIC1BIGxvZzINCi1LIHBhc3MyIC1UIDUgLUcgQkFSTkVZIC1BIC1SIDIwMSBsb2cyDQotSyBwYXNzMiAtVCA3IC1FIHdpbG1hIC1BIC1SIDMwMyBsb2cyDQotSyBwYXNzMSAtVCA1IC1HIEJBUk5FWSAtTCAtUiAxMDEgbG9nMQ0KLUsgcGFzczEgLVQgNiAtRyBCQVJORVkgLUEgLVIgMTAyIGxvZzENCi1LIHBhc3MyIC1UIDggLUUgd2lsbWEgLUwgLVIgMzAzIGxvZzINCi1LIHBhc3MxIC1UIDkgLUcgU0FMTFkgLUEgbG9nMQ0KLUsgcGFzczIgLVQgOSAtRyBCQVJORVkgLUwgLVIgMjAxIGxvZzINCi1LIHBhc3MyIC1UIDEwIC1HIGZyZWQgLUEgLVIgMTAzIGxvZzINCi1LIHBhc3MxIC1UIDExIC1HIFNBTExZIC1BIC1SIDIwMSBsb2cxDQotSyBwYXNzMSAtVCAxMiAtRyBTQUxMWSAtTCAtUiAyMDEgbG9nMQ0KLUsgcGFzczIgLVQgMTMgLUUgd2lsbWEgLUEgLVIgMTAzIGxvZzINCi1LIHBhc3MxIC1UIDE0IC1HIEJBUk5FWSAtTCAtUiAxMDIgbG9nMQ0KLUsgcGFzczEgLVQgMTUgLUcgU0FMTFkgLUEgLVIgMjAxIGxvZzENCi1LIHBhc3MyIC1UIDE2IC1FIHdpbG1hIC1MIC1SIDEwMyBsb2cyDQotSyBwYXNzMiAtVCAxNyAtRyBCQVJORVkgLUwgbG9nMg0KLUsgcGFzczIgLVQgMjUgLUcgQkFSTkVZIC1BIGxvZzINCi1LIHBhc3MxIC1UIDE3IC1HIEJBUk5FWSAtQSAtUiAyMDEgbG9nMQ0KLUsgcGFzczEgLVQgMTkgLUcgQkFSTkVZIC1MIC1SIDIwMSBsb2cxDQotSyBwYXNzMiAtVCAzNSAtRyBCQVJORVkgLUEgLVIgMjAxIGxvZzINCi1LIHBhc3MyIC1UIDQ1IC1HIEJBUk5FWSAtTCAtUiAyMDEgbG9nMg0KLUsgcGFzczIgLVQgNTUgLUcgQkFSTkVZIC1BIC1SIDEwMiBsb2cyDQotSyBwYXNzMSAtVCAzOSAtRyBCQVJORVkgLUwgbG9nMQ0KLUsgcGFzczEgLVQgNDkgLUcgQkFSTkVZIC1BIGxvZzENCi1LIHBhc3MxIC1UIDU5IC1HIEJBUk5FWSAtQSAtUiAxMDIgbG9nMQ0KLUsgcGFzczEgLVQgNjkgLUcgQkFSTkVZIC1MIC1SIDEwMiBsb2cxDQotSyBwYXNzMSAtVCA3OSAtRyBCQVJORVkgLUEgLVIgMTAyIGxvZzENCi1LIHBhc3MxIC1UIDg5IC1HIEJBUk5FWSAtTCAtUiAxMDIgbG9nMQ==",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["-B", "batch"]
+    },
+    {
+      "program": "logread",
+      "args": ["-K", "pass1", "-R", "-G", "BARNEY", "log1"]
+    },
+    {
+      "program": "logread",
+      "args": ["-K", "pass2", "-R", "-E", "wilma", "log1"]
+    },
+    {
+      "program": "logread",
+      "args": ["-K", "pass1", "-R", "-E", "wilma", "log1"]
+    },
+    {
+      "program": "logread",
+      "args": ["-K", "pass2", "-R", "-E", "wilma", "log2"]
+    },
+    {
+      "program": "logread",
+      "args": ["-K", "pass2", "-R", "-G", "BARNEY", "log2"]
+    },
+    {
+      "program": "logread",
+      "args": ["-K", "pass1", "-R", "-G", "SALLY", "log1"]
+    }
+  ]
+}
