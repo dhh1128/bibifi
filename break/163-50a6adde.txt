@@ -1,0 +1,4 @@
+"/tmp/log" and "tmp/log" are different files. We should be able to write separate galleries. Team 163 ignores prepended paths and puts everything in the working directory.
+This would particularly be a problem if the user uses cd and is then no longer able to access a gallery in a parent directory.
+
+Spec: Log file names can include periods. Slashes may be used to reference log files in other directories. 
