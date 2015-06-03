@@ -1,0 +1,1 @@
+both "log1.script" and "log1" are valid logfile names that do not exist in the fs when we start; we should be able to write to both
