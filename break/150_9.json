@@ -9,7 +9,6 @@
     {
       "program": "logappend",
       "args": ["-K", "secret", "-A", "-G", "GERDA", "--R", "1", "-T", "2", "log"]
-    },
-    
+    }
  ]
 }
