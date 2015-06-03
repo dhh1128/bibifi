@@ -1,0 +1,12 @@
+{
+  "target_team": 174,
+  "type": "correctness",
+  "commands": [
+    {
+      "program": "logread",
+      "args": ["-K", "secret", "-S", "/dev/urandom"],
+      "output": "integrity violation",
+      "exit": 255
+    }
+  ]
+}
