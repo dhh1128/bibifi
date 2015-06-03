@@ -1,0 +1,12 @@
+{
+  "target_team": 119,
+  "type": "correctness",
+  "commands": [
+    {
+      "program": "logread",
+      "args": ["-K", "secret", "-S", "batch"]
+    }
+  ],
+  "batch": "IQ=="
+}
+
