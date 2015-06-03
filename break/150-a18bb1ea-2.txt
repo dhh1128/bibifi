@@ -1,0 +1,2 @@
+Spec: If the logfile has been corrupted, the program should exit and print "integrity violation" to stdout and exit with return 255
+Spec: If the log cannot be authenticated with the token [...], then "integrity violation" should be printed to stdout and 255 should be returned.
