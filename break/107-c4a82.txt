@@ -1,0 +1,4 @@
+Provided input causes a segfault.
+Without stepping through the code its hard to pinpoint the exact location where it occurs.
+However, in Crypto.c starting at line 360, you can see that array bounds are being set from values in the log file.
+By editing the log file, I am able to force invalid values into array bounds.
