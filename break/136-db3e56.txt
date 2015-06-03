@@ -1,0 +1,1 @@
+According to spec: "Conflicting command line arguments are given, for example both -E and -G" is one of the "examples of conditions that would result in printing 'invalid'". Oracle agrees
