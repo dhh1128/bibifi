@@ -1,0 +1,4 @@
+Logread fails to print "integrity violation" on invalid Base64.
+
+This is a security concern because, to a user it appears as though the gallery is empty.
+Thus, any log file can be modified to appear empty (while still apparently containing data).

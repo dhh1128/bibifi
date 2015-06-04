@@ -1,0 +1,14 @@
+{
+  "target_team": 163,
+  "type": "correctness",
+  "commands": [
+    {
+      "program": "logappend",
+      "args": ["-K", "secret", "-T", "1", "-G", "fred", "-A", "/tmp/log"]
+    },
+    {
+      "program": "logappend",
+      "args": ["-K", "secret", "-T", "1", "-G", "fred", "-A", "tmp/log"]
+    }
+  ]
+}

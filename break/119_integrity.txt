@@ -1,1 +1,0 @@
-Logread fails print "integrity violation" on invalid Base64. To the user it appears as though the gallery is empty.
