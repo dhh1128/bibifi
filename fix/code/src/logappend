@@ -1,0 +1,14 @@
+#!/bin/bash 
+
+# Figure out the full path to this bash script; we need it so we can
+# build java's classpath correctly.
+SCRIPT_PATH="${BASH_SOURCE[0]}";
+if([ -h "${SCRIPT_PATH}" ]) then
+    while([ -h "${SCRIPT_PATH}" ]) do SCRIPT_PATH=`readlink "${SCRIPT_PATH}"`; done
+fi
+pushd . > /dev/null
+cd `dirname ${SCRIPT_PATH}` > /dev/null
+SCRIPT_PATH=`pwd`;
+popd  > /dev/null
+
+java -jar ${SCRIPT_PATH}/bin/logappend.jar "$@"
