@@ -1,0 +1,5 @@
+Bug id 1949 and 11868 both catch the problem where a java File object can be
+inited with a path that ends with a trailing slash, but the slash will be
+dropped from the path if it doesn't exist. The result is that java code
+creates a file and succeeds, instead of attempting to create a folder, and
+failing. This fix detects such bad paths and rejects them.
