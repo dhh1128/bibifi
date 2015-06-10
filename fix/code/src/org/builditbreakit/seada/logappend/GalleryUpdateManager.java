@@ -41,7 +41,8 @@ public class GalleryUpdateManager {
 		return item;
 	}
 	
-	public void save() {
+	public boolean save() {
+		boolean ok = true;
 		for (GalleryUpdate item : states.values()) {
 			if (item.modified) {
 				try {
@@ -49,9 +50,11 @@ public class GalleryUpdateManager {
 					writer.write(item.state, item.password);
 				} catch (IOException e) {
 					System.out.println("invalid");
+					ok = false;
 				}
 			}
 		}
+		return ok;
 	}
 	
 }

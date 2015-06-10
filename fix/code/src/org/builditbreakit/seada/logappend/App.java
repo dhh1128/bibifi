@@ -78,7 +78,9 @@ public class App {
 				applyCommand(args, gum);
 			}
 			
-			gum.save();
+			if (!gum.save()) {
+				System.exit(exitCodeForErrors);
+			}
 			System.exit(0);
 			
 		} catch (IntegrityViolationException | SecurityException e) {
