@@ -1,0 +1,25 @@
+IMPORTANT - This is a partial fix for bug 21382, which exhibits multiple
+issues. This submission will not resolve 21382 completely. I understand, per
+e-mail subject "Bug with multiple issues", that it is okay to fix issues in any
+order we desire, so as to reduce our team’s unique bug count, even if that 
+results in rejected fix submissions.
+
+The other issues should cause 21382 to be rejected anyway during the dispute
+process. However, I am fixing it should the dispute fail.
+
+----------------------------
+
+21382 exhibits an issue where two visitors, -E FredI and -G FredI, are
+considered to be the same visitor by the algorithm responsible for printing the
+logread –I output.
+
+The result is that the algorithm ignores the room history of one of these
+visitors.
+
+The problem is that the algorithm tests if two visitors are the same person by
+using the equals() method. The equals method, however, only considers the
+visitor's name. It does not consider the visitor's type.
+
+To correct the issue I had to add a visitor type field to the Visitor object
+and include the new field in the equality check. I also had to update visitor
+serialization to populate this field.
