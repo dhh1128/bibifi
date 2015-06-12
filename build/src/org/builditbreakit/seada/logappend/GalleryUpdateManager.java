@@ -15,7 +15,7 @@ public class GalleryUpdateManager {
 	
 	private Map<String, GalleryUpdate> states = new HashMap<String, GalleryUpdate>();
 	
-	private static final Pattern cantBeFile = Pattern.compile(".*/(\\.\\.?)?$");
+	private static final Pattern cantBeFile = Pattern.compile(".*/$");
 	
 	/**
 	 * Find the existing gallery state for a particular path -- or create a new one, if
