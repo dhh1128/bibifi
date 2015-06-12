@@ -15,20 +15,25 @@ import com.esotericsoftware.kryo.serializers.CollectionSerializer;
 public final class Visitor {
 
 	private transient final String name;
+	private transient final VisitorType visitorType;
 	private transient final List<LocationRecord> history;
 
-	public Visitor(String name) {
+	public Visitor(String name, VisitorType visitorType) {
 		ValidationUtil.assertValidVisitorName(name);
+		ValidationUtil.assertValidVisitorType(visitorType);
 		
 		this.name = name;
+		this.visitorType = visitorType;
 		this.history = new ArrayList<>();
 	}
 	
-	private Visitor(String name, List<LocationRecord> history) {
+	private Visitor(String name, VisitorType visitorType, List<LocationRecord> history) {
 		ValidationUtil.assertValidVisitorName(name);
+		ValidationUtil.assertValidVisitorType(visitorType);
 		ValidationUtil.assertNotNull(history, "History");
 
 		this.name = name;
+		this.visitorType = visitorType;
 		this.history = new ArrayList<>(history);
 	}
 
@@ -43,6 +48,10 @@ public final class Visitor {
 		return name;
 	}
 	
+	public VisitorType getVisitorType() {
+		return visitorType;
+	}
+	
 	public List<LocationRecord> getHistory() {
 		return Collections.unmodifiableList(history);
 	}
@@ -53,9 +62,10 @@ public final class Visitor {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result	+ ((visitorType == null) ? 0 : visitorType.hashCode());
 		return result;
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		/* Eclipse Generated */
@@ -76,6 +86,9 @@ public final class Visitor {
 		} else if (!name.equals(other.name)) {
 			return false;
 		}
+		if (visitorType != other.visitorType) {
+			return false;
+		}
 		return true;
 	}
 
@@ -84,6 +97,8 @@ public final class Visitor {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Visitor [name=");
 		builder.append(name);
+		builder.append(", type=");
+		builder.append(visitorType);
 		builder.append(", lastLocationRecord=");
 		if (history.isEmpty()) {
 			builder.append(Location.OFF_PREMISES);
@@ -136,18 +151,24 @@ public final class Visitor {
 		return builder.toString();
 	}
 
-	private static final Serializer<Visitor> serializer = new VisitorSerializer();
+	private static final Serializer<Visitor> employeeSerializer = new VisitorSerializer(VisitorType.EMPLOYEE);
+	private static final Serializer<Visitor> guestSerializer = new VisitorSerializer(VisitorType.GUEST);
 
-	public static Serializer<Visitor> getSerializer() {
-		return serializer;
+	public static Serializer<Visitor> getSerializer(VisitorType serializerType) {
+		if(serializerType == VisitorType.EMPLOYEE) {
+			return employeeSerializer;
+		}
+		return guestSerializer;
 	}
 
 	private static class VisitorSerializer extends Serializer<Visitor> {
 		private static CollectionSerializer historySerializer = new CollectionSerializer(
 				LocationRecord.class, LocationRecord.getSerializer(), false);
+		private final VisitorType serializerType;
 
-		public VisitorSerializer() {
+		public VisitorSerializer(VisitorType serializerType) {
 			super(true);
+			this.serializerType = serializerType;
 		}
 
 		@Override
@@ -156,7 +177,7 @@ public final class Visitor {
 			@SuppressWarnings("unchecked")
 			List<LocationRecord> history = kryo.readObject(in, ArrayList.class,
 					historySerializer);
-			return new Visitor(name, history);
+			return new Visitor(name, serializerType, history);
 		}
 
 		@Override

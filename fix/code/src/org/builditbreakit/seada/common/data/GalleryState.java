@@ -88,7 +88,7 @@ public class GalleryState {
 		Map<String, Visitor> map = getMap(visitorType);
 		Visitor visitor = map.get(name);
 		if (visitor == null) {
-			visitor = new Visitor(name);
+			visitor = new Visitor(name, visitorType);
 			map.put(name, visitor);
 		}
 
@@ -187,18 +187,21 @@ public class GalleryState {
 
 	private static class GalleryStateSerializer extends
 			Serializer<GalleryState> {
-		private static CollectionSerializer visitorsSerializer = new CollectionSerializer(
-				Visitor.class, Visitor.getSerializer(), false);
+		private static CollectionSerializer visitorsSerializerE = new CollectionSerializer(
+				Visitor.class, Visitor.getSerializer(VisitorType.EMPLOYEE), false);
+		
+		private static CollectionSerializer visitorsSerializerG = new CollectionSerializer(
+				Visitor.class, Visitor.getSerializer(VisitorType.GUEST), false);
 
 		@Override
 		public GalleryState read(Kryo kryo, Input in, Class<GalleryState> clazz) {
 			@SuppressWarnings("unchecked")
 			Collection<Visitor> guests = kryo.readObject(in,
-					ArrayList.class, visitorsSerializer);
+					ArrayList.class, visitorsSerializerG);
 			
 			@SuppressWarnings("unchecked")
 			Collection<Visitor> employees = kryo.readObject(in,
-					ArrayList.class, visitorsSerializer);
+					ArrayList.class, visitorsSerializerE);
 			
 			return new GalleryState(guests, employees);
 		}
@@ -206,10 +209,10 @@ public class GalleryState {
 		@Override
 		public void write(Kryo kryo, Output out, GalleryState object) {
 			Collection<Visitor> guests = object.guestMap.values();
-			kryo.writeObject(out, guests, visitorsSerializer);
+			kryo.writeObject(out, guests, visitorsSerializerG);
 			
 			Collection<Visitor> employees = object.employeeMap.values();
-			kryo.writeObject(out, employees, visitorsSerializer);
+			kryo.writeObject(out, employees, visitorsSerializerE);
 		}
 	}
 }
