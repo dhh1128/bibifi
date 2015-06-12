@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
+import org.builditbreakit.seada.common.exceptions.MissingVisitorException;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
@@ -65,7 +66,7 @@ public class GalleryState {
 		}
 
 		if (visitor == null) {
-			throw new IllegalStateException("Visitor does not exist");
+			throw new MissingVisitorException("Visitor does not exist");
 		}
 
 		return visitor;

@@ -17,8 +17,10 @@ import org.builditbreakit.seada.common.data.ValidationUtil;
 import org.builditbreakit.seada.common.data.Visitor;
 import org.builditbreakit.seada.common.data.VisitorType;
 import org.builditbreakit.seada.common.exceptions.IntegrityViolationException;
+import org.builditbreakit.seada.common.exceptions.MissingVisitorException;
 
 public class ConcurrentVisitorsFormatter implements Formatter {
+	private boolean printNothing = false;
 	private final GalleryState state;
 	private final Set<Visitor> visitors = new HashSet<>();
 
@@ -28,11 +30,19 @@ public class ConcurrentVisitorsFormatter implements Formatter {
 	}
 
 	public void addVisitor(String name, VisitorType type) {
-		visitors.add(state.getVisitor(name, type));
+		try {
+			visitors.add(state.getVisitor(name, type));
+		} catch (MissingVisitorException e) {
+			printNothing = true;
+		}
 	}
 
 	@Override
 	public String format() {
+		if(printNothing) {
+			return "";
+		}
+		
 		Map<Integer, SortedSet<VisitorRecord>> roomIndex = buildIndex(visitors);
 
 		SortedSet<Integer> results = new TreeSet<>();
