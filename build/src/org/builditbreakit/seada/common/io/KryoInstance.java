@@ -23,7 +23,7 @@ public final class KryoInstance {
 	private static void init() {
 		if (!initialized) {
 			KRYO.register(GalleryState.class, GalleryState.getSerializer());
-			KRYO.register(Visitor.class, Visitor.getSerializer());
+			KRYO.register(Visitor.class);
 			KRYO.register(LocationRecord.class, LocationRecord.getSerializer());
 
 			initialized = true;
