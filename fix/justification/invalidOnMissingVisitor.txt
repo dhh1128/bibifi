@@ -1,0 +1,15 @@
+The bugs fixed by this submission should be rejected during the dispute process
+due to contradictory instructions by the spec. Since the spec is contradictory
+there is no notion of supporting this behavior correctly or incorrectly. We are
+submitting fixes to match the oracle anyways in case our dispute fails.
+
+-------------------------
+
+Consider bug 6571. It uses the logread -I command and specifies a visitor -G Joe.
+Joe was never a visitor to the gallery. In such cases, the spec is contradictory.
+However, the oracle prints nothing and returns 0. Our software prints invalid
+and returns 255. This fix aligns our implementation with the oracle.
+
+To fix the issue, I added a MissingVisitorException that is thrown when a
+specified visitor is missing. The logread -I code catches this exception and
+then sets a flag to print nothing.
