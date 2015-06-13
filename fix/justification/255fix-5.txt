@@ -1,0 +1,5 @@
+We were printing "invalid" when unable to save a logfile, but we were
+returning 0 instead of 255 because we didn't check for success of .save()
+method. The breaks (for example, 20543) were catching the fact that we
+differed from the oracle in the return code. We now detect failure to save
+and return 255, per spec.
