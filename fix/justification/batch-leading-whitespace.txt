@@ -1,0 +1,4 @@
+We were not tolerating whitespace at the beginning of batch lines. Two bugs, 16663 and 16665,
+captured scenarios where the oracle did tolerate leading whitespace. Thus, we were printing
+"invalid" where the oracle printed nothing. This fix causes us to silently ignore leading
+whitespace in batch lines.
