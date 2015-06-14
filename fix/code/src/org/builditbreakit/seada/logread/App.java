@@ -25,7 +25,7 @@ public class App {
 			cmd.parse(args);
 
 			File file = new File(cmd.getLogfile());
-			if (!file.exists()) {
+			if (cmd.getLogfile().isEmpty() || !file.exists()) {
 				switch (cmd.getStyle()) {
 				case DUMP_CURRENT_STATE:
 					harness.println();

@@ -111,7 +111,7 @@ public final class ValidationUtil {
 	
 	public static void assertValidLogfile(String value) {
 		boolean bad = false;
-		if (value == null || value.isEmpty()) {
+		if (value == null) {
 			bad = true;
 		} else {
 			/*
