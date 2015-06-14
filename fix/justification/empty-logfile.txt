@@ -1,0 +1,3 @@
+The oracle treats an empty logfile name as a non-existent file. It prints nothing and
+returns 0. We treated such an argument as invalid and returned "invalid"/255. This
+fix brings our behavior in line with the oracle.
