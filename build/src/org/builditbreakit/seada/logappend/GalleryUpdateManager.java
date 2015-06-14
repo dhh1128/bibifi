@@ -24,11 +24,18 @@ public class GalleryUpdateManager {
 	 */
 	public GalleryUpdate getGalleryFor(AppendCommand cmd) throws IOException, SecurityException {
 		String lf = cmd.getLogfile();
-		Matcher m = cantBeFile.matcher(lf);
-		if (m.matches()) {
-			throw new IOException("Bad logfile.");
+		File f;
+		// Special handling of empty filename to match oracle's (mis)behavior:
+		if (lf.isEmpty()) {
+			f = File.createTempFile(".empty", ".tmp");
+			f.deleteOnExit();
+		} else {
+			Matcher m = cantBeFile.matcher(lf);
+			if (m.matches()) {
+				throw new IOException("Bad logfile.");
+			}
+			f = new File(lf);
 		}
-		File f = new File(lf);
 		String password = cmd.getToken();
 		// Convert to canonical version of path so different paths to the same logfile
 		// are resolved to the same thing.
