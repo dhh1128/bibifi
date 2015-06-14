@@ -20,6 +20,10 @@ public class BatchProcessor {
 		}
 		return splitLine(line);
 	}
+	
+	private static boolean isSplitChar(char c) {
+		return (c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '\f' || c == '\13');
+	}
 
 	/**
 	 * This logic is super simple and would not be adequate for a robust
@@ -31,11 +35,14 @@ public class BatchProcessor {
 		ArrayList<String> tokens = new ArrayList<>(16);
 		int length = line.length();
 		int offset = 0;
+		// Consume leading whitespace.
+		while (isSplitChar(line.charAt(offset)) && offset < length) {
+			++offset;
+		}
 		for (int i = offset; i < length; i++) {
 			char c = line.charAt(i);
 			// Check whitespace characters in regex set: [\s]
-			if ((c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '\f' || c == '\13')
-					&& (offset != i)) {
+			if (isSplitChar(c) && (offset != i)) {
 				tokens.add(line.substring(offset, i));
 				offset = i + 1;
 			}
